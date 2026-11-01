@@ -1,0 +1,20 @@
+{
+  "description": "Copied from stock.wood.walnut",
+  "digest": "a1c3e6e1f9c3d774dd6786c886728980ad0b2baff37c21a2bae69dcc5c66e6b3",
+  "kind": "shader",
+  "name": "from.stock.wood.walnut",
+  "payload": {
+    "color": "#4e2f1c",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.45
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [],
+  "version": "1.0.0"
+}

@@ -1,0 +1,20 @@
+{
+  "description": "Copied from stock.glow.warm",
+  "digest": "ec36a74e0fd8f526429d072453780a64d4c6e6cc2d8e8048947569341b9c98f4",
+  "kind": "shader",
+  "name": "from.stock.glow.warm",
+  "payload": {
+    "color": "#fff0d0",
+    "extra": {},
+    "glow": "#ffcf8a",
+    "glow_strength": 3.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [],
+  "version": "1.0.0"
+}

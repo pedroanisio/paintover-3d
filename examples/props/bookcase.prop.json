@@ -1,0 +1,21 @@
+{
+  "name": "bookcase",
+  "description": "Open shelves; the number of shelves follows the height unless set",
+  "tags": ["furniture", "storage"],
+  "params": {
+    "width": {"default": 1.8, "min": 0.5, "max": 6},
+    "height": {"default": 2.2, "min": 0.8, "max": 3.6},
+    "shelf_gap": {"default": 0.36, "min": 0.22, "max": 0.6}
+  },
+  "slots": {"wood": "stock.wood.oak", "back": "stock.wood.walnut"},
+  "variants": {"low": {"height": 1.0, "width": 2.4}, "wall": {"width": 5.0, "height": 2.8}},
+  "parts": [
+    {"solid": "box", "size": ["width", "height", 0.02], "at": [0, "height / 2", 0.15], "shader": "back"},
+    {"repeat": 2, "as": "s", "parts": [
+      {"solid": "box", "size": [0.03, "height", 0.32], "at": ["(s * 2 - 1) * width / 2", "height / 2", 0], "shader": "wood"}
+    ]},
+    {"repeat": "floor(height / shelf_gap) + 1", "as": "n", "parts": [
+      {"solid": "box", "size": ["width", 0.03, 0.32], "at": [0, "min(n * shelf_gap, height) + 0.015 - (n * shelf_gap >= height) * 0.03", 0], "shader": "wood"}
+    ]}
+  ]
+}

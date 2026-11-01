@@ -1,0 +1,20 @@
+{
+  "description": "Copied from scifi.neon.cyan",
+  "digest": "2d7b8877346df247e9c899605452120adee2c313afbe3de0e7a084d28abbc628",
+  "kind": "shader",
+  "name": "from.scifi.neon.cyan",
+  "payload": {
+    "color": "#001014",
+    "extra": {},
+    "glow": "#37e0ff",
+    "glow_strength": 6.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.7
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [],
+  "version": "1.0.0"
+}

@@ -1,0 +1,20 @@
+{
+  "description": "Copied from stock.metal.brass",
+  "digest": "6ce2b63f441d1c89c1a1a6f57208d677bc9f3a1c6879c6d47aa1a5dbd1cb2f85",
+  "kind": "shader",
+  "name": "from.stock.metal.brass",
+  "payload": {
+    "color": "#b08d43",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 1.0,
+    "opacity": 1.0,
+    "roughness": 0.3
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [],
+  "version": "1.0.0"
+}

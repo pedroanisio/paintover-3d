@@ -1,0 +1,40 @@
+{
+  "name": "meeting-table",
+  "description": "Table that seats as many as its length allows, with pendant lights above",
+  "tags": ["furniture"],
+  "params": {
+    "length": {"default": 3.2, "min": 1.4, "max": 8, "description": "Along x, in metres"},
+    "depth": {"default": 1.1, "min": 0.7, "max": 1.8},
+    "height": {"default": 0.75, "min": 0.6, "max": 1.1},
+    "spacing": {"default": 0.8, "min": 0.55, "max": 1.6, "description": "Between chairs"},
+    "seated": {"default": 1, "min": 0, "max": 1, "description": "1 draws the chairs"},
+    "pendants": {"default": 2, "min": 0, "max": 6},
+    "ceiling": {"default": 3.0, "min": 2.4, "max": 6}
+  },
+  "slots": {"top": "studio.car-paint.midnight", "legs": "stock.metal.black", "seat": "studio.velvet.plum"},
+  "variants": {
+    "huddle": {"length": 1.8, "depth": 0.9, "pendants": 1},
+    "boardroom": {"length": 5.6, "depth": 1.5, "spacing": 0.9, "pendants": 3, "shaders": {"top": "studio.copper.brushed"}}
+  },
+  "parts": [
+    {"solid": "box", "size": ["length", 0.05, "depth"], "at": [0, "height - 0.025", 0], "shader": "top"},
+    {"repeat": 4, "as": "i", "parts": [
+      {"solid": "box", "size": [0.07, "height - 0.05", 0.07], "shader": "legs",
+       "at": ["(i % 2 * 2 - 1) * (length / 2 - 0.12)", "(height - 0.05) / 2", "(i // 2 * 2 - 1) * (depth / 2 - 0.12)"]}
+    ]},
+    {"repeat": "floor((length - 0.3) / spacing)", "as": "n", "when": "seated > 0", "parts": [
+      {"prop": "chair", "shaders": {"seat": "$seat"},
+       "at": ["(n + 0.5) * spacing - floor((length - 0.3) / spacing) * spacing / 2", 0, "depth / 2 + 0.2"]},
+      {"prop": "chair", "shaders": {"seat": "$seat"}, "yaw": 180,
+       "at": ["(n + 0.5) * spacing - floor((length - 0.3) / spacing) * spacing / 2", 0, "-depth / 2 - 0.2"]}
+    ]},
+    {"repeat": "pendants", "as": "p", "parts": [
+      {"solid": "cylinder", "radius": 0.006, "height": 0.9, "shader": "legs", "segments": 8,
+       "at": ["length * ((p + 0.5) / pendants - 0.5)", "ceiling - 0.45", 0]},
+      {"solid": "cone", "radius": 0.22, "height": 0.2, "shader": "legs",
+       "at": ["length * ((p + 0.5) / pendants - 0.5)", "ceiling - 0.98", 0]},
+      {"light": "point", "intensity": 5, "color": "#ffd29a", "reach": 7,
+       "at": ["length * ((p + 0.5) / pendants - 0.5)", "ceiling - 1.15", 0]}
+    ]}
+  ]
+}

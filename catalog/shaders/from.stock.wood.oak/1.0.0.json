@@ -1,0 +1,20 @@
+{
+  "description": "Copied from stock.wood.oak",
+  "digest": "1265c079cc4dda63cfad774f0e5dadfba84707b671cb4d25600d7e5906cca155",
+  "kind": "shader",
+  "name": "from.stock.wood.oak",
+  "payload": {
+    "color": "#8a5a33",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.55
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [],
+  "version": "1.0.0"
+}

@@ -1,0 +1,89 @@
+{
+  "description": "Straight-backed chair; its seat height and width are parameters",
+  "digest": "4aa9b94adf8bef4f0dff4def8125ef0b2b201d1eefd708af69e494c102d4a85e",
+  "kind": "prop",
+  "name": "chair",
+  "payload": {
+    "params": {
+      "seat_height": {
+        "default": 0.46,
+        "description": "",
+        "max": 0.8,
+        "min": 0.3
+      },
+      "width": {
+        "default": 0.46,
+        "description": "Seat width and depth",
+        "max": 0.7,
+        "min": 0.34
+      }
+    },
+    "parts": [
+      {
+        "at": [
+          0,
+          "seat_height",
+          0
+        ],
+        "shader": "seat",
+        "size": [
+          "width",
+          0.06,
+          "width"
+        ],
+        "solid": "box"
+      },
+      {
+        "at": [
+          0,
+          "seat_height + 0.26",
+          "width / 2 - 0.02"
+        ],
+        "shader": "frame",
+        "size": [
+          "width",
+          0.45,
+          0.04
+        ],
+        "solid": "box"
+      },
+      {
+        "as": "i",
+        "parts": [
+          {
+            "at": [
+              "(i % 2 * 2 - 1) * (width / 2 - 0.03)",
+              "(seat_height - 0.02) / 2",
+              "(i // 2 * 2 - 1) * (width / 2 - 0.03)"
+            ],
+            "shader": "frame",
+            "size": [
+              0.04,
+              "seat_height - 0.02",
+              0.04
+            ],
+            "solid": "box"
+          }
+        ],
+        "repeat": 4
+      }
+    ],
+    "slots": {
+      "frame": "from.stock.wood.oak@1.0.0",
+      "seat": "velvet.plum@1.0.0"
+    },
+    "template": true,
+    "variants": {}
+  },
+  "schema": 1,
+  "size": [
+    0.46,
+    0.945,
+    0.46
+  ],
+  "tags": [
+    "furniture",
+    "seating"
+  ],
+  "version": "1.0.0"
+}

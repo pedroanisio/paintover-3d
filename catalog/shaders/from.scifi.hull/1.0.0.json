@@ -1,0 +1,20 @@
+{
+  "description": "Copied from scifi.hull",
+  "digest": "1dded63a6326c78bac240d10a9f54db50062823af6a2b3ec19f98bb27119caa3",
+  "kind": "shader",
+  "name": "from.scifi.hull",
+  "payload": {
+    "color": "#59626e",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.1,
+    "opacity": 1.0,
+    "roughness": 0.45
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [],
+  "version": "1.0.0"
+}

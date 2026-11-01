@@ -1,0 +1,26 @@
+{
+  "description": "Metal with thin-film colours",
+  "digest": "741f7a67f815747a52b7a92e09b41e5d2f8fc43019fda08fbe0b9f2ab15b2317",
+  "kind": "shader",
+  "name": "soap-film",
+  "payload": {
+    "color": "#d0d4dc",
+    "extra": {
+      "iridescence": 1,
+      "iridescenceIor": 1.6
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.9,
+    "opacity": 1.0,
+    "roughness": 0.2
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal",
+    "glossy"
+  ],
+  "version": "1.0.0"
+}

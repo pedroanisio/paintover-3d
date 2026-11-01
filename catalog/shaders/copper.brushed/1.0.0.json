@@ -1,0 +1,24 @@
+{
+  "description": "Brushed copper with stretched highlights",
+  "digest": "b9fa3fd37cc43b79265ab1c940fc4e1aabd1a0da938a9c0426ff5583c35701f2",
+  "kind": "shader",
+  "name": "copper.brushed",
+  "payload": {
+    "color": "#b5673a",
+    "extra": {
+      "anisotropy": 0.8
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 1.0,
+    "opacity": 1.0,
+    "roughness": 0.32
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

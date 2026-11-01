@@ -1,0 +1,13 @@
+# Local toolchain, rebuilt by ./doctor.py
+.venv/
+.tools/
+
+# Generated pictures; each example writes its own
+renders/
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/

@@ -1,0 +1,25 @@
+{
+  "description": "Soft fabric with a bright rim",
+  "digest": "5a9774e961b526a374e31f01e04a682a4670b3dc317767d1e97ed8190c763c26",
+  "kind": "shader",
+  "name": "velvet.plum",
+  "payload": {
+    "color": "#4a1740",
+    "extra": {
+      "sheenColor": "#e58fd0",
+      "sheenRoughness": 0.3
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.8
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "fabric"
+  ],
+  "version": "1.0.0"
+}

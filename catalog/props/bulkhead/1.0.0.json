@@ -1,0 +1,243 @@
+{
+  "description": "Corridor ring, made by the sci-fi plugin",
+  "digest": "674e2d27a1f4a3cfcb6e3f40e71072a84904f402ec74cdce2634d8f1b09d2d43",
+  "kind": "prop",
+  "name": "bulkhead",
+  "payload": {
+    "parts": [
+      {
+        "at": [
+          0.0,
+          -0.1,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 1.9,
+          "height": 0.2,
+          "width": 4.0
+        },
+        "material": "from.scifi.deck@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          3.1,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 1.9,
+          "height": 0.2,
+          "width": 4.0
+        },
+        "material": "from.scifi.hull@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          1.5,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 1.9,
+          "height": 3.0,
+          "width": 0.2
+        },
+        "material": "from.scifi.hull@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          1.5,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 1.9,
+          "height": 3.0,
+          "width": 0.2
+        },
+        "material": "from.scifi.hull@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.77,
+          2.5,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 1.7,
+          "height": 0.08,
+          "width": 0.05
+        },
+        "material": "from.scifi.neon.cyan@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.77,
+          2.5,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 1.7,
+          "height": 0.08,
+          "width": 0.05
+        },
+        "material": "from.scifi.neon.cyan@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          2.75,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#7fe9ff",
+        "intensity": 5.0,
+        "light": "point",
+        "reach": 5.0,
+        "shadows": false,
+        "softness": 0.0
+      }
+    ]
+  },
+  "schema": 1,
+  "size": [
+    4.0,
+    3.4,
+    1.9
+  ],
+  "tags": [
+    "scifi",
+    "structure"
+  ],
+  "version": "1.0.0"
+}

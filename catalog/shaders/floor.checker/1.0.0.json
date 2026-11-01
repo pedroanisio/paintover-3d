@@ -1,0 +1,28 @@
+{
+  "description": "Black and white tiles",
+  "digest": "c407b63eb5f015994ecc6ff9ba8e7e40c9dfe0ee7ef279155b7dcdb8659bfe66",
+  "kind": "shader",
+  "name": "floor.checker",
+  "payload": {
+    "color": "#ffffff",
+    "extra": {
+      "uvScaleX": 4,
+      "uvScaleY": 4
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "2a781d1bd7096d709a30fba391852e6ecffe253852242cea4bb5b89d7b2aa70e.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.35
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "floor",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

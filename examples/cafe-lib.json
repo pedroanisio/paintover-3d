@@ -1,0 +1,15 @@
+{
+  "name": "cafe",
+  "materials": {
+    "tile": {"color": "#c9c2b4", "roughness": 0.3},
+    "banquette": {"color": "#7a2231", "roughness": 0.8}
+  },
+  "assemblies": {
+    "table-for-two": [
+      {"use": "stock.table", "width": 0.75, "depth": 0.75, "top": "stock.plaster.white"},
+      {"use": "stock.chair", "at": [0, 0, 0.62], "seat": "cafe.banquette"},
+      {"use": "stock.chair", "at": [0, 0, -0.62], "yaw": 180, "seat": "cafe.banquette"},
+      {"use": "stock.sphere", "radius": 0.05, "at": [0, 0.8, 0], "material": "stock.metal.brass"}
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "description": "Deep blue paint under a hard clear coat",
+  "digest": "80947560aa4233d71dbd1b62ed2d99f5951926f27bdc1ae0111cf9e22af9e303",
+  "kind": "shader",
+  "name": "car-paint.midnight",
+  "payload": {
+    "color": "#10234f",
+    "extra": {
+      "clearcoat": 1,
+      "clearcoatRoughness": 0.05
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.6,
+    "opacity": 1.0,
+    "roughness": 0.35
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "paint",
+    "glossy"
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,110 @@
+{
+  "description": "Open shelves; the number of shelves follows the height unless set",
+  "digest": "f4ac728c648b1220a25bd2f7a9514290dbabfcd8b914ef8c3b558aec2ca53997",
+  "kind": "prop",
+  "name": "bookcase",
+  "payload": {
+    "params": {
+      "height": {
+        "default": 2.2,
+        "description": "",
+        "max": 3.6,
+        "min": 0.8
+      },
+      "shelf_gap": {
+        "default": 0.36,
+        "description": "",
+        "max": 0.6,
+        "min": 0.22
+      },
+      "width": {
+        "default": 1.8,
+        "description": "",
+        "max": 6,
+        "min": 0.5
+      }
+    },
+    "parts": [
+      {
+        "at": [
+          0,
+          "height / 2",
+          0.15
+        ],
+        "shader": "back",
+        "size": [
+          "width",
+          "height",
+          0.02
+        ],
+        "solid": "box"
+      },
+      {
+        "as": "s",
+        "parts": [
+          {
+            "at": [
+              "(s * 2 - 1) * width / 2",
+              "height / 2",
+              0
+            ],
+            "shader": "wood",
+            "size": [
+              0.03,
+              "height",
+              0.32
+            ],
+            "solid": "box"
+          }
+        ],
+        "repeat": 2
+      },
+      {
+        "as": "n",
+        "parts": [
+          {
+            "at": [
+              0,
+              "min(n * shelf_gap, height) + 0.015 - (n * shelf_gap >= height) * 0.03",
+              0
+            ],
+            "shader": "wood",
+            "size": [
+              "width",
+              0.03,
+              0.32
+            ],
+            "solid": "box"
+          }
+        ],
+        "repeat": "floor(height / shelf_gap) + 1"
+      }
+    ],
+    "slots": {
+      "back": "from.stock.wood.walnut@1.0.0",
+      "wood": "from.stock.wood.oak@1.0.0"
+    },
+    "template": true,
+    "variants": {
+      "low": {
+        "height": 1.0,
+        "width": 2.4
+      },
+      "wall": {
+        "height": 2.8,
+        "width": 5.0
+      }
+    }
+  },
+  "schema": 1,
+  "size": [
+    1.83,
+    2.2,
+    0.32
+  ],
+  "tags": [
+    "furniture",
+    "storage"
+  ],
+  "version": "1.0.0"
+}

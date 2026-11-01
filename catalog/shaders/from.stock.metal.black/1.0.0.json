@@ -1,0 +1,20 @@
+{
+  "description": "Copied from stock.metal.black",
+  "digest": "44c6cac140aab8c2c4d12937ad2ff598578dbb0ed9adeeaa11ca4b97d3a54006",
+  "kind": "shader",
+  "name": "from.stock.metal.black",
+  "payload": {
+    "color": "#17181a",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.8,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [],
+  "version": "1.0.0"
+}

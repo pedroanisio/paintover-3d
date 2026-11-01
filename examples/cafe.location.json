@@ -1,0 +1,18 @@
+{
+  "name": "corner-cafe",
+  "nodes": [
+    {"use": "stock.room", "width": 8, "depth": 6, "height": 3.0, "floor": "cafe.tile", "walls": "stock.plaster.cream"},
+    {"use": "cafe.table-for-two", "at": [-2.2, 0, 1.2]},
+    {"use": "cafe.table-for-two", "at": [0.2, 0, 1.2]},
+    {"use": "cafe.table-for-two", "at": [2.6, 0, 1.2]},
+    {"use": "cafe.table-for-two", "at": [-2.2, 0, -1.0]},
+    {"use": "stock.pendant-lamp", "ceiling": 3.0, "at": [-2.2, 0, 1.2]},
+    {"use": "stock.pendant-lamp", "ceiling": 3.0, "at": [0.2, 0, 1.2]},
+    {"use": "stock.pendant-lamp", "ceiling": 3.0, "at": [2.6, 0, 1.2]},
+    {"use": "stock.bookshelf", "width": 2.4, "at": [1.5, 0, 2.8]},
+    {"use": "stock.plant", "at": [3.4, 0, 2.4]}
+  ],
+  "rig": {"use": "stock.interior"},
+  "marks": [{"name": "waiter", "at": [1.4, 0, -0.6], "facing": 0}],
+  "shots": [{"name": "wide", "eye": [-3.4, 1.5, -2.6], "look_at": [0.8, 1.0, 1.4], "lens": 24}]
+}

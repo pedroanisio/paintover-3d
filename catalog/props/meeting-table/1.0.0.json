@@ -1,0 +1,190 @@
+{
+  "description": "Table that seats as many as its length allows, with pendant lights above",
+  "digest": "dc77ee76ef8fe24ea7d4ba9d8a662cb649e1d483edf7f191227fd3b4bca6a1c7",
+  "kind": "prop",
+  "name": "meeting-table",
+  "payload": {
+    "params": {
+      "ceiling": {
+        "default": 3.0,
+        "description": "",
+        "max": 6,
+        "min": 2.4
+      },
+      "depth": {
+        "default": 1.1,
+        "description": "",
+        "max": 1.8,
+        "min": 0.7
+      },
+      "height": {
+        "default": 0.75,
+        "description": "",
+        "max": 1.1,
+        "min": 0.6
+      },
+      "length": {
+        "default": 3.2,
+        "description": "Along x, in metres",
+        "max": 8,
+        "min": 1.4
+      },
+      "pendants": {
+        "default": 2,
+        "description": "",
+        "max": 6,
+        "min": 0
+      },
+      "seated": {
+        "default": 1,
+        "description": "1 draws the chairs",
+        "max": 1,
+        "min": 0
+      },
+      "spacing": {
+        "default": 0.8,
+        "description": "Between chairs",
+        "max": 1.6,
+        "min": 0.55
+      }
+    },
+    "parts": [
+      {
+        "at": [
+          0,
+          "height - 0.025",
+          0
+        ],
+        "shader": "top",
+        "size": [
+          "length",
+          0.05,
+          "depth"
+        ],
+        "solid": "box"
+      },
+      {
+        "as": "i",
+        "parts": [
+          {
+            "at": [
+              "(i % 2 * 2 - 1) * (length / 2 - 0.12)",
+              "(height - 0.05) / 2",
+              "(i // 2 * 2 - 1) * (depth / 2 - 0.12)"
+            ],
+            "shader": "legs",
+            "size": [
+              0.07,
+              "height - 0.05",
+              0.07
+            ],
+            "solid": "box"
+          }
+        ],
+        "repeat": 4
+      },
+      {
+        "as": "n",
+        "parts": [
+          {
+            "at": [
+              "(n + 0.5) * spacing - floor((length - 0.3) / spacing) * spacing / 2",
+              0,
+              "depth / 2 + 0.2"
+            ],
+            "prop": "chair@1.0.0",
+            "shaders": {
+              "seat": "$seat"
+            }
+          },
+          {
+            "at": [
+              "(n + 0.5) * spacing - floor((length - 0.3) / spacing) * spacing / 2",
+              0,
+              "-depth / 2 - 0.2"
+            ],
+            "prop": "chair@1.0.0",
+            "shaders": {
+              "seat": "$seat"
+            },
+            "yaw": 180
+          }
+        ],
+        "repeat": "floor((length - 0.3) / spacing)",
+        "when": "seated > 0"
+      },
+      {
+        "as": "p",
+        "parts": [
+          {
+            "at": [
+              "length * ((p + 0.5) / pendants - 0.5)",
+              "ceiling - 0.45",
+              0
+            ],
+            "height": 0.9,
+            "radius": 0.006,
+            "segments": 8,
+            "shader": "legs",
+            "solid": "cylinder"
+          },
+          {
+            "at": [
+              "length * ((p + 0.5) / pendants - 0.5)",
+              "ceiling - 0.98",
+              0
+            ],
+            "height": 0.2,
+            "radius": 0.22,
+            "shader": "legs",
+            "solid": "cone"
+          },
+          {
+            "at": [
+              "length * ((p + 0.5) / pendants - 0.5)",
+              "ceiling - 1.15",
+              0
+            ],
+            "color": "#ffd29a",
+            "intensity": 5,
+            "light": "point",
+            "reach": 7
+          }
+        ],
+        "repeat": "pendants"
+      }
+    ],
+    "slots": {
+      "legs": "from.stock.metal.black@1.0.0",
+      "seat": "velvet.plum@1.0.0",
+      "top": "car-paint.midnight@1.0.0"
+    },
+    "template": true,
+    "variants": {
+      "boardroom": {
+        "depth": 1.5,
+        "length": 5.6,
+        "pendants": 3,
+        "shaders": {
+          "top": "copper.brushed@1.0.0"
+        },
+        "spacing": 0.9
+      },
+      "huddle": {
+        "depth": 0.9,
+        "length": 1.8,
+        "pendants": 1
+      }
+    }
+  },
+  "schema": 1,
+  "size": [
+    3.2,
+    3.0,
+    1.96
+  ],
+  "tags": [
+    "furniture"
+  ],
+  "version": "1.0.0"
+}

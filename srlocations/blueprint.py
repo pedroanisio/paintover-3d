@@ -1,0 +1,37 @@
+"""A location written as data: JSON a person, a tool or a model can produce with no Python."""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Optional
+
+from srlocations.catalog import SharedCatalog
+from srlocations.location import Location
+from srlocations.paint import PaintLayer
+from srlocations.registry import Registry, node_from_spec
+
+
+class Blueprint:
+    def __init__(self, data: dict, base: Path = Path(".")) -> None:
+        self.data, self.base = data, base
+
+    @classmethod
+    def load(cls, path: str | Path) -> "Blueprint":
+        return cls(json.loads(Path(path).read_text()), Path(path).resolve().parent)
+
+    def build(self, registry: Optional[Registry] = None) -> Location:
+        registry = registry or Registry.default()
+        for source in self.data.get("catalogs", ()):  # {"path": relative to this file, "pins": as SharedCatalog.pins}
+            SharedCatalog.open(self.base / source["path"]).install(registry, source.get("pins"))
+        location = Location(self.data["name"], registry)
+        for spec in self.data.get("nodes", ()):
+            location.add(node_from_spec(location.registry, spec))
+        if "rig" in self.data:
+            rig = dict(self.data["rig"])
+            location.rig(rig.pop("use"), **rig)
+        for mark in self.data.get("marks", ()):
+            location.mark(**mark)
+        for shot in self.data.get("shots", ()):
+            location.shot(**shot)
+        location.paintings.extend(PaintLayer.from_spec(spec, self.base) for spec in self.data.get("paint", ()))
+        return location

@@ -1,0 +1,20 @@
+{
+  "description": "Copied from scifi.deck",
+  "digest": "d3b44e7d630fcffe2ac6ffb5729d12e8966d75a8c9c65a522528ab793ebd9c09",
+  "kind": "shader",
+  "name": "from.scifi.deck",
+  "payload": {
+    "color": "#2e333b",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.1,
+    "opacity": 1.0,
+    "roughness": 0.35
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [],
+  "version": "1.0.0"
+}

@@ -1,0 +1,146 @@
+{
+  "description": "Brass lamp with its own light",
+  "digest": "a823665ebc47dac1984fd4c783e935ac374b4e8dab66f708c9cce2e27a374805",
+  "kind": "prop",
+  "name": "floor-lamp.warm",
+  "payload": {
+    "parts": [
+      {
+        "at": [
+          0.0,
+          0.015,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.03,
+          "radius": 0.14
+        },
+        "material": "from.stock.metal.brass@1.0.0",
+        "segments": 32,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          0.85,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 1.7,
+          "radius": 0.012
+        },
+        "material": "from.stock.metal.brass@1.0.0",
+        "segments": 12,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          1.68,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.26,
+          "radius": 0.2
+        },
+        "material": "from.stock.glow.warm@1.0.0",
+        "segments": 32,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#ffc98a",
+        "intensity": 7.0,
+        "light": "point",
+        "reach": 9.0,
+        "shadows": false,
+        "softness": 0.0
+      }
+    ]
+  },
+  "schema": 1,
+  "size": [
+    0.4,
+    1.81,
+    0.4
+  ],
+  "tags": [
+    "lighting"
+  ],
+  "version": "1.0.0"
+}

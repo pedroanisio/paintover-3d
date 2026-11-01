@@ -1,0 +1,301 @@
+"""The scene graph: everything a location holds is a Node that places Solids and Lights in the world."""
+from __future__ import annotations
+
+import math
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from typing import Any, Iterator, Optional, Sequence, Union
+
+from srlocations.geometry import Matrix, Transform, Vec3, VecLike, corners
+
+
+Polyline = list[tuple[float, float, float]]
+WIRE_SEGMENTS = 16
+
+
+def ring(radius: float, y: float) -> Polyline:
+    """A closed circle in the xz plane at height y."""
+    turns = [2 * math.pi * i / WIRE_SEGMENTS for i in range(WIRE_SEGMENTS + 1)]
+    return [(radius * math.cos(t), y, radius * math.sin(t)) for t in turns]
+
+
+@dataclass(frozen=True)
+class Placed:
+    """A leaf of the graph with its world transform; `path` names the prefabs it came through."""
+    item: Union["Solid", "Light"]
+    world: Transform
+    path: str
+
+
+@dataclass
+class Node(ABC):
+    at: VecLike = field(default=(0, 0, 0), kw_only=True)
+    yaw: float = field(default=0.0, kw_only=True)
+    pitch: float = field(default=0.0, kw_only=True)
+    roll: float = field(default=0.0, kw_only=True)
+    name: Optional[str] = field(default=None, kw_only=True)
+    basis: Optional[Matrix] = field(default=None, kw_only=True)  # replaces yaw, pitch and roll when set
+
+    @property
+    def transform(self) -> Transform:
+        if self.basis is not None:
+            return Transform(Vec3.of(self.at), self.basis)
+        return Transform.at(self.at, self.yaw, self.pitch, self.roll)
+
+    def parts(self) -> Sequence["Node"]:
+        """The nodes directly under this one."""
+        return ()
+
+    def descend(self) -> Iterator["Node"]:
+        """This node and everything under it, prefabs included."""
+        yield self
+        for part in self.parts():
+            yield from part.descend()
+
+    @property
+    def label(self) -> str:
+        return self.name or type(self).__name__.lower()
+
+    @abstractmethod
+    def walk(self, parent: Transform = Transform(), path: str = "") -> Iterator[Placed]:
+        """Every leaf under this node, in world space."""
+
+
+@dataclass
+class Solid(Node):
+    """One engine primitive. `material` is a name the location's registry resolves."""
+    material: str = field(default="stock.default", kw_only=True)
+    casts_shadow: bool = field(default=True, kw_only=True)
+    primitive = ""
+
+    def walk(self, parent: Transform = Transform(), path: str = "") -> Iterator[Placed]:
+        yield Placed(self, parent.then(self.transform), f"{path}/{self.label}".lstrip("/"))
+
+    @abstractmethod
+    def dimensions(self) -> dict[str, float]:
+        """The primitive's size attributes in metres, by engine attribute name."""
+
+    def geometry(self, units: float) -> dict[str, Any]:
+        """Engine attributes that are not plain sizes, such as a path. `units` is scene units per metre."""
+        return {}
+
+    def facets(self) -> list[tuple["Solid", Vec3]]:
+        """The surfaces ink can tell apart, each as a solid and its outward normal; a zero normal means a curved one."""
+        return [(self, Vec3(0, 0, 0))]
+
+    def spans(self) -> list[tuple["Solid", float, float]]:
+        """The surfaces a texture is laid on, each with the metres that one 0 to 1 of its UVs covers across and up. The
+        engine scales UVs per material and maps every face of a primitive 0 to 1, so a texture stretches on its own."""
+        half = self.half_extents()
+        return [(self, 2 * half.x, 2 * half.y)]
+
+    def drawn_in(self, look: str) -> bool:
+        """Whether this solid belongs in a look, by the look's name."""
+        return True
+
+    @abstractmethod
+    def half_extents(self) -> Vec3:
+        """Half the size of the primitive's local bounding box."""
+
+    def edges(self) -> list[Polyline]:
+        """The lines a wireframe draws, in the local frame. By default the bounding box's twelve edges."""
+        x, y, z = self.half_extents()
+        rims = [[(sx * x, b, sz * z) for sx, sz in ((-1, -1), (1, -1), (1, 1), (-1, 1), (-1, -1))] for b in (-y, y)]
+        pillars = [[(sx * x, -y, sz * z), (sx * x, y, sz * z)] for sx in (-1, 1) for sz in (-1, 1)]
+        return rims + pillars
+
+    def bounds(self, world: Transform) -> tuple[Vec3, Vec3]:
+        points = list(corners(world, self.half_extents()))
+        return (Vec3(*(min(getattr(p, a) for p in points) for a in "xyz")),
+                Vec3(*(max(getattr(p, a) for p in points) for a in "xyz")))
+
+
+@dataclass
+class Box(Solid):
+    size: VecLike = (1, 1, 1)
+    primitive = "box"
+
+    def dimensions(self) -> dict[str, float]:
+        w, h, d = Vec3.of(self.size)
+        return {"width": w, "height": h, "depth": d}
+
+    def half_extents(self) -> Vec3:
+        w, h, d = Vec3.of(self.size)
+        return Vec3(w / 2, h / 2, d / 2)
+
+    def facets(self) -> list[tuple[Solid, Vec3]]:
+        """A thin slab inside each face, flush with it: one primitive has one material, and creases need six."""
+        half, slabs = tuple(self.half_extents()), []
+        depth = min(0.001, min(half) / 2)
+        for axis in range(3):
+            for sign in (-1, 1):
+                size, at, normal = [2 * h for h in half], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+                size[axis], at[axis], normal[axis] = depth, sign * (half[axis] - depth / 2), float(sign)
+                slabs.append((Box(tuple(size), at=tuple(at), casts_shadow=False), Vec3(*normal)))
+        return slabs
+
+    def spans(self) -> list[tuple[Solid, float, float]]:
+        """A panel on each face. The engine runs a box's UVs a different way along each axis and cannot rotate them, so
+        each panel is a box turned until its front faces out: u runs across and v up, and bricks stay in courses."""
+        w, h, d = Vec3.of(self.size)
+        depth = min(0.001, min(w, h, d) / 4)
+        faces = [(w, h, (0, 0, (d - depth) / 2), {}), (d, h, ((w - depth) / 2, 0, 0), {"yaw": 90.0}),
+                 (w, d, (0, (h - depth) / 2, 0), {"pitch": 90.0})]
+        return [(Box((across, up, depth), at=tuple(sign * v for v in at), casts_shadow=False, **turn), across, up)
+                for across, up, at, turn in faces for sign in (-1, 1)]
+
+
+@dataclass
+class Round(Solid):
+    """A solid of revolution with its axis along local y."""
+    radius: float = 0.5
+    height: float = 1.0
+    segments: int = field(default=32, kw_only=True)
+
+    def dimensions(self) -> dict[str, float]:
+        return {"radius": self.radius, "height": self.height}
+
+    def half_extents(self) -> Vec3:
+        return Vec3(self.radius, self.height / 2, self.radius)
+
+    def spokes(self) -> list[tuple[float, float]]:
+        """Eight directions around the axis, as x and z on a circle of this radius."""
+        return [(self.radius * math.cos(t), self.radius * math.sin(t)) for t in (i * math.pi / 4 for i in range(8))]
+
+
+def caps(radius: float, height: float, ends: Sequence[int]) -> list[tuple[Solid, Vec3]]:
+    """Thin discs just outside the flat ends of a round solid."""
+    return [(Cylinder(radius, 0.001, at=(0, end * (height / 2 + 0.0005), 0), casts_shadow=False), Vec3(0, float(end), 0))
+            for end in ends]
+
+
+class Cylinder(Round):
+    primitive = "cylinder"
+
+    def facets(self) -> list[tuple[Solid, Vec3]]:
+        return [(self, Vec3(0, 0, 0)), *caps(self.radius, self.height, (-1, 1))]
+
+    def spans(self) -> list[tuple[Solid, float, float]]:
+        return [(self, 2 * math.pi * self.radius, self.height),
+                *((cap, 2 * self.radius, 2 * self.radius) for cap, _ in self.facets()[1:])]
+
+    def edges(self) -> list[Polyline]:
+        h = self.height / 2
+        return [ring(self.radius, -h), ring(self.radius, h), *([(x, -h, z), (x, h, z)] for x, z in self.spokes())]
+
+
+class Cone(Round):
+    """The point is at the top."""
+    primitive = "cone"
+
+    def facets(self) -> list[tuple[Solid, Vec3]]:
+        return [(self, Vec3(0, 0, 0)), *caps(self.radius, self.height, (-1,))]
+
+    def spans(self) -> list[tuple[Solid, float, float]]:
+        return [(self, 2 * math.pi * self.radius, math.hypot(self.radius, self.height)),
+                *((cap, 2 * self.radius, 2 * self.radius) for cap, _ in self.facets()[1:])]
+
+    def edges(self) -> list[Polyline]:
+        h = self.height / 2
+        return [ring(self.radius, -h), *([(x, -h, z), (0.0, h, 0.0)] for x, z in self.spokes())]
+
+
+@dataclass
+class Sphere(Solid):
+    radius: float = 0.5
+    segments: int = field(default=32, kw_only=True)
+    primitive = "sphere"
+
+    def dimensions(self) -> dict[str, float]:
+        return {"radius": self.radius}
+
+    def half_extents(self) -> Vec3:
+        return Vec3(self.radius, self.radius, self.radius)
+
+    def spans(self) -> list[tuple[Solid, float, float]]:
+        return [(self, 2 * math.pi * self.radius, math.pi * self.radius)]
+
+    def edges(self) -> list[Polyline]:
+        r = self.radius
+        rings = [ring(r * math.cos(t), r * math.sin(t)) for t in (-math.pi / 4, 0.0, math.pi / 4)]
+        for yaw in (0.0, math.pi / 2):
+            turns = [2 * math.pi * i / WIRE_SEGMENTS for i in range(WIRE_SEGMENTS + 1)]
+            rings.append([(r * math.cos(t) * math.cos(yaw), r * math.sin(t), r * math.cos(t) * math.sin(yaw))
+                          for t in turns])
+        return rings
+
+
+@dataclass
+class Group(Node):
+    """Nodes that move together."""
+    children: Sequence[Node] = ()
+
+    def parts(self) -> Sequence[Node]:
+        return self.children
+
+    def walk(self, parent: Transform = Transform(), path: str = "") -> Iterator[Placed]:
+        world, here = parent.then(self.transform), f"{path}/{self.label}".lstrip("/")
+        for child in self.children:
+            yield from child.walk(world, here)
+
+
+@dataclass
+class Prefab(Node):
+    """A reusable, parametric piece of a location: subclass it as a dataclass and implement build()."""
+
+    @abstractmethod
+    def build(self) -> Sequence[Node]:
+        """The nodes of this prefab in its local frame, with the origin on the floor at its centre."""
+
+    def parts(self) -> Sequence[Node]:
+        return self.build()
+
+    def walk(self, parent: Transform = Transform(), path: str = "") -> Iterator[Placed]:
+        world, here = parent.then(self.transform), f"{path}/{self.label}".lstrip("/")
+        for child in self.build():
+            yield from child.walk(world, here)
+
+
+@dataclass
+class Light(Node):
+    """A light is a node, so a lamp prefab can carry the light it gives."""
+    intensity: float = 1.0
+    color: str = field(default="#ffffff", kw_only=True)
+    shadows: bool = field(default=False, kw_only=True)
+    softness: float = field(default=0.0, kw_only=True)
+    kind = ""
+
+    def walk(self, parent: Transform = Transform(), path: str = "") -> Iterator[Placed]:
+        yield Placed(self, parent.then(self.transform), f"{path}/{self.label}".lstrip("/"))
+
+    def attributes(self) -> dict[str, float]:
+        """Attributes particular to this kind of light, in engine units."""
+        return {}
+
+
+class Ambient(Light):
+    kind = "ambient"
+
+
+class Sun(Light):
+    """Directional, in lux; `yaw` and `pitch` say where it points."""
+    kind = "directional"
+
+
+@dataclass
+class Point(Light):
+    """In candela; `reach` is where it fades out, in metres."""
+    reach: Optional[float] = field(default=None, kw_only=True)
+    kind = "point"
+
+    def attributes(self) -> dict[str, float]:
+        return {} if self.reach is None else {"range": self.reach * 100}
+
+
+@dataclass
+class Spot(Point):
+    cone: float = field(default=45.0, kw_only=True)
+    kind = "spot"
+
+    def attributes(self) -> dict[str, float]:
+        return {**super().attributes(), "spotAngle": self.cone}
