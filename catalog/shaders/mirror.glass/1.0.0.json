@@ -1,0 +1,23 @@
+{
+  "description": "A true mirror",
+  "digest": "a09dafc96b1ebccfbec5d1e01a7ac89134c24e617cb069a1cd3e87cd817bd16d",
+  "kind": "shader",
+  "name": "mirror.glass",
+  "payload": {
+    "color": "#ffffff",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 1.0,
+    "opacity": 1.0,
+    "roughness": 0.02
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal",
+    "glossy"
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,26 @@
+{
+  "description": "Dark open-grain veneer under deep lacquer",
+  "digest": "18779e4441a30578873bd56b6207f8746176bd8c10b09438ec3c8a48c4a8423a",
+  "kind": "shader",
+  "name": "veneer.ebony",
+  "payload": {
+    "color": "#1b0f0a",
+    "extra": {
+      "clearcoat": 1,
+      "clearcoatRoughness": 0.03
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.3
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "wood",
+    "glossy"
+  ],
+  "version": "1.0.0"
+}

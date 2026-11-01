@@ -1,0 +1,27 @@
+{
+  "description": "Deep red paint under a hard clear coat",
+  "digest": "a356bf3ff848dbab43efcce087d55fd08f896ccdabe8bee1788dcc7a5d7dc8a5",
+  "kind": "shader",
+  "name": "paint.garnet",
+  "payload": {
+    "color": "#7d0d12",
+    "extra": {
+      "clearcoat": 1,
+      "clearcoatRoughness": 0.04,
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.5,
+    "opacity": 1.0,
+    "roughness": 0.3
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "paint",
+    "glossy"
+  ],
+  "version": "1.0.0"
+}

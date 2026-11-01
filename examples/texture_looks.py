@@ -97,7 +97,7 @@ def looks(maps: dict[str, Path]) -> dict[str, Look]:
         "example.blueprint": Look([Flat(), Ink(color="#e8f1ff", width=1.2, vary=0.15, wobble=0.0)], sky="#18428a",
                                   name="example.blueprint", textures={"": Texture(maps["drafting"], tile=1.0, tint="#ffffff")}),
         "example.loft": Look([Lit()], name="example.loft",
-                             textures={"stock.plaster": Texture(maps["brick"], tile=1.0, tint="#ffffff"),
+                             textures={"role:wall": Texture(maps["brick"], tile=1.0, tint="#ffffff"),
                                        "stock.wood.oak": Texture(maps["planks"], tile=0.9, tint="#ffffff")},
                              materials={"stock.fabric.teal": "stock.fabric.rust"}),
     }

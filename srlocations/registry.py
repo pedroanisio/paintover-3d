@@ -7,6 +7,7 @@ import importlib.metadata
 import importlib.util
 import json
 import os
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -60,6 +61,8 @@ class Registry:
         self.rigs: Catalog[Callable[..., Any]] = Catalog("light rig")
         self.archetypes: Catalog[Callable[..., Any]] = Catalog("archetype")
         self.modes: Catalog[Callable[..., Any]] = Catalog("render mode")
+        self.passes: Catalog[Any] = Catalog("look pass")  # Pass classes, by the name a look written as data uses
+        self.cast: Catalog[Any] = Catalog("character")  # Performers
         self.shared: dict[str, Any] = {}  # installed shared catalogs, by name
         self.resolved: dict[str, str] = {}  # an unpinned shared name to the name@version it stands for
         self.checks: list[Any] = []
@@ -162,12 +165,29 @@ class PluginManager:
         path = Path(path)
         spec = importlib.util.spec_from_file_location(f"srlocations_plugin_{path.stem}", path)
         module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module  # a dataclass looks its module up here while it is being made
         spec.loader.exec_module(module)
         return self._from_module(module)
 
     def load_entry_points(self) -> list[Plugin]:
-        """Plugins other packages declare in pyproject.toml under [project.entry-points."srlocations.plugins"]."""
-        return [self.load(entry.load()()) for entry in importlib.metadata.entry_points(group=ENTRY_POINT_GROUP)]
+        """Plugins other packages declare in pyproject.toml under [project.entry-points."srlocations.plugins"]. Packages
+        come in no useful order, so each loads once what it requires has. What can never load is refused by load()."""
+        waiting = [self._from_entry(entry) for entry in importlib.metadata.entry_points(group=ENTRY_POINT_GROUP)]
+        done: list[Plugin] = []
+        while waiting:
+            ready = next((p for p in waiting if all(name in self.loaded for name in p.requires)), waiting[0])
+            done.append(self.load(ready))
+            waiting.remove(ready)
+        return done
+
+    def _from_entry(self, entry: importlib.metadata.EntryPoint) -> Plugin:
+        try:
+            made = entry.load()
+        except Exception as error:
+            raise CatalogError(f"plugin entry point {entry.name!r} ({entry.value}) cannot be loaded: {error}") from error
+        if not (isinstance(made, type) and issubclass(made, Plugin)):
+            raise CatalogError(f"plugin entry point {entry.name!r}: {getattr(made, '__name__', made)} is not a Plugin")
+        return made()
 
     def _from_module(self, module: Any) -> Plugin:
         found = [v for v in vars(module).values() if isinstance(v, type) and issubclass(v, Plugin)

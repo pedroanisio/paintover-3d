@@ -1,0 +1,25 @@
+{
+  "description": "Black lacquer for a console",
+  "digest": "cc1f04ff325d5c9969aa05e12abe0cd6722b74eb0828fd61b5ecd8df0377264a",
+  "kind": "shader",
+  "name": "piano.black",
+  "payload": {
+    "color": "#08090b",
+    "extra": {
+      "clearcoat": 1,
+      "clearcoatRoughness": 0.02
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.25
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glossy"
+  ],
+  "version": "1.0.0"
+}

@@ -6,6 +6,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+import json
+
 from srlocations import Group, Material, PropTemplate, Registry, SharedCatalog
 from srlocations.stock.prefabs import Chair, FloorLamp, Table
 
@@ -50,8 +52,18 @@ def main() -> None:
         slots={"top": "studio.car-paint.midnight", "seat": "studio.velvet.plum"})
     for name in ("chair", "meeting-table", "bookcase"):  # in order: the table nests the chair
         catalog.publish_template(PropTemplate.from_file(ROOT / f"examples/props/{name}.prop.json"), registry)
+    grand_tourer = registry.plugins.load_file(ROOT / "examples/plugins/grand_tourer.py")
+    for name, (material, tags, description) in grand_tourer.shaders.items():
+        catalog.publish_shader(name, material, tags=tags, description=description)
+    catalog.publish_prop("gt-cabin", registry.create("gt.cabin"), registry, "1.5.0", tags=["vehicle", "interior"],
+                         description="Grand tourer interior in cognac hide, its right door open", slots=grand_tourer.slots)
+    catalog.publish_prop("mountain-overlook", registry.create("gt.overlook"), registry, "1.5.0", tags=["landscape", "backdrop"],
+                         description="Pull-off on a mountain road above hazy ridges")
+    catalog.publish_location("grand-tourer", json.loads((ROOT / "examples/grand-tourer.location.json").read_text()), "1.5.0",
+                             tags=["vehicle", "interior", "landscape"],
+                             description="Grand tourer parked at a mountain overlook, door open")
     for entry in catalog.entries():
-        print(f"{entry.kind:<7}{entry.ref:<34}{entry.description}")
+        print(f"{entry.kind:<9}{entry.ref:<34}{entry.description}")
     print("verify:", catalog.verify() or "clean")
 
 

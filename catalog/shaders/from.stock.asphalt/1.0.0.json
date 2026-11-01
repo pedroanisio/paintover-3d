@@ -1,0 +1,20 @@
+{
+  "description": "Copied from stock.asphalt",
+  "digest": "d901970ac88784dcaff511da0e197ecc8984341533ff0e81b122412df7bcb737",
+  "kind": "shader",
+  "name": "from.stock.asphalt",
+  "payload": {
+    "color": "#2c2d30",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.95
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [],
+  "version": "1.0.0"
+}

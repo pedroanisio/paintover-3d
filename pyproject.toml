@@ -16,4 +16,4 @@ build-backend = "setuptools.build_meta"
 include = ["srlocations*"]
 
 [tool.setuptools.package-data]
-srlocations = ["shaders/*.fs"]
+srlocations = ["shaders/*.fs", "stock/views/*.png"]

@@ -1,0 +1,23 @@
+{
+  "description": "Far ridge, in haze",
+  "digest": "9b08661e5ad1ca3cf95c8485899b50ad09b1a470d101420e02ae8e4d7263d2cc",
+  "kind": "shader",
+  "name": "haze.far",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#c5cec2",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "backdrop",
+    "glow"
+  ],
+  "version": "1.0.0"
+}

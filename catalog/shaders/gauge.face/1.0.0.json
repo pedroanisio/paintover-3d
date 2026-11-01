@@ -1,0 +1,22 @@
+{
+  "description": "Softly lit instrument face",
+  "digest": "0228a7109c4ce94bf38410d959aac98c7a8200fd7680b2d5814b67b4dc67cf26",
+  "kind": "shader",
+  "name": "gauge.face",
+  "payload": {
+    "color": "#05070a",
+    "extra": {},
+    "glow": "#8fc0d0",
+    "glow_strength": 0.5,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.2
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

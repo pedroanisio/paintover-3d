@@ -1,0 +1,24 @@
+{
+  "description": "Soft tan roof lining",
+  "digest": "dfdc396f8340f4c2038bd35d57ee4c563570176d49c8d054fd4e96409b4affa3",
+  "kind": "shader",
+  "name": "headliner.tan",
+  "payload": {
+    "color": "#6d5a46",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.9
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "fabric"
+  ],
+  "version": "1.0.0"
+}

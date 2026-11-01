@@ -1,0 +1,23 @@
+{
+  "description": "Middle ridge, in haze",
+  "digest": "d58a43f185be84aa41c75f783b8afdd879df04d227d4f538fa68ec7fb8136c7c",
+  "kind": "shader",
+  "name": "haze.mid",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#aab8ad",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "backdrop",
+    "glow"
+  ],
+  "version": "1.0.0"
+}

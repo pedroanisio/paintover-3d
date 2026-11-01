@@ -1,0 +1,22 @@
+{
+  "description": "Warm gold-toned alloy",
+  "digest": "64cea8698b50d5ebb3e1a24b451e1f619d93f9d5c59acc1932229a2c4f8c7780",
+  "kind": "shader",
+  "name": "metal.champagne",
+  "payload": {
+    "color": "#c9a877",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 1.0,
+    "opacity": 1.0,
+    "roughness": 0.28
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

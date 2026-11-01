@@ -1,0 +1,23 @@
+name: tests
+on:
+  push:
+  pull_request:
+env:
+  SR_GPU_BACKEND: vulkan  # lavapipe: a runner has no GPU, and the tests read pixels, so Mesa's software Vulkan draws them
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install software Vulkan and ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mesa-vulkan-drivers libvulkan1 libegl1 libgl1-mesa-dri ffmpeg fonts-dejavu-core openssh-client
+      - name: Install sr-core and the newest published engine
+        run: python ./doctor.py --no-build
+      - run: .venv/bin/python -m pip install pytest
+      - run: .venv/bin/python -m pytest -q tests -p no:cacheprovider

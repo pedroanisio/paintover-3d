@@ -1,0 +1,22 @@
+{
+  "description": "Pale contrast stitching",
+  "digest": "d0e1b3bcf47930f74f4c290f802cc3bbad7aa80b68a068a1f5247a3263d39fa5",
+  "kind": "shader",
+  "name": "stitch.linen",
+  "payload": {
+    "color": "#d9bd98",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.7
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "thread"
+  ],
+  "version": "1.0.0"
+}

@@ -5,43 +5,52 @@ import random
 from dataclasses import dataclass, field
 from typing import Optional, Sequence
 
-from srlocations.nodes import Box, Cone, Cylinder, Node, Point, Prefab, Sphere
+from srlocations.geometry import Vec3
+from srlocations.nodes import Backdrop, Box, Cone, Cylinder, Node, Point, Prefab, Seat, Sphere
 
 WALL = 0.15
+VIEW_DISTANCE = 2.5  # how far outside a wall its view hangs, far enough to shift a little as the camera moves
+VIEW_MARGIN = 6.0  # how far past the last window it runs on each side, so a glancing shot does not find its edge
+VIEW_HORIZON = 1.5  # above the floor
+PICTURE_HORIZON = 0.62  # how far down a view's picture its horizon is
 
 
 @dataclass(frozen=True)
 class Opening:
-    """A hole in a wall: `center` along it, from its middle, `bottom` to `top` above the floor."""
+    """A hole in a wall: `center` along it, from its middle, `bottom` to `top` above the floor. `view` is a material to see
+    through it, such as "stock.view.day"; the outside can also be built, since a window is real glass."""
     center: float
     width: float = 1.0
     bottom: float = 0.0
     top: float = 2.1
+    view: Optional[str] = None
 
 
 def door(center: float) -> Opening:
     return Opening(center, 0.95, 0.0, 2.1)
 
 
-def window(center: float, width: float = 1.4) -> Opening:
-    return Opening(center, width, 0.9, 2.2)
+def window(center: float, width: float = 1.4, view: Optional[str] = None) -> Opening:
+    return Opening(center, width, 0.9, 2.2, view)
 
 
 @dataclass
 class Wall(Prefab):
-    """A straight wall along local x, cut around its openings; glazed where an opening starts above the floor."""
+    """A straight wall along local x, cut around its openings; glazed where an opening starts above the floor. `outside`
+    is the side of local z that its views hang on, 1 or -1."""
     length: float = 4.0
     height: float = 2.8
     openings: Sequence[Opening] = ()
     material: str = "stock.plaster.white"
     thickness: float = WALL
+    outside: int = 1
 
     def build(self) -> Sequence[Node]:
         parts: list[Node] = []
         def piece(x0: float, x1: float, y0: float, y1: float) -> None:
             if x1 - x0 > 1e-6 and y1 - y0 > 1e-6:
                 parts.append(Box(size=(x1 - x0, y1 - y0, self.thickness), at=((x0 + x1) / 2, (y0 + y1) / 2, 0),
-                                 material=self.material))
+                                 material=self.material, role="wall"))
         cursor = -self.length / 2
         for hole in sorted(self.openings, key=lambda o: o.center):
             left, right = hole.center - hole.width / 2, hole.center + hole.width / 2
@@ -50,10 +59,23 @@ class Wall(Prefab):
             piece(left, right, hole.top, self.height)
             if hole.bottom > 0:
                 parts.append(Box(size=(hole.width, hole.top - hole.bottom, 0.02), material="stock.glass.window",
-                                 at=(hole.center, (hole.bottom + hole.top) / 2, 0), casts_shadow=False))
+                                 at=(hole.center, (hole.bottom + hole.top) / 2, 0), casts_shadow=False, role="window"))
             cursor = right
         piece(cursor, self.length / 2, 0, self.height)
-        return parts
+        return [*parts, *self.views()]
+
+    def views(self) -> list[Node]:
+        """One card to a picture, however many windows look at it."""
+        cards: list[Node] = []
+        for number, name in enumerate(sorted({hole.view for hole in self.openings if hole.view})):
+            seen = [hole for hole in self.openings if hole.view == name]
+            left = min(hole.center - hole.width / 2 for hole in seen) - VIEW_MARGIN
+            right = max(hole.center + hole.width / 2 for hole in seen) + VIEW_MARGIN
+            width = right - left
+            cards.append(Backdrop(width, width / 2, material=name, role="view", name=f"view-{number}",
+                                  at=((left + right) / 2, VIEW_HORIZON + (PICTURE_HORIZON - 0.5) * width / 2,
+                                      self.outside * (VIEW_DISTANCE + number)), yaw=0 if self.outside > 0 else 180))
+        return cards
 
 
 @dataclass
@@ -74,15 +96,16 @@ class Room(Prefab):
         w, d, h = self.width, self.depth, self.height
         slab = 0.1
         parts: list[Node] = [
-            Box(size=(w + 2 * WALL, slab, d + 2 * WALL), at=(0, -slab / 2, 0), material=self.floor, name="floor"),
+            Box(size=(w + 2 * WALL, slab, d + 2 * WALL), at=(0, -slab / 2, 0), material=self.floor, name="floor",
+                role="floor"),
             Wall(w + 2 * WALL, h, self.north, self.walls, at=(0, 0, d / 2 + WALL / 2), name="north"),
-            Wall(w + 2 * WALL, h, self.south, self.walls, at=(0, 0, -d / 2 - WALL / 2), name="south"),
+            Wall(w + 2 * WALL, h, self.south, self.walls, outside=-1, at=(0, 0, -d / 2 - WALL / 2), name="south"),
             Wall(d, h, self.east, self.walls, at=(w / 2 + WALL / 2, 0, 0), yaw=90, name="east"),
-            Wall(d, h, self.west, self.walls, at=(-w / 2 - WALL / 2, 0, 0), yaw=90, name="west"),
+            Wall(d, h, self.west, self.walls, outside=-1, at=(-w / 2 - WALL / 2, 0, 0), yaw=90, name="west"),
         ]
         if self.ceiling:
             parts.append(Box(size=(w + 2 * WALL, slab, d + 2 * WALL), at=(0, h + slab / 2, 0), material=self.ceiling,
-                             name="ceiling"))
+                             name="ceiling", role="ceiling"))
         return parts
 
 
@@ -109,6 +132,9 @@ class Chair(Prefab):
     frame: str = "stock.wood.oak"
     seat: str = "stock.fabric.teal"
 
+    def seats(self) -> Sequence[Seat]:
+        return [Seat(Vec3(0, 0, 0.05), 180.0, 0.49, 0.27)]
+
     def build(self) -> Sequence[Node]:
         parts: list[Node] = [Box(size=(0.44, 0.06, 0.44), at=(0, 0.46, 0), material=self.seat),
                              Box(size=(0.44, 0.45, 0.04), at=(0, 0.72, 0.2), material=self.frame)]
@@ -121,6 +147,10 @@ class Chair(Prefab):
 class Sofa(Prefab):
     width: float = 2.0
     fabric: str = "stock.fabric.rust"
+
+    def seats(self) -> Sequence[Seat]:
+        count = max(1, int((self.width - 0.4) / 0.55))
+        return [Seat(Vec3((i - (count - 1) / 2) * (self.width - 0.4) / count, 0, 0.1), 180.0, 0.45, 0.55) for i in range(count)]
 
     def build(self) -> Sequence[Node]:
         w = self.width
@@ -204,6 +234,8 @@ class PendantLamp(Prefab):
 
 @dataclass
 class Plant(Prefab):
+    yields = True
+
     def build(self) -> Sequence[Node]:
         return [Cylinder(0.16, 0.3, at=(0, 0.15, 0), material="stock.plaster.cream"),
                 Sphere(0.3, at=(0, 0.62, 0), material="stock.leaf.green"),
@@ -213,6 +245,7 @@ class Plant(Prefab):
 
 @dataclass
 class Tree(Prefab):
+    yields = True
     height: float = 5.0
     spread: float = 1.5
     seed: int = 0
@@ -229,9 +262,44 @@ class Tree(Prefab):
         return parts
 
 
+PANE = (1.3, 1.7)  # a building's window, wide and high
+FRONT = 0.25  # how thick a building's front is, with rooms behind it
+ROOM_DEPTH = 1.5  # how far one of those rooms goes back
+ROOM_ABOVE, ROOM_BELOW = 0.2, 0.35  # how far past the head and sill it runs, so a low angle does not find its edge
+
+
+def centre(width: float, pitch: float, bay: int) -> float:
+    return -width / 2 + pitch * (bay + 0.5)
+
+
+def room(x: float, sill: float, front: float, wide: float, lit: bool, rng: random.Random) -> list[Node]:
+    """What is seen through a window: five thin sides, with sometimes a curtain or a dark shape against the light."""
+    back, side = ("stock.interior.lit", "stock.interior.lit.side") if lit else ("stock.interior.dark", "stock.interior.dark")
+    low, high, skin = sill - ROOM_BELOW, sill + PANE[1] + ROOM_ABOVE, 0.02
+    tall, middle, deep = high - low, (low + high) / 2, front + ROOM_DEPTH / 2
+
+    def panel(size: tuple[float, float, float], at: tuple[float, float, float], material: str, role: str = "interior") -> Box:
+        return Box(size=size, at=at, material=material, role=role, casts_shadow=False)
+
+    parts = [panel((wide, tall, skin), (x, middle, front + ROOM_DEPTH - skin), back),
+             panel((skin, tall, ROOM_DEPTH), (x - wide / 2, middle, deep), side),
+             panel((skin, tall, ROOM_DEPTH), (x + wide / 2, middle, deep), side),
+             panel((wide, skin, ROOM_DEPTH), (x, low, deep), side),
+             panel((wide, skin, ROOM_DEPTH), (x, high, deep), side)]
+    if rng.random() < 0.5:
+        sign = rng.choice((-1, 1))
+        parts.append(panel((0.3, PANE[1] + 0.1, 0.04), (x + sign * (PANE[0] / 2 - 0.1), sill + PANE[1] / 2, front + 0.08),
+                           "stock.curtain"))
+    if lit and rng.random() < 0.4:
+        parts.append(panel((rng.uniform(0.4, 0.8), rng.uniform(0.5, 1.0), 0.05), (x + rng.uniform(-0.3, 0.3), sill + 0.2,
+                                                                                 front + 0.9), "stock.interior.dark"))
+    return parts
+
+
 @dataclass
 class Building(Prefab):
-    """A block with a grid of windows on its -z face; `lit` is the share with a light on behind them."""
+    """A block with a grid of windows on its -z face; `lit` is the share with a light on behind them. `interiors` opens
+    each window onto a shallow room, for a shot close enough to see into one. It costs about ten solids a window."""
     width: float = 10.0
     depth: float = 9.0
     floors: int = 5
@@ -239,22 +307,66 @@ class Building(Prefab):
     lit: float = 0.0
     seed: int = 0
     storey: float = 3.1
+    interiors: bool = False
 
     def build(self) -> Sequence[Node]:
         rng = random.Random(self.seed)
         h = self.floors * self.storey
-        parts: list[Node] = [Box(size=(self.width, h, self.depth), at=(0, h / 2, 0), material=self.facade),
-                             Box(size=(self.width + 0.3, 0.3, self.depth + 0.3), at=(0, h + 0.15, 0),
-                                 material="stock.concrete")]
-        face = -self.depth / 2 - 0.02
+        roof = Box(size=(self.width + 0.3, 0.3, self.depth + 0.3), at=(0, h + 0.15, 0), material="stock.concrete", role="roof")
         bays = max(1, int(self.width // 2.4))
         pitch = self.width / bays
+        if self.interiors:
+            return [roof, *self.shell(h, bays, pitch), *self.rooms(rng, bays, pitch)]
+        parts: list[Node] = [Box(size=(self.width, h, self.depth), at=(0, h / 2, 0), material=self.facade,
+                                 role="wall"), roof]
+        face = -self.depth / 2 - 0.02
         for floor in range(self.floors):
             for bay in range(bays):
                 glow = rng.random() < self.lit
                 parts.append(Box(size=(1.3, 1.7, 0.06), at=(-self.width / 2 + pitch * (bay + 0.5),
                                                             self.storey * (floor + 0.55), face),
-                                 material="stock.glow.window" if glow else "stock.glass.dark", casts_shadow=False))
+                                 material="stock.glow.window" if glow else "stock.glass.dark", casts_shadow=False,
+                                 role="window"))
+        return parts
+
+    def sill(self, floor: int) -> float:
+        return self.storey * (floor + 0.55) - PANE[1] / 2
+
+    def shell(self, h: float, bays: int, pitch: float) -> list[Node]:
+        """The block with holes for its windows: a front cut around them, and behind it a body that stops short of them."""
+        if self.depth < FRONT + ROOM_DEPTH + 0.5:
+            raise ValueError(f"a building {self.depth} m deep has no room for interiors")
+        front, inner = -self.depth / 2, -self.depth / 2 + FRONT
+        back = inner + ROOM_DEPTH
+
+        def block(x0: float, x1: float, y0: float, y1: float, z0: float, z1: float) -> Box:
+            return Box(size=(x1 - x0, y1 - y0, z1 - z0), at=((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2),
+                       material=self.facade, role="wall")
+
+        half = self.width / 2
+        heads = [self.sill(floor) + PANE[1] for floor in range(self.floors)]
+        sills = [self.sill(floor) for floor in range(self.floors)]
+        parts = [block(-half, half, 0, h, back, self.depth / 2),
+                 block(-half, -half + 0.2, 0, h, inner, back), block(half - 0.2, half, 0, h, inner, back)]
+        parts += [block(-half, half, low, high, front, inner) for low, high in zip([0.0, *heads], [*sills, h])]
+        edges = [-half, *(x for bay in range(bays) for x in (centre(self.width, pitch, bay) - PANE[0] / 2,
+                                                             centre(self.width, pitch, bay) + PANE[0] / 2)), half]
+        for floor in range(self.floors):
+            parts += [block(left, right, sills[floor], heads[floor], front, inner)
+                      for left, right in zip(edges[::2], edges[1::2])]
+        return parts
+
+    def rooms(self, rng: random.Random, bays: int, pitch: float) -> list[Node]:
+        dress = random.Random(self.seed + 1)  # kept apart, so `lit` picks the same windows with interiors or without
+        parts: list[Node] = []
+        inner = -self.depth / 2 + FRONT
+        for floor in range(self.floors):
+            for bay in range(bays):
+                glow = rng.random() < self.lit
+                x, sill = centre(self.width, pitch, bay), self.sill(floor)
+                parts += room(x, sill, inner, min(pitch - 0.3, PANE[0] + 0.7), glow, dress)
+                parts.append(Box(size=(*PANE, 0.02), at=(x, sill + PANE[1] / 2, -self.depth / 2 + 0.06), role="window",
+                                 material="stock.glass.window", casts_shadow=False))
         return parts
 
 

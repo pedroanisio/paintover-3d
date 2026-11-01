@@ -1,0 +1,22 @@
+{
+  "description": "Dark conifer",
+  "digest": "09e34ad10ad53e1c5948669d45ee25fd9089f1df9d6bebf0db4df8f777227afa",
+  "kind": "shader",
+  "name": "conifer.dark",
+  "payload": {
+    "color": "#141c16",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.95
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plant"
+  ],
+  "version": "1.0.0"
+}

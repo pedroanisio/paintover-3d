@@ -1,0 +1,25 @@
+{
+  "description": "Saddle-tan hide with a soft sheen",
+  "digest": "eccc0d9a717b79a61d18ae1646d44fe95493bd13936adbbf26acde18328fbbc3",
+  "kind": "shader",
+  "name": "leather.cognac",
+  "payload": {
+    "color": "#b0581f",
+    "extra": {
+      "sheenColor": "#e0a070",
+      "sheenRoughness": 0.5
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.44
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "leather"
+  ],
+  "version": "1.0.0"
+}

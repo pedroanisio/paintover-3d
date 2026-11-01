@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Iterable
 
 from srlocations.location import LightRig
-from srlocations.nodes import Ambient, Light, Sun
+from srlocations.nodes import Ambient, Light, Sky, Sun
 
 
 @dataclass
@@ -39,4 +39,24 @@ class Interior(LightRig):
         return [Ambient(self.fill, color="#ffe9cf", name="room-fill")]
 
 
-RIGS = {"daylight": Daylight, "night": Night, "interior": Interior}
+@dataclass
+class OpenSky(LightRig):
+    """A real sky and a low sun, for anywhere open to the air. Best path traced, which lets the sky reflect."""
+    azimuth: float = 35.0
+    elevation: float = 30.0
+    strength: float = 2.5
+    brightness: float = 1.0
+    zenith: str = "#6f9fb0"
+    horizon: str = "#e4e6d8"
+    ground: str = "#3d3a33"
+    sun: str = "#ffe8c8"
+    falloff: float = 0.5
+
+    def lights(self) -> Iterable[Light]:
+        return [Sky(self.brightness, zenith=self.zenith, horizon=self.horizon, ground=self.ground, falloff=self.falloff,
+                    name="sky"),
+                Sun(self.strength, color=self.sun, yaw=self.azimuth + 180, pitch=-self.elevation, shadows=True,
+                    softness=0.6, name="sun")]
+
+
+RIGS = {"daylight": Daylight, "night": Night, "interior": Interior, "open-sky": OpenSky}

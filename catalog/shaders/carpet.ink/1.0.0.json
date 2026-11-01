@@ -1,0 +1,24 @@
+{
+  "description": "Dense black carpet",
+  "digest": "cd175f8715d234bbcc63b3f20225eeb3761eae2399a2f923aee5b828fbfc7dd7",
+  "kind": "shader",
+  "name": "carpet.ink",
+  "payload": {
+    "color": "#17171a",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.95
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "fabric"
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,6186 @@
+{
+  "description": "Grand tourer interior in cognac hide, its right door open",
+  "digest": "f50c7ce470c490304ca0bc921daca2eb3966efce42fc2fcf19ecfe221b777610",
+  "kind": "prop",
+  "name": "gt-cabin",
+  "payload": {
+    "parts": [
+      {
+        "at": [
+          0.0,
+          -0.05,
+          -0.2
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 3.0,
+          "height": 0.1,
+          "width": 1.8
+        },
+        "material": "carpet.ink@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "headliner.tan@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            40,
+            40
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "(-0.74*(1-u)*(1-u)+-0.74*2*u*(1-u)+-0.74*u*u)*(1-v)*(1-v)+(0*(1-u)*(1-u)+0*2*u*(1-u)+0*u*u)*2*v*(1-v)+(0.74*(1-u)*(1-u)+0.74*2*u*(1-u)+0.74*u*u)*v*v",
+          "y": "(1*(1-u)*(1-u)+1.06*2*u*(1-u)+1.03*u*u)*(1-v)*(1-v)+(1.2*(1-u)*(1-u)+1.2*2*u*(1-u)+1.16*u*u)*2*v*(1-v)+(1*(1-u)*(1-u)+1.06*2*u*(1-u)+1.03*u*u)*v*v",
+          "z": "(-1.45*(1-u)*(1-u)+-0.3*2*u*(1-u)+0.25*u*u)*(1-v)*(1-v)+(-1.45*(1-u)*(1-u)+-0.3*2*u*(1-u)+0.3*u*u)*2*v*(1-v)+(-1.45*(1-u)*(1-u)+-0.3*2*u*(1-u)+0.25*u*u)*v*v"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.84*(1-u)*(1-u)+-0.76*2*u*(1-u)+-0.7*u*u+pow(abs(sin(180*u)),0.12)*(-0.029347*cos(v)+-0.0028015*sin(v))",
+          "y": "0.74*(1-u)*(1-u)+0.93*2*u*(1-u)+1.08*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.02679*sin(v))",
+          "z": "0.86*(1-u)*(1-u)+0.56*2*u*(1-u)+0.2*u*u+pow(abs(sin(180*u)),0.12)*(-0.0062251*cos(v)+0.013207*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0.84*(1-u)*(1-u)+0.76*2*u*(1-u)+0.7*u*u+pow(abs(sin(180*u)),0.12)*(-0.029347*cos(v)+0.0028015*sin(v))",
+          "y": "0.74*(1-u)*(1-u)+0.93*2*u*(1-u)+1.08*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.02679*sin(v))",
+          "z": "0.86*(1-u)*(1-u)+0.56*2*u*(1-u)+0.2*u*u+pow(abs(sin(180*u)),0.12)*(0.0062251*cos(v)+0.013207*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.7*(1-u)*(1-u)+-0.72*2*u*(1-u)+-0.75*u*u+pow(abs(sin(180*u)),0.12)*(-0.029983*cos(v)+-7.9657e-05*sin(v))",
+          "y": "1.08*(1-u)*(1-u)+1.1*2*u*(1-u)+0.96*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.029905*sin(v))",
+          "z": "0.2*(1-u)*(1-u)+-0.6*2*u*(1-u)+-1.3*u*u+pow(abs(sin(180*u)),0.12)*(0.00099944*cos(v)+-0.0023897*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0.7*(1-u)*(1-u)+0.72*2*u*(1-u)+0.75*u*u+pow(abs(sin(180*u)),0.12)*(-0.029983*cos(v)+7.9657e-05*sin(v))",
+          "y": "1.08*(1-u)*(1-u)+1.1*2*u*(1-u)+0.96*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.029905*sin(v))",
+          "z": "0.2*(1-u)*(1-u)+-0.6*2*u*(1-u)+-1.3*u*u+pow(abs(sin(180*u)),0.12)*(-0.00099944*cos(v)+-0.0023897*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.7*(1-u)*(1-u)+0*2*u*(1-u)+0.7*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+-0*sin(v))",
+          "y": "1.1*(1-u)*(1-u)+1.16*2*u*(1-u)+1.1*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.015*sin(v))",
+          "z": "0.24*(1-u)*(1-u)+0.32*2*u*(1-u)+0.24*u*u+pow(abs(sin(180*u)),0.12)*(-0.03*cos(v)+0*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          1.1,
+          0.26
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.03*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(cos(u))*pow(abs(cos(u)),0.4))",
+          "y": "0.025*(sign(sin(v))*pow(abs(sin(v)),0.4))",
+          "z": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(sin(u))*pow(abs(sin(u)),0.4))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          1.04,
+          0.27
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.990268,
+            -0.139173
+          ],
+          [
+            0.0,
+            0.139173,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.12*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))",
+          "y": "0.0325*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.0125*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          -0.36,
+          1.1,
+          0.22
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.990268,
+            0.139173
+          ],
+          [
+            0.0,
+            -0.139173,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "headliner.tan@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.15*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(cos(u))*pow(abs(cos(u)),0.4))",
+          "y": "0.009*(sign(sin(v))*pow(abs(sin(v)),0.4))",
+          "z": "0.08*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(sin(u))*pow(abs(sin(u)),0.4))"
+        }
+      },
+      {
+        "at": [
+          0.36,
+          1.1,
+          0.22
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.990268,
+            0.139173
+          ],
+          [
+            0.0,
+            -0.139173,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "headliner.tan@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.15*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(cos(u))*pow(abs(cos(u)),0.4))",
+          "y": "0.009*(sign(sin(v))*pow(abs(sin(v)),0.4))",
+          "z": "0.08*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(sin(u))*pow(abs(sin(u)),0.4))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "paint.garnet@1.0.0",
+        "slot": "paint",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            40,
+            40
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "(-0.92*(1-u)+-0.92*u)*(1-v)*(1-v)+(0*(1-u)+0*u)*2*v*(1-v)+(0.92*(1-u)+0.92*u)*v*v",
+          "y": "(0.72*(1-u)+0.7*u)*(1-v)*(1-v)+(0.8*(1-u)+0.76*u)*2*v*(1-v)+(0.72*(1-u)+0.7*u)*v*v",
+          "z": "(0.9*(1-u)+2.4*u)*(1-v)*(1-v)+(0.9*(1-u)+2.4*u)*2*v*(1-v)+(0.9*(1-u)+2.4*u)*v*v"
+        }
+      },
+      {
+        "at": [
+          -0.9,
+          0.36,
+          -0.3
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "paint.garnet@1.0.0",
+        "slot": "paint",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.02*(sign(cos(v))*pow(abs(cos(v)),0.2))*(sign(cos(u))*pow(abs(cos(u)),0.2))",
+          "y": "0.17*(sign(sin(v))*pow(abs(sin(v)),0.2))",
+          "z": "1.1*(sign(cos(v))*pow(abs(cos(v)),0.2))*(sign(sin(u))*pow(abs(sin(u)),0.2))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            40,
+            40
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "(-0.8*(1-u)+-0.8*u)*(1-v)+(0.8*(1-u)+0.8*u)*v",
+          "y": "(0*(1-u)+1.05*u)*(1-v)+(0*(1-u)+1.05*u)*v",
+          "z": "(-1.45*(1-u)+-1.45*u)*(1-v)+(-1.45*(1-u)+-1.45*u)*v"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.16,
+          -0.4
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.275*(sign(cos(v))*pow(abs(cos(v)),0.28))*(sign(cos(u))*pow(abs(cos(u)),0.28))",
+          "y": "0.15*(sign(sin(v))*pow(abs(sin(v)),0.28))",
+          "z": "0.3*(sign(cos(v))*pow(abs(cos(v)),0.28))*(sign(sin(u))*pow(abs(sin(u)),0.28))"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.35,
+          -0.38
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.996195,
+            -0.087156
+          ],
+          [
+            0.0,
+            0.087156,
+            0.996195
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.235*(sign(cos(v))*pow(abs(cos(v)),0.42))*(sign(cos(u))*pow(abs(cos(u)),0.42))",
+          "y": "0.055*(sign(sin(v))*pow(abs(sin(v)),0.42))",
+          "z": "0.29*(sign(cos(v))*pow(abs(cos(v)),0.42))*(sign(sin(u))*pow(abs(sin(u)),0.42))"
+        }
+      },
+      {
+        "at": [
+          -0.57,
+          0.37,
+          -0.38
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.996195,
+            -0.087156
+          ],
+          [
+            0.0,
+            0.087156,
+            0.996195
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.06*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))",
+          "y": "0.06*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.28*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          -0.17,
+          0.37,
+          -0.38
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.996195,
+            -0.087156
+          ],
+          [
+            0.0,
+            0.087156,
+            0.996195
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.06*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))",
+          "y": "0.06*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.28*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.0,
+          -0.42
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "stitch.linen@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.135*(1-u)*(1-u)*(1-u)+-0.135*3*u*(1-u)*(1-u)+-0.135*3*u*u*(1-u)+-0.135*u*u*u+pow(abs(sin(180*u)),0.12)*(0.0028*cos(v)+0*sin(v))",
+          "y": "0.408*(1-u)*(1-u)*(1-u)+0.418*3*u*(1-u)*(1-u)+0.416*3*u*u*(1-u)+0.388*u*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0027979*sin(v))",
+          "z": "-0.2*(1-u)*(1-u)*(1-u)+0*3*u*(1-u)*(1-u)+0.2*3*u*u*(1-u)+0.32*u*u*u+pow(abs(sin(180*u)),0.12)*(-0*cos(v)+0.00010761*sin(v))"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.0,
+          -0.42
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "stitch.linen@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0.135*(1-u)*(1-u)*(1-u)+0.135*3*u*(1-u)*(1-u)+0.135*3*u*u*(1-u)+0.135*u*u*u+pow(abs(sin(180*u)),0.12)*(0.0028*cos(v)+0*sin(v))",
+          "y": "0.408*(1-u)*(1-u)*(1-u)+0.418*3*u*(1-u)*(1-u)+0.416*3*u*u*(1-u)+0.388*u*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0027979*sin(v))",
+          "z": "-0.2*(1-u)*(1-u)*(1-u)+0*3*u*(1-u)*(1-u)+0.2*3*u*u*(1-u)+0.32*u*u*u+pow(abs(sin(180*u)),0.12)*(-0*cos(v)+0.00010761*sin(v))"
+        }
+      },
+      {
+        "at": [
+          -0.647,
+          0.17,
+          -0.34
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.007*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.065*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.135*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          -0.65,
+          0.17,
+          -0.4
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.008*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.045*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.05*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          -0.65,
+          0.17,
+          -0.28
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.008*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.045*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.05*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.629047,
+          -0.851671
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.97437,
+            0.224951
+          ],
+          [
+            0.0,
+            -0.224951,
+            0.97437
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.235*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))*(1-0.2*(sign(sin(v))*pow(abs(sin(v)),0.5)))",
+          "y": "0.33*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.035*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.629805,
+          -0.759479
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.97437,
+            0.224951
+          ],
+          [
+            0.0,
+            -0.224951,
+            0.97437
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.14*(sign(cos(v))*pow(abs(cos(v)),0.42))*(sign(cos(u))*pow(abs(cos(u)),0.42))*(1-0.14*(sign(sin(v))*pow(abs(sin(v)),0.42)))",
+          "y": "0.3*(sign(sin(v))*pow(abs(sin(v)),0.42))",
+          "z": "0.06*(sign(cos(v))*pow(abs(cos(v)),0.42))*(sign(sin(u))*pow(abs(sin(u)),0.42))"
+        }
+      },
+      {
+        "at": [
+          -0.54,
+          0.660161,
+          -0.761355
+        ],
+        "basis": [
+          [
+            0.99863,
+            0.052336,
+            0.0
+          ],
+          [
+            -0.050995,
+            0.973035,
+            0.224951
+          ],
+          [
+            0.011773,
+            -0.224643,
+            0.97437
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.6))*(sign(cos(u))*pow(abs(cos(u)),0.6))*(1-0.24*(sign(sin(v))*pow(abs(sin(v)),0.6)))",
+          "y": "0.34*(sign(sin(v))*pow(abs(sin(v)),0.6))",
+          "z": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.6))*(sign(sin(u))*pow(abs(sin(u)),0.6))+-0.02*(sign(sin(v))*pow(abs(sin(v)),0.6))"
+        }
+      },
+      {
+        "at": [
+          -0.2,
+          0.660161,
+          -0.761355
+        ],
+        "basis": [
+          [
+            0.99863,
+            -0.052336,
+            0.0
+          ],
+          [
+            0.050995,
+            0.973035,
+            0.224951
+          ],
+          [
+            -0.011773,
+            -0.224643,
+            0.97437
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.6))*(sign(cos(u))*pow(abs(cos(u)),0.6))*(1-0.24*(sign(sin(v))*pow(abs(sin(v)),0.6)))",
+          "y": "0.34*(sign(sin(v))*pow(abs(sin(v)),0.6))",
+          "z": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.6))*(sign(sin(u))*pow(abs(sin(u)),0.6))+-0.02*(sign(sin(v))*pow(abs(sin(v)),0.6))"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.33,
+          -0.68
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.97437,
+            0.224951
+          ],
+          [
+            0.0,
+            -0.224951,
+            0.97437
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0*(1-u)*(1-u)+0*2*u*(1-u)+0*u*u+pow(abs(sin(180*u)),0.12)*(0.012*cos(v)+0*sin(v))",
+          "y": "0.05*(1-u)*(1-u)+0.38*2*u*(1-u)+0.64*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+-0.00040655*sin(v))",
+          "z": "0.05*(1-u)*(1-u)+0.066*2*u*(1-u)+0.03*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+-0.011993*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.37,
+          0.16,
+          -0.45
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.275*(sign(cos(v))*pow(abs(cos(v)),0.28))*(sign(cos(u))*pow(abs(cos(u)),0.28))",
+          "y": "0.15*(sign(sin(v))*pow(abs(sin(v)),0.28))",
+          "z": "0.3*(sign(cos(v))*pow(abs(cos(v)),0.28))*(sign(sin(u))*pow(abs(sin(u)),0.28))"
+        }
+      },
+      {
+        "at": [
+          0.37,
+          0.35,
+          -0.43
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.996195,
+            -0.087156
+          ],
+          [
+            0.0,
+            0.087156,
+            0.996195
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.235*(sign(cos(v))*pow(abs(cos(v)),0.42))*(sign(cos(u))*pow(abs(cos(u)),0.42))",
+          "y": "0.055*(sign(sin(v))*pow(abs(sin(v)),0.42))",
+          "z": "0.29*(sign(cos(v))*pow(abs(cos(v)),0.42))*(sign(sin(u))*pow(abs(sin(u)),0.42))"
+        }
+      },
+      {
+        "at": [
+          0.17,
+          0.37,
+          -0.43
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.996195,
+            -0.087156
+          ],
+          [
+            0.0,
+            0.087156,
+            0.996195
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.06*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))",
+          "y": "0.06*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.28*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          0.57,
+          0.37,
+          -0.43
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.996195,
+            -0.087156
+          ],
+          [
+            0.0,
+            0.087156,
+            0.996195
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.06*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))",
+          "y": "0.06*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.28*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          0.37,
+          0.0,
+          -0.47
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "stitch.linen@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.135*(1-u)*(1-u)*(1-u)+-0.135*3*u*(1-u)*(1-u)+-0.135*3*u*u*(1-u)+-0.135*u*u*u+pow(abs(sin(180*u)),0.12)*(0.0028*cos(v)+0*sin(v))",
+          "y": "0.408*(1-u)*(1-u)*(1-u)+0.418*3*u*(1-u)*(1-u)+0.416*3*u*u*(1-u)+0.388*u*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0027979*sin(v))",
+          "z": "-0.2*(1-u)*(1-u)*(1-u)+0*3*u*(1-u)*(1-u)+0.2*3*u*u*(1-u)+0.32*u*u*u+pow(abs(sin(180*u)),0.12)*(-0*cos(v)+0.00010761*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.37,
+          0.0,
+          -0.47
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "stitch.linen@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0.135*(1-u)*(1-u)*(1-u)+0.135*3*u*(1-u)*(1-u)+0.135*3*u*u*(1-u)+0.135*u*u*u+pow(abs(sin(180*u)),0.12)*(0.0028*cos(v)+0*sin(v))",
+          "y": "0.408*(1-u)*(1-u)*(1-u)+0.418*3*u*(1-u)*(1-u)+0.416*3*u*u*(1-u)+0.388*u*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0027979*sin(v))",
+          "z": "-0.2*(1-u)*(1-u)*(1-u)+0*3*u*(1-u)*(1-u)+0.2*3*u*u*(1-u)+0.32*u*u*u+pow(abs(sin(180*u)),0.12)*(-0*cos(v)+0.00010761*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.647,
+          0.17,
+          -0.39
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.007*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.065*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.135*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.65,
+          0.17,
+          -0.45
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.008*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.045*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.05*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.65,
+          0.17,
+          -0.33
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.008*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.045*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.05*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.37,
+          0.629047,
+          -0.901671
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.97437,
+            0.224951
+          ],
+          [
+            0.0,
+            -0.224951,
+            0.97437
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.235*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))*(1-0.2*(sign(sin(v))*pow(abs(sin(v)),0.5)))",
+          "y": "0.33*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.035*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          0.37,
+          0.629805,
+          -0.809479
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.97437,
+            0.224951
+          ],
+          [
+            0.0,
+            -0.224951,
+            0.97437
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.14*(sign(cos(v))*pow(abs(cos(v)),0.42))*(sign(cos(u))*pow(abs(cos(u)),0.42))*(1-0.14*(sign(sin(v))*pow(abs(sin(v)),0.42)))",
+          "y": "0.3*(sign(sin(v))*pow(abs(sin(v)),0.42))",
+          "z": "0.06*(sign(cos(v))*pow(abs(cos(v)),0.42))*(sign(sin(u))*pow(abs(sin(u)),0.42))"
+        }
+      },
+      {
+        "at": [
+          0.2,
+          0.660161,
+          -0.811355
+        ],
+        "basis": [
+          [
+            0.99863,
+            0.052336,
+            0.0
+          ],
+          [
+            -0.050995,
+            0.973035,
+            0.224951
+          ],
+          [
+            0.011773,
+            -0.224643,
+            0.97437
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.6))*(sign(cos(u))*pow(abs(cos(u)),0.6))*(1-0.24*(sign(sin(v))*pow(abs(sin(v)),0.6)))",
+          "y": "0.34*(sign(sin(v))*pow(abs(sin(v)),0.6))",
+          "z": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.6))*(sign(sin(u))*pow(abs(sin(u)),0.6))+-0.02*(sign(sin(v))*pow(abs(sin(v)),0.6))"
+        }
+      },
+      {
+        "at": [
+          0.54,
+          0.660161,
+          -0.811355
+        ],
+        "basis": [
+          [
+            0.99863,
+            -0.052336,
+            0.0
+          ],
+          [
+            0.050995,
+            0.973035,
+            0.224951
+          ],
+          [
+            -0.011773,
+            -0.224643,
+            0.97437
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.6))*(sign(cos(u))*pow(abs(cos(u)),0.6))*(1-0.24*(sign(sin(v))*pow(abs(sin(v)),0.6)))",
+          "y": "0.34*(sign(sin(v))*pow(abs(sin(v)),0.6))",
+          "z": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.6))*(sign(sin(u))*pow(abs(sin(u)),0.6))+-0.02*(sign(sin(v))*pow(abs(sin(v)),0.6))"
+        }
+      },
+      {
+        "at": [
+          0.37,
+          0.33,
+          -0.73
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.97437,
+            0.224951
+          ],
+          [
+            0.0,
+            -0.224951,
+            0.97437
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0*(1-u)*(1-u)+0*2*u*(1-u)+0*u*u+pow(abs(sin(180*u)),0.12)*(0.012*cos(v)+0*sin(v))",
+          "y": "0.05*(1-u)*(1-u)+0.38*2*u*(1-u)+0.64*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+-0.00040655*sin(v))",
+          "z": "0.05*(1-u)*(1-u)+0.066*2*u*(1-u)+0.03*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+-0.011993*sin(v))"
+        }
+      },
+      {
+        "at": [
+          -0.42,
+          0.34,
+          -1.15
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.994522,
+            -0.104528
+          ],
+          [
+            0.0,
+            0.104528,
+            0.994522
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.26*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(cos(u))*pow(abs(cos(u)),0.4))",
+          "y": "0.1*(sign(sin(v))*pow(abs(sin(v)),0.4))",
+          "z": "0.25*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(sin(u))*pow(abs(sin(u)),0.4))"
+        }
+      },
+      {
+        "at": [
+          0.42,
+          0.34,
+          -1.15
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.994522,
+            -0.104528
+          ],
+          [
+            0.0,
+            0.104528,
+            0.994522
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.26*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(cos(u))*pow(abs(cos(u)),0.4))",
+          "y": "0.1*(sign(sin(v))*pow(abs(sin(v)),0.4))",
+          "z": "0.25*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(sin(u))*pow(abs(sin(u)),0.4))"
+        }
+      },
+      {
+        "at": [
+          -0.42,
+          0.7,
+          -1.32
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            0.275637
+          ],
+          [
+            0.0,
+            -0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.26*(sign(cos(v))*pow(abs(cos(v)),0.45))*(sign(cos(u))*pow(abs(cos(u)),0.45))*(1-0.1*(sign(sin(v))*pow(abs(sin(v)),0.45)))",
+          "y": "0.31*(sign(sin(v))*pow(abs(sin(v)),0.45))",
+          "z": "0.08*(sign(cos(v))*pow(abs(cos(v)),0.45))*(sign(sin(u))*pow(abs(sin(u)),0.45))"
+        }
+      },
+      {
+        "at": [
+          0.42,
+          0.7,
+          -1.32
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            0.275637
+          ],
+          [
+            0.0,
+            -0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.26*(sign(cos(v))*pow(abs(cos(v)),0.45))*(sign(cos(u))*pow(abs(cos(u)),0.45))*(1-0.1*(sign(sin(v))*pow(abs(sin(v)),0.45)))",
+          "y": "0.31*(sign(sin(v))*pow(abs(sin(v)),0.45))",
+          "z": "0.08*(sign(cos(v))*pow(abs(cos(v)),0.45))*(sign(sin(u))*pow(abs(sin(u)),0.45))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.25,
+          -1.08
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.13*(sign(cos(v))*pow(abs(cos(v)),0.35))*(sign(cos(u))*pow(abs(cos(u)),0.35))",
+          "y": "0.25*(sign(sin(v))*pow(abs(sin(v)),0.35))",
+          "z": "0.375*(sign(cos(v))*pow(abs(cos(v)),0.35))*(sign(sin(u))*pow(abs(sin(u)),0.35))"
+        }
+      },
+      {
+        "at": [
+          -0.74,
+          0.34,
+          -1.05
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.05*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(cos(u))*pow(abs(cos(u)),0.4))",
+          "y": "0.28*(sign(sin(v))*pow(abs(sin(v)),0.4))",
+          "z": "0.5*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(sin(u))*pow(abs(sin(u)),0.4))"
+        }
+      },
+      {
+        "at": [
+          0.8,
+          0.2,
+          -1.12
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.05*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.2*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.36*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0.76*(1-u)*(1-u)+0.75*2*u*(1-u)+0.76*u*u+pow(abs(sin(180*u)),0.12)*(0.005*cos(v)+0*sin(v))",
+          "y": "0.402*(1-u)*(1-u)+0.405*2*u*(1-u)+0.4*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.005*sin(v))",
+          "z": "-1.45*(1-u)*(1-u)+-1.1*2*u*(1-u)+-0.76*u*u+pow(abs(sin(180*u)),0.12)*(-0*cos(v)+1.4493e-05*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.2,
+          0.02
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "carpet.ink@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.15*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(cos(u))*pow(abs(cos(u)),0.25))",
+          "y": "0.21*(sign(sin(v))*pow(abs(sin(v)),0.25))",
+          "z": "0.625*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(sin(u))*pow(abs(sin(u)),0.25))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.47,
+          -0.37
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.999391,
+            0.034899
+          ],
+          [
+            0.0,
+            -0.034899,
+            0.999391
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.12*(sign(cos(v))*pow(abs(cos(v)),0.45))*(sign(cos(u))*pow(abs(cos(u)),0.45))",
+          "y": "0.055*(sign(sin(v))*pow(abs(sin(v)),0.45))",
+          "z": "0.21*(sign(cos(v))*pow(abs(cos(v)),0.45))*(sign(sin(u))*pow(abs(sin(u)),0.45))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.44,
+          0.17
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.990268,
+            0.139173
+          ],
+          [
+            0.0,
+            -0.139173,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.125*(sign(cos(v))*pow(abs(cos(v)),0.2))*(sign(cos(u))*pow(abs(cos(u)),0.2))",
+          "y": "0.02*(sign(sin(v))*pow(abs(sin(v)),0.2))",
+          "z": "0.32*(sign(cos(v))*pow(abs(cos(v)),0.2))*(sign(sin(u))*pow(abs(sin(u)),0.2))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.127*(1-u)*(1-u)+-0.127*2*u*(1-u)+-0.127*u*u+pow(abs(sin(180*u)),0.12)*(0.006*cos(v)+-0*sin(v))",
+          "y": "0.41*(1-u)*(1-u)+0.45*2*u*(1-u)+0.5*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0059415*sin(v))",
+          "z": "-0.15*(1-u)*(1-u)+0.17*2*u*(1-u)+0.49*u*u+pow(abs(sin(180*u)),0.12)*(-0*cos(v)+-0.00083553*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0.127*(1-u)*(1-u)+0.127*2*u*(1-u)+0.127*u*u+pow(abs(sin(180*u)),0.12)*(0.006*cos(v)+-0*sin(v))",
+          "y": "0.41*(1-u)*(1-u)+0.45*2*u*(1-u)+0.5*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0059415*sin(v))",
+          "z": "-0.15*(1-u)*(1-u)+0.17*2*u*(1-u)+0.49*u*u+pow(abs(sin(180*u)),0.12)*(-0*cos(v)+-0.00083553*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.435,
+          -0.04
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.990268,
+            0.139173
+          ],
+          [
+            0.0,
+            -0.139173,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.075*(sign(cos(v))*pow(abs(cos(v)),0.15))*(sign(cos(u))*pow(abs(cos(u)),0.15))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.15))",
+          "z": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.15))*(sign(sin(u))*pow(abs(sin(u)),0.15))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.44,
+          -0.04
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.990268,
+            0.139173
+          ],
+          [
+            0.0,
+            -0.139173,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.07*(sign(cos(v))*pow(abs(cos(v)),0.15))*(sign(cos(u))*pow(abs(cos(u)),0.15))",
+          "y": "0.007*(sign(sin(v))*pow(abs(sin(v)),0.15))",
+          "z": "0.095*(sign(cos(v))*pow(abs(cos(v)),0.15))*(sign(sin(u))*pow(abs(sin(u)),0.15))"
+        }
+      },
+      {
+        "at": [
+          0.045,
+          0.465,
+          0.13
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.990268,
+            0.139173
+          ],
+          [
+            0.0,
+            -0.139173,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.03,
+          "radius": 0.03
+        },
+        "material": "metal.satin@1.0.0",
+        "segments": 48,
+        "slot": "trim",
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          -0.045,
+          0.465,
+          0.13
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.990268,
+            0.139173
+          ],
+          [
+            0.0,
+            -0.139173,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.03,
+          "radius": 0.022
+        },
+        "material": "metal.satin@1.0.0",
+        "segments": 48,
+        "slot": "trim",
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          0.54,
+          0.26
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.990268,
+            0.139173
+          ],
+          [
+            0.0,
+            -0.139173,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.025*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))*(1-0.25*(sign(sin(v))*pow(abs(sin(v)),0.5)))",
+          "y": "0.08*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.04*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.62,
+          0.53
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.15*(sign(cos(v))*pow(abs(cos(v)),0.2))*(sign(cos(u))*pow(abs(cos(u)),0.2))",
+          "y": "0.13*(sign(sin(v))*pow(abs(sin(v)),0.2))",
+          "z": "0.025*(sign(cos(v))*pow(abs(cos(v)),0.2))*(sign(sin(u))*pow(abs(sin(u)),0.2))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.155*(1-u)*(1-u)+-0.158*2*u*(1-u)+-0.155*u*u+pow(abs(sin(180*u)),0.12)*(0.007*cos(v)+0*sin(v))",
+          "y": "0.5*(1-u)*(1-u)+0.61*2*u*(1-u)+0.72*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0021224*sin(v))",
+          "z": "0.49*(1-u)*(1-u)+0.525*2*u*(1-u)+0.56*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+-0.0066705*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0.155*(1-u)*(1-u)+0.158*2*u*(1-u)+0.155*u*u+pow(abs(sin(180*u)),0.12)*(0.007*cos(v)+0*sin(v))",
+          "y": "0.5*(1-u)*(1-u)+0.61*2*u*(1-u)+0.72*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0021224*sin(v))",
+          "z": "0.49*(1-u)*(1-u)+0.525*2*u*(1-u)+0.56*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+-0.0066705*sin(v))"
+        }
+      },
+      {
+        "at": [
+          -0.09,
+          0.62,
+          0.503
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.036+0.004*cos(v))*cos(u)",
+          "y": "(0.036+0.004*cos(v))*sin(u)",
+          "z": "0.004*sin(v)"
+        }
+      },
+      {
+        "at": [
+          -0.09,
+          0.62,
+          0.508
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ],
+          [
+            0.0,
+            -0.961262,
+            0.275637
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.012,
+          "radius": 0.034
+        },
+        "material": "piano.black@1.0.0",
+        "segments": 48,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          0.62,
+          0.503
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.036+0.004*cos(v))*cos(u)",
+          "y": "(0.036+0.004*cos(v))*sin(u)",
+          "z": "0.004*sin(v)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.62,
+          0.508
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ],
+          [
+            0.0,
+            -0.961262,
+            0.275637
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.012,
+          "radius": 0.034
+        },
+        "material": "piano.black@1.0.0",
+        "segments": 48,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.09,
+          0.62,
+          0.503
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.036+0.004*cos(v))*cos(u)",
+          "y": "(0.036+0.004*cos(v))*sin(u)",
+          "z": "0.004*sin(v)"
+        }
+      },
+      {
+        "at": [
+          0.09,
+          0.62,
+          0.508
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ],
+          [
+            0.0,
+            -0.961262,
+            0.275637
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.012,
+          "radius": 0.034
+        },
+        "material": "piano.black@1.0.0",
+        "segments": 48,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          -0.1,
+          0.71,
+          0.536
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          -0.06,
+          0.71,
+          0.536
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          -0.02,
+          0.71,
+          0.536
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.02,
+          0.71,
+          0.536
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.06,
+          0.71,
+          0.536
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.1,
+          0.71,
+          0.536
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          -0.1,
+          0.688,
+          0.542
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          -0.06,
+          0.688,
+          0.542
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          -0.02,
+          0.688,
+          0.542
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.02,
+          0.688,
+          0.542
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.06,
+          0.688,
+          0.542
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.1,
+          0.688,
+          0.542
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.961262,
+            -0.275637
+          ],
+          [
+            0.0,
+            0.275637,
+            0.961262
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.012*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.006*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.74,
+          0.86
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.spruce@1.0.0",
+        "slot": "dash",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            40
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.81*(sign(cos(v))*pow(abs(cos(v)),0.38))*(sign(cos(u))*pow(abs(cos(u)),0.38))",
+          "y": "0.1*(sign(sin(v))*pow(abs(sin(v)),0.38))-0.02*pow((sign(cos(v))*pow(abs(cos(v)),0.38))*(sign(cos(u))*pow(abs(cos(u)),0.38)),2)",
+          "z": "0.3*(sign(cos(v))*pow(abs(cos(v)),0.38))*(sign(sin(u))*pow(abs(sin(u)),0.38))+-0.1*pow((sign(cos(v))*pow(abs(cos(v)),0.38))*(sign(cos(u))*pow(abs(cos(u)),0.38)),2)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.55,
+          0.72
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.81*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.13*(sign(sin(v))*pow(abs(sin(v)),0.3))-0.01*pow((sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3)),2)",
+          "z": "0.14*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))+-0.1*pow((sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3)),2)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.655,
+          0.585
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "veneer.ebony@1.0.0",
+        "slot": "veneer",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            20
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.8*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(cos(u))*pow(abs(cos(u)),0.25))",
+          "y": "0.035*(sign(sin(v))*pow(abs(sin(v)),0.25))-0.01*pow((sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(cos(u))*pow(abs(cos(u)),0.25)),2)",
+          "z": "0.015*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(sin(u))*pow(abs(sin(u)),0.25))+-0.1*pow((sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(cos(u))*pow(abs(cos(u)),0.25)),2)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.8*(1-u)*(1-u)*(1-u)+-0.25*3*u*(1-u)*(1-u)+0.25*3*u*u*(1-u)+0.8*u*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+-0*sin(v))",
+          "y": "0.699*(1-u)*(1-u)*(1-u)+0.701*3*u*(1-u)*(1-u)+0.701*3*u*u*(1-u)+0.699*u*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.005*sin(v))",
+          "z": "0.495*(1-u)*(1-u)*(1-u)+0.6*3*u*(1-u)*(1-u)+0.6*3*u*u*(1-u)+0.495*u*u*u+pow(abs(sin(180*u)),0.12)*(-0.005*cos(v)+0*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.08*(1-u)*(1-u)*(1-u)+0.25*3*u*(1-u)*(1-u)+0.5*3*u*u*(1-u)+0.8*u*u*u+pow(abs(sin(180*u)),0.12)*(-0.00037566*cos(v)+0*sin(v))",
+          "y": "0.612*(1-u)*(1-u)*(1-u)+0.612*3*u*(1-u)*(1-u)+0.612*3*u*u*(1-u)+0.612*u*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0035*sin(v))",
+          "z": "0.585*(1-u)*(1-u)*(1-u)+0.585*3*u*(1-u)*(1-u)+0.56*3*u*u*(1-u)+0.49*u*u*u+pow(abs(sin(180*u)),0.12)*(-0.0034798*cos(v)+0*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.48,
+          0.48,
+          0.55
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.25*(sign(cos(v))*pow(abs(cos(v)),0.2))*(sign(cos(u))*pow(abs(cos(u)),0.2))",
+          "y": "0.1*(sign(sin(v))*pow(abs(sin(v)),0.2))-0.015*pow((sign(cos(v))*pow(abs(cos(v)),0.2))*(sign(cos(u))*pow(abs(cos(u)),0.2)),2)",
+          "z": "0.025*(sign(cos(v))*pow(abs(cos(v)),0.2))*(sign(sin(u))*pow(abs(sin(u)),0.2))+-0.03*pow((sign(cos(v))*pow(abs(cos(v)),0.2))*(sign(cos(u))*pow(abs(cos(u)),0.2)),2)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0.24*(1-u)*(1-u)*(1-u)+0.4*3*u*(1-u)*(1-u)+0.55*3*u*u*(1-u)+0.78*u*u*u+pow(abs(sin(180*u)),0.12)*(-0.00091045*cos(v)+0.00013423*sin(v))",
+          "y": "0.585*(1-u)*(1-u)*(1-u)+0.595*3*u*(1-u)*(1-u)+0.595*3*u*u*(1-u)+0.57*u*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0049981*sin(v))",
+          "z": "0.56*(1-u)*(1-u)*(1-u)+0.555*3*u*(1-u)*(1-u)+0.53*3*u*u*(1-u)+0.46*u*u*u+pow(abs(sin(180*u)),0.12)*(-0.0049164*cos(v)+-2.4858e-05*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.5,
+          0.52,
+          0.525
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.035*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(cos(u))*pow(abs(cos(u)),0.4))",
+          "y": "0.009*(sign(sin(v))*pow(abs(sin(v)),0.4))",
+          "z": "0.01*(sign(cos(v))*pow(abs(cos(v)),0.4))*(sign(sin(u))*pow(abs(sin(u)),0.4))"
+        }
+      },
+      {
+        "at": [
+          -0.36,
+          0.42,
+          0.58
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.939693,
+            -0.34202
+          ],
+          [
+            0.0,
+            0.34202,
+            0.939693
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.15*(sign(cos(v))*pow(abs(cos(v)),0.45))*(sign(cos(u))*pow(abs(cos(u)),0.45))",
+          "y": "0.1*(sign(sin(v))*pow(abs(sin(v)),0.45))",
+          "z": "0.06*(sign(cos(v))*pow(abs(cos(v)),0.45))*(sign(sin(u))*pow(abs(sin(u)),0.45))"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.75,
+          0.56
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.994522,
+            0.104528
+          ],
+          [
+            0.0,
+            -0.104528,
+            0.994522
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.19*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))",
+          "y": "0.055*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.72,
+          0.452
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.994522,
+            -0.104528
+          ],
+          [
+            0.0,
+            0.104528,
+            0.994522
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "gauge.face@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.16*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(cos(u))*pow(abs(cos(u)),0.25))",
+          "y": "0.05*(sign(sin(v))*pow(abs(sin(v)),0.25))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(sin(u))*pow(abs(sin(u)),0.25))"
+        }
+      },
+      {
+        "at": [
+          -0.46,
+          0.72,
+          0.444
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.994522,
+            -0.104528
+          ],
+          [
+            0.0,
+            0.104528,
+            0.994522
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.042+0.0035*cos(v))*cos(u)",
+          "y": "(0.042+0.0035*cos(v))*sin(u)",
+          "z": "0.0035*sin(v)"
+        }
+      },
+      {
+        "at": [
+          -0.28,
+          0.72,
+          0.444
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.994522,
+            -0.104528
+          ],
+          [
+            0.0,
+            0.104528,
+            0.994522
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.042+0.0035*cos(v))*cos(u)",
+          "y": "(0.042+0.0035*cos(v))*sin(u)",
+          "z": "0.0035*sin(v)"
+        }
+      },
+      {
+        "at": [
+          0.1,
+          0.655,
+          0.57
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.028+0.0035*cos(v))*cos(u)",
+          "y": "(0.028+0.0035*cos(v))*sin(u)",
+          "z": "0.0035*sin(v)"
+        }
+      },
+      {
+        "at": [
+          0.1,
+          0.655,
+          0.57
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.006,
+          "radius": 0.026
+        },
+        "material": "gauge.face@1.0.0",
+        "segments": 48,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.19,
+          0.655,
+          0.567
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.028+0.0035*cos(v))*cos(u)",
+          "y": "(0.028+0.0035*cos(v))*sin(u)",
+          "z": "0.0035*sin(v)"
+        }
+      },
+      {
+        "at": [
+          0.19,
+          0.655,
+          0.567
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.006,
+          "radius": 0.026
+        },
+        "material": "gauge.face@1.0.0",
+        "segments": 48,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.28,
+          0.655,
+          0.558
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.028+0.0035*cos(v))*cos(u)",
+          "y": "(0.028+0.0035*cos(v))*sin(u)",
+          "z": "0.0035*sin(v)"
+        }
+      },
+      {
+        "at": [
+          0.28,
+          0.655,
+          0.558
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.006,
+          "radius": 0.026
+        },
+        "material": "gauge.face@1.0.0",
+        "segments": 48,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          -0.72,
+          0.655,
+          0.51
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.038+0.0045*cos(v))*cos(u)",
+          "y": "(0.038+0.0045*cos(v))*sin(u)",
+          "z": "0.0045*sin(v)"
+        }
+      },
+      {
+        "at": [
+          -0.72,
+          0.655,
+          0.515
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.01,
+          "radius": 0.036
+        },
+        "material": "piano.black@1.0.0",
+        "segments": 48,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.72,
+          0.655,
+          0.51
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.038+0.0045*cos(v))*cos(u)",
+          "y": "(0.038+0.0045*cos(v))*sin(u)",
+          "z": "0.0045*sin(v)"
+        }
+      },
+      {
+        "at": [
+          0.72,
+          0.655,
+          0.515
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.01,
+          "radius": 0.036
+        },
+        "material": "piano.black@1.0.0",
+        "segments": 48,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          -0.82,
+          0.36,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.04*(sign(cos(v))*pow(abs(cos(v)),0.42))*(sign(cos(u))*pow(abs(cos(u)),0.42))",
+          "y": "0.17*(sign(sin(v))*pow(abs(sin(v)),0.42))",
+          "z": "0.56*(sign(cos(v))*pow(abs(cos(v)),0.42))*(sign(sin(u))*pow(abs(sin(u)),0.42))"
+        }
+      },
+      {
+        "at": [
+          -0.77,
+          0.47,
+          -0.1
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.05*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))",
+          "y": "0.025*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.31*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          -0.82,
+          0.64,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.025*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.06*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.57*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          -0.79,
+          0.61,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "veneer.ebony@1.0.0",
+        "slot": "veneer",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.025*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(cos(u))*pow(abs(cos(u)),0.25))",
+          "y": "0.025*(sign(sin(v))*pow(abs(sin(v)),0.25))",
+          "z": "0.56*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(sin(u))*pow(abs(sin(u)),0.25))"
+        }
+      },
+      {
+        "at": [
+          -0.8,
+          0.68,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "veneer.ebony@1.0.0",
+        "slot": "veneer",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.025*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(cos(u))*pow(abs(cos(u)),0.25))",
+          "y": "0.025*(sign(sin(v))*pow(abs(sin(v)),0.25))",
+          "z": "0.56*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(sin(u))*pow(abs(sin(u)),0.25))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.77*(1-u)*(1-u)+-0.76*2*u*(1-u)+-0.77*u*u+pow(abs(sin(180*u)),0.12)*(0.0035*cos(v)+-0*sin(v))",
+          "y": "0.645*(1-u)*(1-u)+0.645*2*u*(1-u)+0.645*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0035*sin(v))",
+          "z": "-0.55*(1-u)*(1-u)+0*2*u*(1-u)+0.55*u*u+pow(abs(sin(180*u)),0.12)*(-0*cos(v)+0*sin(v))"
+        }
+      },
+      {
+        "at": [
+          -0.78,
+          0.55,
+          0.2
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "piano.black@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.01*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.025*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.1*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.765*(1-u)*(1-u)+-0.755*2*u*(1-u)+-0.765*u*u+pow(abs(sin(180*u)),0.12)*(0.007*cos(v)+-0*sin(v))",
+          "y": "0.545*(1-u)*(1-u)+0.56*2*u*(1-u)+0.555*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.0069879*sin(v))",
+          "z": "0.12*(1-u)*(1-u)+0.2*2*u*(1-u)+0.29*u*u+pow(abs(sin(180*u)),0.12)*(-0*cos(v)+-0.00041105*sin(v))"
+        }
+      },
+      {
+        "at": [
+          -1.03,
+          0.84,
+          0.5
+        ],
+        "basis": [
+          [
+            0.990268,
+            0.0,
+            -0.139173
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.139173,
+            0.0,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "paint.garnet@1.0.0",
+        "slot": "paint",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.11*(sign(cos(v))*pow(abs(cos(v)),0.55))*(sign(cos(u))*pow(abs(cos(u)),0.55))",
+          "y": "0.065*(sign(sin(v))*pow(abs(sin(v)),0.55))",
+          "z": "0.055*(sign(cos(v))*pow(abs(cos(v)),0.55))*(sign(sin(u))*pow(abs(sin(u)),0.55))"
+        }
+      },
+      {
+        "at": [
+          -1.03,
+          0.84,
+          0.445
+        ],
+        "basis": [
+          [
+            0.990268,
+            0.0,
+            -0.139173
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.139173,
+            0.0,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "mirror.glass@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.0975*(sign(cos(v))*pow(abs(cos(v)),0.45))*(sign(cos(u))*pow(abs(cos(u)),0.45))",
+          "y": "0.0525*(sign(sin(v))*pow(abs(sin(v)),0.45))",
+          "z": "0.006*(sign(cos(v))*pow(abs(cos(v)),0.45))*(sign(sin(u))*pow(abs(sin(u)),0.45))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "paint.garnet@1.0.0",
+        "slot": "paint",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "-0.8*(1-u)*(1-u)+-0.9*2*u*(1-u)+-0.98*u*u+pow(abs(sin(180*u)),0.12)*(0.0050596*cos(v)+0.0045766*sin(v))",
+          "y": "0.76*(1-u)*(1-u)+0.78*2*u*(1-u)+0.82*u*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.015255*sin(v))",
+          "z": "0.44*(1-u)*(1-u)+0.47*2*u*(1-u)+0.5*u*u+pow(abs(sin(180*u)),0.12)*(0.015179*cos(v)+-0.0015255*sin(v))"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.66,
+          0.26
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.939693,
+            -0.34202
+          ],
+          [
+            0.0,
+            0.34202,
+            0.939693
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.18+0.0165*cos(v))*cos(u)",
+          "y": "(0.18+0.0165*cos(v))*sin(u)",
+          "z": "0.0165*sin(v)"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.66,
+          0.26
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.939693,
+            -0.34202
+          ],
+          [
+            0.0,
+            0.34202,
+            0.939693
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            30,
+            150
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.18+0.01725*cos(v))*cos(u)",
+          "y": "(0.18+0.01725*cos(v))*sin(u)",
+          "z": "0.01725*sin(v)"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.66,
+          0.26
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.939693,
+            -0.34202
+          ],
+          [
+            0.0,
+            0.34202,
+            0.939693
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            96,
+            14
+          ],
+          "u": [
+            215,
+            325
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "(0.18+0.01725*cos(v))*cos(u)",
+          "y": "(0.18+0.01725*cos(v))*sin(u)",
+          "z": "0.01725*sin(v)"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.65487,
+          0.274095
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.939693,
+            -0.34202
+          ],
+          [
+            0.0,
+            0.34202,
+            0.939693
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "radius": 0.062
+        },
+        "material": "metal.champagne@1.0.0",
+        "segments": 32,
+        "solid": "sphere"
+      },
+      {
+        "at": [
+          -0.37,
+          0.672997,
+          0.224292
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.34202,
+            0.939693
+          ],
+          [
+            0.0,
+            -0.939693,
+            0.34202
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.02,
+          "radius": 0.05
+        },
+        "material": "leather.cognac@1.0.0",
+        "segments": 48,
+        "slot": "hide",
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          -0.37,
+          0.66171,
+          0.255302
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.939693,
+            -0.34202
+          ],
+          [
+            0.0,
+            0.34202,
+            0.939693
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.champagne@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.17*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))",
+          "y": "0.0175*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.01*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.577138,
+          0.22452
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.939693,
+            -0.34202
+          ],
+          [
+            0.0,
+            0.34202,
+            0.939693
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.champagne@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.02*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(cos(u))*pow(abs(cos(u)),0.5))",
+          "y": "0.085*(sign(sin(v))*pow(abs(sin(v)),0.5))",
+          "z": "0.01*(sign(cos(v))*pow(abs(cos(v)),0.5))*(sign(sin(u))*pow(abs(sin(u)),0.5))"
+        }
+      },
+      {
+        "at": [
+          -0.37,
+          0.66,
+          0.26
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.939693,
+            -0.34202
+          ],
+          [
+            0.0,
+            0.34202,
+            0.939693
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0*(1-u)+0*u+pow(abs(sin(180*u)),0.12)*(0.032*cos(v)+-0*sin(v))",
+          "y": "0*(1-u)+0*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.032*sin(v))",
+          "z": "0.04*(1-u)+0.32*u+pow(abs(sin(180*u)),0.12)*(-0*cos(v)+0*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.88,
+          0.14,
+          -0.05
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.ink@1.0.0",
+        "slot": "shell",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.045*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.1*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.65*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "metal.satin@1.0.0",
+        "slot": "trim",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            true
+          ],
+          "inward": false,
+          "samples": [
+            32,
+            12
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            360
+          ],
+          "x": "0.83*(1-u)+0.83*u+pow(abs(sin(180*u)),0.12)*(0.006*cos(v)+-0*sin(v))",
+          "y": "0.25*(1-u)+0.25*u+pow(abs(sin(180*u)),0.12)*(0*cos(v)+0.006*sin(v))",
+          "z": "-0.65*(1-u)+0.55*u+pow(abs(sin(180*u)),0.12)*(-0*cos(v)+0*sin(v))"
+        }
+      },
+      {
+        "at": [
+          0.38,
+          0.055,
+          0.58
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.984808,
+            0.173648
+          ],
+          [
+            0.0,
+            -0.173648,
+            0.984808
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "leather.cognac@1.0.0",
+        "slot": "hide",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            56,
+            36
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.17*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))",
+          "y": "0.01*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "0.2*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      }
+    ],
+    "slots": {
+      "dash": "leather.spruce@1.0.0",
+      "hide": "leather.cognac@1.0.0",
+      "paint": "paint.garnet@1.0.0",
+      "shell": "leather.ink@1.0.0",
+      "trim": "metal.satin@1.0.0",
+      "veneer": "veneer.ebony@1.0.0"
+    }
+  },
+  "schema": 1,
+  "size": [
+    2.063929,
+    1.24299,
+    4.1
+  ],
+  "tags": [
+    "vehicle",
+    "interior"
+  ],
+  "version": "1.0.0"
+}

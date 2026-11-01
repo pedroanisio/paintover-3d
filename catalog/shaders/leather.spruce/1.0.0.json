@@ -1,0 +1,25 @@
+{
+  "description": "Dark green-black hide for a dashboard top",
+  "digest": "91c8c1624928a984c81d8c8d8cc4c23049ff4176e0da7d641cdedfc265c35458",
+  "kind": "shader",
+  "name": "leather.spruce",
+  "payload": {
+    "color": "#25322e",
+    "extra": {
+      "clearcoat": 0.25,
+      "clearcoatRoughness": 0.4
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.34
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "leather"
+  ],
+  "version": "1.0.0"
+}

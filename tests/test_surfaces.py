@@ -1,0 +1,260 @@
+"""Curved solids, the sky, path tracing and locations in a catalog."""
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from srlocations import (Blueprint, Box, CatalogError, Location, Material, Registry, Renderer, SceneCompiler, Shaded,
+                         SharedCatalog, Sky, Surface, TemplateError, Traced, TracedCompiler, Transform, Vec3)
+from srlocations.catalog import FrozenProp
+from srlocations.surfaces import MAX_SAMPLES
+from srlocations.templates import engine_expression, evaluate
+
+
+def ball(radius=0.5, **place) -> Surface:
+    r = str(radius)
+    return Surface(f"{r}*cos(v)*cos(u)", f"{r}*sin(v)", f"{r}*cos(v)*sin(u)", u=(0, 360), v=(-90, 90), closed=(True, False),
+                   **{"material": "stock.default", **place})
+
+
+def fresh(tmp_path, name="studio") -> SharedCatalog:
+    return SharedCatalog.create(tmp_path / "shared", name)
+
+
+def blueprint(**extra) -> dict:
+    return {"name": "draft", "nodes": [{"use": "studio.pod"}], "rig": {"use": "stock.open-sky"},
+            "shots": [{"name": "wide", "eye": [0, 1.5, -6], "look_at": [0, 0.5, 0]}], **extra}
+
+
+def published_pod(tmp_path) -> SharedCatalog:
+    catalog = fresh(tmp_path)
+    catalog.publish_shader("skin", Material("#336699", 0.4))
+    registry = Registry.default().use(catalog)
+    catalog.publish_prop("pod", ball(material="studio.skin"), registry)
+    return catalog
+
+
+def test_a_surface_knows_its_own_bounds():
+    low, high = ball(at=(1, 2, 3)).bounds(Transform.at((1, 2, 3)))
+    assert (low.x, low.y, low.z) == pytest.approx((0.5, 1.5, 2.5))
+    assert (high.x, high.y, high.z) == pytest.approx((1.5, 2.5, 3.5))
+
+
+def test_a_lopsided_surface_is_not_taken_for_a_centred_one():
+    sheet = Surface("u", "0", "v", u=(2, 3), v=(5, 6))
+    low, high = sheet.bounds(Transform())
+    assert (low.x, high.x, low.z, high.z) == pytest.approx((2, 3, 5, 6))
+
+
+def test_a_camera_outside_a_surface_is_clear_of_it_and_one_inside_is_not():
+    location = Location("x")
+    location.add(ball(1.0))
+    location.shot("out", (0, 0, -3), (0, 0, 0)).shot("in", (0, 0, 0.2), (0, 0, 1))
+    assert [i.message for i in location.validate() if i.code == "shot-inside-solid"] == ["shot 'in' starts inside surface"]
+
+
+def test_a_wireframe_follows_the_curve_and_not_its_box():
+    points = [point for line in ball().edges() for point in line]
+    assert points and all(sum(c * c for c in point) == pytest.approx(0.25) for point in points)
+
+
+@pytest.mark.parametrize("axis", ["__import__('os')", "open('x')", "u.real", "[u][0]", "lambda: 1"])
+def test_a_surface_cannot_reach_past_its_expressions(axis):
+    with pytest.raises(TemplateError):
+        Surface(axis).bounds(Transform())
+
+
+def test_a_surface_that_cannot_be_drawn_is_found_at_build_time():
+    with pytest.raises(TemplateError, match="not a finite number|cannot work out"):
+        Surface("1/u", u=(0, 1)).bounds(Transform())
+
+
+def test_a_surface_has_a_size_limit():
+    with pytest.raises(TemplateError, match="samples"):
+        Surface(samples=(MAX_SAMPLES + 1, 8))
+
+
+@pytest.mark.parametrize("text", ["cos(u)*2", "pow(abs(sin(u)),0.5)*sign(cos(v))", "-sqrt(u+1)/max(v,1)", "pi*u", "min(u,v)+floor(v)"])
+def test_the_engine_accepts_every_translated_expression(text, tmp_path):
+    written = engine_expression(text, {"u": "u", "v": "v"})
+    assert "Math." in written and "__" not in written
+    surface = Surface(text, "v", "u", u=(10, 40), v=(1, 3), material="stock.default", samples=(4, 4))
+    location = Location("x")
+    location.add(surface)
+    location.rig("stock.open-sky")
+    location.shot("wide", (0, 2, -80), (0, 2, 25))
+    assert Renderer().render(location, "wide", tmp_path / "e.png", Shaded(64, 36, supersample=1)).exists()
+    assert surface.half_extents().z == pytest.approx(40)
+
+
+def test_angles_stay_in_degrees_on_the_way_to_the_engine():
+    assert engine_expression("sin(u)", {"u": "u"}) == "Math.sin((u)*Math.PI/180)"
+    assert engine_expression("sin(u)+v", {"u": "u", "v": "(0-v)"}) == "(Math.sin((u)*Math.PI/180)+(0-v))"
+
+
+def test_rendering_a_surface_passes_the_engines_own_checks(tmp_path):
+    location = Location("x")
+    location.add(Box((6, 0.1, 6), at=(0, -0.05, 0), material="stock.concrete"))
+    location.add(ball(at=(0, 0.6, 0)))
+    location.rig("stock.open-sky")
+    location.shot("wide", (0, 1.2, -3), (0, 0.5, 0), lens=30)
+    assert Renderer().render(location, "wide", tmp_path / "s.png", Shaded(160, 90, supersample=1)).stat().st_size > 1000
+    assert Renderer().render(location, "wide", tmp_path / "w.png").stat().st_size > 1000
+
+
+def test_traced_mode_asks_the_camera_for_the_path_tracer():
+    location = Location("x")
+    location.add(ball(at=(0, 1, 0)))
+    location.shot("wide", (0, 1, -3), (0, 1, 0))
+    assert isinstance(Traced().compiler(), TracedCompiler)
+    camera = next(n for n in Traced(samples=9, bounces=3).compiler().compile(location, "wide").iter() if n.xml_name == "camera")
+    assert (camera.renderer, str(camera.pathSamples), str(camera.maxBounces)) == ("pathtrace", "9", "3")
+    plain = next(n for n in SceneCompiler().compile(location, "wide").iter() if n.xml_name == "camera")
+    assert plain.renderer != "pathtrace"
+
+
+def test_a_traced_shot_comes_out(tmp_path):
+    location = Location("x", Registry.default())
+    location.add(ball(at=(0, 0.6, 0)))
+    location.rig("stock.open-sky")
+    location.shot("wide", (0, 1, -3), (0, 0.6, 0))
+    assert Renderer().render(location, "wide", tmp_path / "t.png", "stock.traced", width=96, height=54, samples=2).exists()
+
+
+def test_the_sky_is_light_and_background_together():
+    sky = Sky(1.2, zenith="#112233")
+    assert sky.kind == "dome"
+    assert sky.attributes()["environmentVisible"] is True and sky.attributes()["skyZenith"] == "#112233"
+
+
+def test_a_frozen_surface_comes_back_the_same(tmp_path):
+    catalog = fresh(tmp_path)
+    catalog.publish_shader("skin", Material("#336699", 0.4))
+    registry = Registry.default().use(catalog)
+    made = ball(material="studio.skin", at=(1, 0, 0))
+    entry = catalog.publish_prop("pod", made, registry)
+    assert entry.size == pytest.approx((1, 1, 1))
+    thawed = next(leaf for leaf in Registry.default().use(catalog).create("studio.pod").walk())
+    assert isinstance(thawed.item, Surface) and thawed.item.spec() == made.spec() and thawed.world.position.x == 1
+
+
+def test_a_frozen_surface_takes_a_slot(tmp_path):
+    catalog = fresh(tmp_path)
+    catalog.publish_shader("skin", Material("#336699", 0.4))
+    registry = Registry.default().use(catalog)
+    catalog.publish_prop("pod", ball(material="studio.skin"), registry, slots={"skin": "studio.skin"})
+    reskinned = registry.create("studio.pod", shaders={"skin": "stock.fabric.teal"})
+    assert isinstance(reskinned, FrozenProp) and next(reskinned.walk()).item.material == "stock.fabric.teal"
+
+
+def test_a_location_is_published_with_its_names_pinned(tmp_path):
+    catalog = published_pod(tmp_path)
+    entry = catalog.publish_location("garage", blueprint(), tags=["test"], description="A pod")
+    assert entry.payload["nodes"][0]["use"] == "studio.pod@1.0.0" and entry.payload["name"] == "garage"
+    assert (catalog.root / "locations/garage/1.0.0.json").exists()
+    assert catalog.search("pod", kind="location")[0].name == "garage"
+
+
+def test_a_location_builds_with_nothing_but_the_catalog(tmp_path):
+    catalog = published_pod(tmp_path)
+    catalog.publish_location("garage", blueprint())
+    location = SharedCatalog.open(catalog.root).location("garage")
+    assert list(location.registry.plugins.loaded) == ["stock"] and location.name == "garage"
+    assert len(location.solids()) == 1 and "wide" in location.shots and location.validate() == []
+
+
+def test_a_location_keeps_the_versions_it_was_published_against(tmp_path):
+    catalog = published_pod(tmp_path)
+    catalog.publish_location("garage", blueprint())
+    registry = Registry.default().use(catalog)
+    catalog.publish_prop("pod", ball(0.9, material="studio.skin"), registry, "2.0.0")
+    location = SharedCatalog.open(catalog.root).location("garage")
+    assert location.solids()[0].item.half_extents().x == pytest.approx(0.5)
+
+
+def test_a_published_location_is_a_fresh_location_each_time(tmp_path):
+    catalog = published_pod(tmp_path)
+    catalog.publish_location("garage", blueprint())
+    first = catalog.location("garage")
+    count = len(first.nodes)
+    first.add(Box())
+    assert len(catalog.location("garage").nodes) == count
+
+
+def test_a_location_cannot_lean_on_a_plugin(tmp_path):
+    catalog = published_pod(tmp_path)
+    with pytest.raises(CatalogError, match="no prefab"):
+        catalog.publish_location("garage", {**blueprint(), "nodes": [{"use": "someone.elses-prefab"}]})
+    assert catalog.entries("location") == []
+
+
+def test_a_location_with_a_broken_shot_is_refused(tmp_path):
+    catalog = published_pod(tmp_path)
+    inside = {"name": "wide", "eye": [0, 0, 0], "look_at": [0, 0, 1]}
+    with pytest.raises(CatalogError, match="cannot be published"):
+        catalog.publish_location("garage", {**blueprint(), "shots": [inside]})
+
+
+def test_a_location_cannot_carry_files_it_does_not_own(tmp_path):
+    with pytest.raises(CatalogError, match="paint"):
+        published_pod(tmp_path).publish_location("garage", blueprint(paint=[{"name": "layer"}]))
+
+
+def test_a_location_drops_the_paths_of_the_machine_it_came_from(tmp_path):
+    catalog = published_pod(tmp_path)
+    entry = catalog.publish_location("garage", blueprint(catalogs=[{"path": "../somewhere"}]))
+    assert "catalogs" not in entry.payload
+
+
+def test_a_location_version_cannot_change(tmp_path):
+    catalog = published_pod(tmp_path)
+    first = catalog.publish_location("garage", blueprint())
+    assert catalog.publish_location("garage", blueprint()).digest == first.digest
+    with pytest.raises(CatalogError, match="bump the version"):
+        catalog.publish_location("garage", blueprint(marks=[{"name": "here", "at": [3, 0, 0]}]))
+
+
+def test_verify_finds_a_location_that_no_longer_builds(tmp_path):
+    catalog = published_pod(tmp_path)
+    catalog.publish_location("garage", blueprint())
+    assert catalog.verify() == []
+    (catalog.root / "props/pod/1.0.0.json").unlink()
+    assert "catalog-location" in [issue.code for issue in catalog.verify()]
+
+
+def test_verify_finds_a_changed_location(tmp_path):
+    catalog = published_pod(tmp_path)
+    catalog.publish_location("garage", blueprint())
+    path = catalog.root / "locations/garage/1.0.0.json"
+    data = json.loads(path.read_text())
+    data["payload"]["name"] = "elsewhere"
+    path.write_text(json.dumps(data))
+    assert [issue.code for issue in catalog.verify()] == ["catalog-digest"]
+
+
+def test_the_published_grand_tourer_needs_no_plugin():
+    catalog = SharedCatalog.open(ROOT / "catalog")
+    location = catalog.location("grand-tourer")
+    assert "grand-tourer" not in location.registry.plugins.loaded
+    assert location.validate() == [] and set(location.shots) == {"from-the-door", "drivers-seat", "console"}
+    assert catalog.pins(location)["props"] == {"gt-cabin": "1.5.0", "mountain-overlook": "1.5.0"}
+    assert catalog.pins(catalog.location("grand-tourer", "1.0.0"))["props"] == {"gt-cabin": "1.0.0", "mountain-overlook": "1.0.0"}
+
+
+def test_every_part_of_a_published_prop_has_its_own_path():
+    leaves = SharedCatalog.open(ROOT / "catalog").location("grand-tourer").solids()
+    cabin = [leaf.path for leaf in leaves if isinstance(leaf.item, Surface) and leaf.path.startswith("gt-cabin")]
+    ridges = [leaf.path for leaf in leaves if "/ridge-3" in leaf.path]
+    assert len(set(cabin)) == len(cabin)
+    assert len(ridges) == 12 and len(set(ridges)) == 1  # the sectors of one hill, with no ink between them
+
+
+def test_the_cabin_can_be_reskinned_by_slot():
+    registry = Registry.default().use(SharedCatalog.open(ROOT / "catalog"))
+    cabin = registry.create("studio.gt-cabin", shaders={"hide": "stock.fabric.teal"})
+    used = {leaf.item.material for leaf in cabin.walk() if isinstance(leaf.item, Surface)}
+    assert "stock.fabric.teal" in used and not any("cognac" in name for name in used)

@@ -1,4 +1,14 @@
+from pathlib import Path
+
 from srlocations.materials import Material
+
+VIEWS = Path(__file__).resolve().parent / "views"  # drawn by examples/views.py
+
+
+def view(name: str) -> Material:
+    """A picture behind a window, which the set's lights do not touch."""
+    return Material("#ffffff", 1.0, extra={"unlit": True}, maps={"baseColorMap": str(VIEWS / f"{name}.png")})
+
 
 PALETTE = {
     "default": Material("#8a8a8a"),
@@ -27,4 +37,15 @@ PALETTE = {
     "paint.red": Material("#a32a2a", 0.35),
     "paint.yellow": Material("#d0a62c", 0.4),
     "rubber": Material("#111214", 0.9),
+    "view.day": view("day"),
+    "view.dusk": view("dusk"),
+    "view.night": view("night"),
+    "interior.lit": Material("#4a3d2e", 0.8, glow="#ffcf8a", glow_strength=1.0),
+    "interior.lit.side": Material("#3a3026", 0.8, glow="#ffb870", glow_strength=0.55),
+    "interior.dark": Material("#181b20", 0.9),
+    "curtain": Material("#b8a88c", 0.9),
+    "mannequin.body": Material("#c9c2b4", 0.7),
+    "mannequin.joint": Material("#3a3d42", 0.5),
+    "mannequin.left": Material("#2f6db5", 0.5),
+    "mannequin.right": Material("#c23b32", 0.5),
 }

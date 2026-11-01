@@ -15,10 +15,11 @@ from typing import Any, Generic, Optional, TypeVar, Union
 from sr_core.scene import Scene
 
 from srlocations import portable
+from srlocations.collision import CollisionError
 from srlocations.geometry import Matrix, Vec3, aim, rotation
 from srlocations.location import Location, Shot
 from srlocations.nodes import Light, Placed, Round, Solid
-from srlocations.paint import paint_over
+from srlocations.paint import Holdout, paint_over
 
 T = TypeVar("T")
 UNITS_PER_METRE = 100
@@ -52,9 +53,16 @@ def safe_id(text: str) -> str:
     return cleaned if cleaned[:1].isalpha() else f"n-{cleaned}"
 
 
+def _see_through(leaf: Placed, location: Location) -> bool:
+    """Whether paint behind this solid still shows, as it does behind glass."""
+    materials = [skin.own or location.registry.materials.get(skin.name) for skin in leaf.item.skins()]
+    return all(material.opacity < 1 or material.extra.get("transmission", 0) for material in materials)
+
+
 class SceneCompiler(Compiler[Scene]):
     """Flattens the graph into one scene: a project, its materials and lights, a camera and the solids."""
     mode = "stock.shaded"  # the name paint and decals limited to some looks are matched against
+    camera: dict[str, Any] = {}  # extra attributes for the shot's camera
 
     def __init__(self, width: int = 1280, height: int = 720, fps: int = 30, duration: float = 1,
                  supersample: int = 2) -> None:
@@ -69,20 +77,33 @@ class SceneCompiler(Compiler[Scene]):
         solids = [leaf for leaf in location.solids() if leaf.item.drawn_in(self.mode)]
         lights = location.lights()
         self._materials(scene, location, solids)
+        self._declare(scene, solids)
         self._lights(scene, lights)
         composition = scene.add_composition()
         self._camera(composition, take)
         for index, leaf in enumerate(solids):
             self.draw(composition, leaf, index)
-        paint_over(scene, composition, location.paintings, shot, Projection(take, self.width, self.height), self.mode)
+        self._paint(scene, composition, location, take, solids)
         return scene
 
+    def _paint(self, scene: Scene, composition, location: Location, take: Shot, solids: list[Placed], effects: str = "") -> None:
+        view = Projection(take, self.width, self.height)
+        holdout = None
+        if any(layer.depth for layer in location.paintings):
+            holdout = Holdout(self, scene, [leaf for leaf in solids if not _see_through(leaf, location)], view, effects)
+        paint_over(scene, composition, location.paintings, take.name, view, self.mode, holdout)
+
     def _materials(self, scene: Scene, location: Location, solids: list[Placed]) -> None:
-        if not solids:  # the schema refuses an empty <materials>
+        names = sorted({skin.name for leaf in solids for skin in leaf.item.skins() if not skin.own})
+        if not names:  # the schema refuses an empty <materials>
             return
         library = scene.add_materials()
-        for name in sorted({leaf.item.material for leaf in solids}):
+        for name in names:
             library.add_material(id=safe_id(name), **location.registry.materials.get(name).attributes())
+
+    def _declare(self, scene: Scene, solids: list[Placed]) -> None:
+        for leaf in solids:
+            leaf.item.declare(scene)
 
     def _lights(self, scene: Scene, lights: list[Placed]) -> None:
         if not lights:  # and an empty <lights>
@@ -99,21 +120,36 @@ class SceneCompiler(Compiler[Scene]):
     def _camera(self, composition, take: Shot) -> None:
         yaw, pitch = aim(take.eye, take.look_at)
         composition.add_camera(id="camera", focalLength=take.lens, near=5, far=500000, yaw=round(yaw, 4),
-                               pitch=round(pitch, 4), **engine_position(take.eye))
+                               pitch=round(pitch, 4), **engine_position(take.eye), **self.camera)
 
-    def draw(self, parent, leaf: Placed, index: int, prefix: str = "", material: Optional[str] = None,
+    def draw(self, parent, leaf: Placed, index: int, prefix: str = "", material: Union[str, dict[str, str], None] = None,
              shadow: Optional[bool] = None, grow: float = 0.0) -> None:
         """One solid under `parent`. A pass of a Look gives its own material and an id prefix, and `grow`, in metres, to
-        close the hairline cracks between sections that a flat colour would show."""
+        close the hairline cracks between sections that a flat colour would show. A dict of material ids by slot replaces
+        those parts of an imported model and leaves the rest as the file has them."""
         solid: Solid = leaf.item
+        if material is None:
+            skins = solid.skins()
+            whole = len(skins) == 1 and not skins[0].slot and not skins[0].own
+            material = safe_id(skins[0].name) if whole else {s.slot: safe_id(s.name) for s in skins if not s.own}
+        painted = ({"materialOverride": " ".join(f"{k}:{v}" for k, v in material.items())} if material else {}) \
+            if isinstance(material, dict) else {"material": material}
         size = {name: round((value + grow) * UNITS_PER_METRE, 3) for name, value in solid.dimensions().items()}
         if isinstance(solid, Round):
             size["segments"] = solid.segments
-        parent.add_object3D(id=safe_id(f"{prefix}{leaf.path}-{index}"), primitive=solid.primitive,
-                            material=material or safe_id(solid.material),
-                            castShadow=solid.casts_shadow if shadow is None else shadow,
-                            **size, **solid.geometry(UNITS_PER_METRE), **engine_position(leaf.world.position),
-                            **engine_angles(leaf.world.basis))
+        solid.dress(parent.add_object3D(id=safe_id(f"{prefix}{leaf.path}-{index}"), primitive=solid.primitive,
+                                        **painted, castShadow=solid.casts_shadow if shadow is None else shadow,
+                                        **size, **solid.geometry(UNITS_PER_METRE), **engine_position(leaf.world.position),
+                                        **engine_angles(leaf.world.basis)))
+
+
+class TracedCompiler(SceneCompiler):
+    """The same scene, path traced: real soft shadows, bounced light and reflections, for a final frame."""
+    mode = "stock.traced"
+
+    def __init__(self, width: int = 1280, height: int = 720, samples: int = 256, bounces: int = 6) -> None:
+        super().__init__(width, height, supersample=1)
+        self.camera = {"renderer": "pathtrace", "pathSamples": samples, "maxBounces": bounces}
 
 
 class Projection:
@@ -224,6 +260,18 @@ class Shaded(RenderMode):
         return SceneCompiler(self.width, self.height, supersample=self.supersample)
 
 
+@dataclass
+class Traced(RenderMode):
+    """Path traced on the GPU: slower, and the one to use where a surface needs to reflect what is around it."""
+    width: int = 1280
+    height: int = 720
+    samples: int = 256
+    bounces: int = 6
+
+    def compiler(self) -> Compiler[Scene]:
+        return TracedCompiler(self.width, self.height, self.samples, self.bounces)
+
+
 def find_engine() -> Path:
     """The scene-render beside this Python, where ./doctor.py puts it, else the one on PATH."""
     beside = Path(sys.executable).with_name("scene-render")
@@ -238,6 +286,9 @@ class Renderer:
 
     def compile(self, location: Location, shot: str, mode: Union[RenderMode, str, None] = None, **params: Any) -> Scene:
         """A shot of a location. `mode` is a RenderMode or a name from registry.modes, with `params` for it."""
+        blocked = location.clashes(bodies_only=True)
+        if blocked:
+            raise CollisionError(f"{blocked[0]}; settle() moves it clear, and solid=False lets it through on purpose")
         chosen = location.registry.modes.get(mode)(**params) if isinstance(mode, str) else mode or self.default_mode
         return chosen.compiler().compile(location, shot)
 

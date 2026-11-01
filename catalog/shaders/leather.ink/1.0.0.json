@@ -1,0 +1,22 @@
+{
+  "description": "Black hide",
+  "digest": "ec6d67f06b820b0f17b3bd9d2bb91394a9507378741b356526167611400cb29a",
+  "kind": "shader",
+  "name": "leather.ink",
+  "payload": {
+    "color": "#141518",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "leather"
+  ],
+  "version": "1.0.0"
+}

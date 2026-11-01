@@ -1,0 +1,23 @@
+{
+  "description": "Nearest ridge, in haze",
+  "digest": "a21000181706b030411958282439ac8dc57ac5616a9d717f8461a94f299fd2c8",
+  "kind": "shader",
+  "name": "haze.near",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#8c9f93",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "backdrop",
+    "glow"
+  ],
+  "version": "1.0.0"
+}

@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from srlocations import Location, Registry, Renderer, Shaded, SharedCatalog, Sphere
+from srlocations import Location, Registry, Renderer, Shaded, SharedCatalog, Sphere, Traced
 from srlocations.stock.prefabs import Room
 
 
@@ -58,6 +58,12 @@ def main() -> None:
     print("pins:", catalog.pins(reused))
     print(renderer.render(reused, "wide", ROOT / "renders/wireframe/6-reusable-props.png").name)
     print(renderer.render(reused, "wide", ROOT / "renders/shaded/6-reusable-props.png", Shaded()).name)
+    parked = catalog.location("grand-tourer", registry=registry)  # a whole location
+    print("issues:", parked.validate() or "none")
+    print("pins:", catalog.pins(parked))
+    print(renderer.render(parked, "from-the-door", ROOT / "renders/wireframe/7-grand-tourer.png").name)
+    for shot in parked.shots:
+        print(renderer.render(parked, shot, ROOT / f"renders/traced/7-grand-tourer-{shot}.png", Traced(1422, 711)).name)
 
 
 if __name__ == "__main__":

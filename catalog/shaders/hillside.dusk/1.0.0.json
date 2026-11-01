@@ -1,0 +1,22 @@
+{
+  "description": "Shadowed hillside",
+  "digest": "4d106a18b1168af6bf98d66218ca048c11c57f90aa899d8e4a77f2b7b235abaa",
+  "kind": "shader",
+  "name": "hillside.dusk",
+  "payload": {
+    "color": "#26302a",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "ground"
+  ],
+  "version": "1.0.0"
+}

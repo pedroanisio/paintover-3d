@@ -1,0 +1,4561 @@
+{
+  "description": "Pull-off on a mountain road above hazy ridges",
+  "digest": "5775be9a41d6ca4f22fd0167bbb36094fd5f75ad819701081970b3871be7c4bd",
+  "kind": "prop",
+  "name": "mountain-overlook",
+  "payload": {
+    "parts": [
+      {
+        "at": [
+          0.0,
+          -0.62,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 12.0,
+          "height": 1.0,
+          "width": 9.0
+        },
+        "material": "from.stock.asphalt@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          -420.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 14000.0,
+          "height": 1.0,
+          "width": 14000.0
+        },
+        "material": "haze.valley@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            0,
+            30
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            30,
+            60
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            60,
+            90
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            90,
+            120
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            120,
+            150
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            150,
+            180
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            180,
+            210
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            210,
+            240
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            240,
+            270
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            270,
+            300
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            300,
+            330
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.far@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            330,
+            360
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "4600*cos(u)",
+          "y": "-420+v*(380+35*sin(2*u+213.35)+19.6*sin(6*u+133.18)+9.8*sin(15*u+170.66)+4.2*sin(31*u+23.59))",
+          "z": "4600*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            0,
+            30
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            30,
+            60
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            60,
+            90
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            90,
+            120
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            120,
+            150
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            150,
+            180
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            180,
+            210
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            210,
+            240
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            240,
+            270
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            270,
+            300
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            300,
+            330
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.mid@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            330,
+            360
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "3000*cos(u)",
+          "y": "-420+v*(310+40*sin(4*u+91.96)+22.4*sin(7*u+286.27)+11.2*sin(15*u+10.442)+4.8*sin(30*u+279.35))",
+          "z": "3000*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            0,
+            30
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            30,
+            60
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            60,
+            90
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            90,
+            120
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            120,
+            150
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            150,
+            180
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            180,
+            210
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            210,
+            240
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            240,
+            270
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            270,
+            300
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            300,
+            330
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "haze.near@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": true,
+          "samples": [
+            96,
+            2
+          ],
+          "u": [
+            330,
+            360
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "1700*cos(u)",
+          "y": "-420+v*(250+30*sin(2*u+133.35)+16.8*sin(8*u+45.479)+8.4*sin(11*u+30.667)+3.6*sin(28*u+292.06))",
+          "z": "1700*sin(u)"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "hillside.dusk@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            40,
+            40
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "(-300*(1-u)+-300*u)*(1-v)+(-4.5*(1-u)+-4.5*u)*v",
+          "y": "(-420*(1-u)+-420*u)*(1-v)+(-1.1*(1-u)+-1.1*u)*v",
+          "z": "(-500*(1-u)+500*u)*(1-v)+(-500*(1-u)+500*u)*v"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "hillside.dusk@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            40,
+            40
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "(4.5*(1-u)+4.5*u)*(1-v)+(300*(1-u)+300*u)*v",
+          "y": "(-1.1*(1-u)+-1.1*u)*(1-v)+(-420*(1-u)+-420*u)*v",
+          "z": "(-500*(1-u)+500*u)*(1-v)+(-500*(1-u)+500*u)*v"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "hillside.dusk@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            40,
+            40
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "(-300*(1-u)+300*u)*(1-v)+(-4.5*(1-u)+4.5*u)*v",
+          "y": "(-420*(1-u)+-420*u)*(1-v)+(-1.1*(1-u)+-1.1*u)*v",
+          "z": "(300*(1-u)+300*u)*(1-v)+(6*(1-u)+6*u)*v"
+        }
+      },
+      {
+        "at": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "hillside.dusk@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            false,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            40,
+            40
+          ],
+          "u": [
+            0,
+            1
+          ],
+          "v": [
+            0,
+            1
+          ],
+          "x": "(-4.5*(1-u)+4.5*u)*(1-v)+(-300*(1-u)+300*u)*v",
+          "y": "(-1.1*(1-u)+-1.1*u)*(1-v)+(-420*(1-u)+-420*u)*v",
+          "z": "(-6*(1-u)+-6*u)*(1-v)+(-300*(1-u)+-300*u)*v"
+        }
+      },
+      {
+        "at": [
+          -92.0,
+          -27.0,
+          150.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {},
+        "material": "conifer.dark@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            64,
+            28
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "85*(sign(cos(v))*pow(abs(cos(v)),0.9))*(sign(cos(u))*pow(abs(cos(u)),0.9))",
+          "y": "23*(sign(sin(v))*pow(abs(sin(v)),0.9))",
+          "z": "45*(sign(cos(v))*pow(abs(cos(v)),0.9))*(sign(sin(u))*pow(abs(sin(u)),0.9))"
+        }
+      },
+      {
+        "at": [
+          17.142773,
+          -6.020171,
+          45.032261
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.696842,
+          "radius": 2.261179
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          20.470476,
+          -4.309777,
+          45.971084
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.738641,
+          "radius": 1.492047
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          27.792963,
+          -5.171241,
+          52.961214
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.376494,
+          "radius": 1.397888
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -4.559768,
+          -7.677475,
+          53.527914
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.773754,
+          "radius": 2.021176
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          48.931605,
+          -4.730032,
+          58.801765
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.61569,
+          "radius": 1.980079
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -0.550354,
+          -7.259007,
+          26.510025
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.113525,
+          "radius": 1.849517
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          1.412496,
+          -4.240493,
+          34.226062
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.12033,
+          "radius": 1.331286
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          16.431867,
+          -4.33679,
+          54.642522
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.076496,
+          "radius": 1.839889
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          19.986389,
+          -6.023845,
+          48.523284
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.82932,
+          "radius": 1.775623
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          49.859372,
+          -4.641383,
+          59.853516
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.360862,
+          "radius": 2.173824
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          8.916633,
+          -6.726962,
+          33.808641
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.15616,
+          "radius": 1.600602
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          35.977273,
+          -6.2606,
+          39.613593
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.386334,
+          "radius": 2.180447
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          47.482543,
+          -5.452503,
+          54.808532
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.00218,
+          "radius": 1.300567
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          44.616316,
+          -6.473596,
+          41.979567
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.921436,
+          "radius": 2.319573
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -5.617699,
+          -6.708144,
+          47.401467
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.114043,
+          "radius": 2.109651
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -4.771348,
+          -4.63795,
+          37.307911
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.856305,
+          "radius": 2.302639
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -2.920499,
+          -6.402626,
+          34.37719
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.404185,
+          "radius": 1.405088
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          37.821291,
+          -5.381466,
+          32.041056
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.237181,
+          "radius": 1.881667
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          1.441065,
+          -3.543359,
+          50.884403
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.523868,
+          "radius": 1.436206
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -3.009521,
+          -5.576756,
+          40.305691
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.851463,
+          "radius": 1.52138
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          48.255743,
+          -2.683965,
+          53.315991
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.216581,
+          "radius": 1.616311
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          2.642613,
+          -4.999576,
+          39.405338
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.417508,
+          "radius": 2.188552
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -3.980035,
+          -5.635099,
+          59.636258
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.852973,
+          "radius": 1.521773
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          36.361381,
+          -6.725657,
+          37.184484
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.185299,
+          "radius": 1.608178
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -4.59297,
+          -3.979607,
+          45.812983
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.972052,
+          "radius": 1.552733
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          12.302243,
+          -5.999647,
+          41.409076
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.836539,
+          "radius": 2.2975
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          24.474275,
+          -6.094979,
+          55.461873
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.731311,
+          "radius": 1.490141
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          44.505424,
+          -6.049994,
+          53.805266
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.997994,
+          "radius": 1.559479
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          34.365463,
+          -2.1425,
+          57.973766
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.786359,
+          "radius": 1.504453
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          42.931385,
+          -6.823716,
+          46.520163
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.685829,
+          "radius": 1.738316
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -7.678212,
+          -3.453917,
+          58.731171
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.953629,
+          "radius": 1.547943
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          5.418884,
+          -6.225756,
+          54.006407
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.385865,
+          "radius": 1.920325
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          0.526004,
+          -5.495571,
+          50.492013
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.275104,
+          "radius": 1.371527
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          23.561981,
+          -6.327509,
+          54.981596
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.457212,
+          "radius": 1.938875
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          45.041611,
+          -5.18718,
+          32.935282
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.066299,
+          "radius": 1.317238
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          16.742331,
+          -5.008581,
+          28.05549
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.705015,
+          "radius": 1.483304
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          24.330165,
+          -2.769589,
+          30.47367
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.448581,
+          "radius": 1.676631
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          48.829605,
+          -4.960242,
+          48.33569
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.764886,
+          "radius": 2.01887
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -1.579169,
+          -1.984726,
+          27.192738
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.071577,
+          "radius": 1.31861
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          32.058201,
+          -3.361596,
+          58.734214
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.085037,
+          "radius": 1.32211
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          18.934143,
+          -2.141021,
+          50.836931
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.275618,
+          "radius": 1.631661
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -5.484226,
+          -3.473032,
+          44.567242
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.948022,
+          "radius": 2.066486
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          34.225288,
+          -3.51152,
+          49.925481
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.173067,
+          "radius": 2.124997
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          11.110046,
+          -3.946166,
+          49.294962
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.603344,
+          "radius": 2.236869
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          15.029189,
+          -5.362908,
+          52.878088
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.453891,
+          "radius": 2.198012
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          27.497633,
+          -4.621023,
+          38.99934
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.330716,
+          "radius": 1.905986
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -5.187878,
+          -4.087685,
+          47.739747
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.973289,
+          "radius": 2.333055
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          33.692425,
+          -5.065312,
+          39.206835
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.940153,
+          "radius": 2.06444
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          16.43135,
+          -2.916514,
+          54.504581
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.335129,
+          "radius": 1.387134
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -8.21261,
+          -6.310805,
+          46.443699
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.923827,
+          "radius": 1.800195
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          31.900081,
+          -3.126685,
+          42.90652
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.458013,
+          "radius": 1.939083
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          5.349813,
+          -3.71138,
+          26.384445
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.204131,
+          "radius": 1.613074
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          2.154465,
+          -5.011493,
+          31.766643
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.622886,
+          "radius": 2.24195
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          16.515949,
+          -3.824426,
+          56.318715
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.307842,
+          "radius": 1.640039
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          1.910347,
+          -3.540871,
+          40.65044
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.223954,
+          "radius": 2.138228
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          42.816135,
+          -6.08378,
+          39.070235
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.332429,
+          "radius": 1.906431
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -1.82942,
+          -3.93059,
+          42.879879
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.348382,
+          "radius": 2.170579
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          32.673066,
+          -6.207947,
+          58.300005
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.107184,
+          "radius": 1.587868
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          17.038967,
+          -4.858237,
+          35.355536
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.856322,
+          "radius": 1.522644
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          27.544013,
+          -2.935151,
+          42.791762
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.261487,
+          "radius": 1.627987
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          48.92219,
+          -6.49193,
+          41.38423
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.298717,
+          "radius": 1.377666
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          42.369743,
+          -5.064352,
+          27.410606
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.834524,
+          "radius": 2.036976
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          8.541821,
+          -5.858822,
+          52.91146
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 5.076456,
+          "radius": 1.319879
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          17.289945,
+          -6.972292,
+          26.840701
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.318674,
+          "radius": 2.162855
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -1.547528,
+          -5.525957,
+          27.596047
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.516721,
+          "radius": 1.954348
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          27.797854,
+          -3.322467,
+          48.271463
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 8.22954,
+          "radius": 2.13968
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          31.069565,
+          -6.556854,
+          32.777608
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.900569,
+          "radius": 1.794148
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -9.354,
+          -7.032848,
+          42.054783
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.856684,
+          "radius": 2.042738
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          6.341296,
+          -5.292508,
+          37.755144
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 7.789246,
+          "radius": 2.025204
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          26.86686,
+          -3.327371,
+          51.711033
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 6.574065,
+          "radius": 1.709257
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 10,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          -14.0,
+          2.5,
+          -3.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "radius": 3.4
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 24,
+        "solid": "sphere"
+      },
+      {
+        "at": [
+          -15.0,
+          6.0,
+          -4.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "radius": 3.8
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 24,
+        "solid": "sphere"
+      },
+      {
+        "at": [
+          -13.0,
+          0.8,
+          -5.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "radius": 3
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 24,
+        "solid": "sphere"
+      },
+      {
+        "at": [
+          -16.0,
+          3.0,
+          -1.5
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "radius": 3.2
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 24,
+        "solid": "sphere"
+      },
+      {
+        "at": [
+          -13.0,
+          6.5,
+          -2.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "radius": 2.5
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 24,
+        "solid": "sphere"
+      },
+      {
+        "at": [
+          -12.0,
+          4.5,
+          -6.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "radius": 2.6
+        },
+        "material": "conifer.dark@1.0.0",
+        "segments": 24,
+        "solid": "sphere"
+      }
+    ]
+  },
+  "schema": 1,
+  "size": [
+    14000.0,
+    444.598277,
+    14000.0
+  ],
+  "tags": [
+    "landscape",
+    "backdrop"
+  ],
+  "version": "1.0.0"
+}

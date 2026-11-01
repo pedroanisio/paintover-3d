@@ -5,8 +5,10 @@ import json
 from pathlib import Path
 from typing import Optional
 
+from srlocations.cast import Portrait
 from srlocations.catalog import SharedCatalog
 from srlocations.location import Location
+from srlocations.looks import Look
 from srlocations.paint import PaintLayer
 from srlocations.registry import Registry, node_from_spec
 
@@ -24,8 +26,10 @@ class Blueprint:
         for source in self.data.get("catalogs", ()):  # {"path": relative to this file, "pins": as SharedCatalog.pins}
             SharedCatalog.open(self.base / source["path"]).install(registry, source.get("pins"))
         location = Location(self.data["name"], registry)
+        for name, spec in self.data.get("looks", {}).items():  # {name: as Look.from_spec}, usable as a render mode by name
+            Look.from_spec(spec, registry, self.base, name).register(registry, override=True)
         for spec in self.data.get("nodes", ()):
-            location.add(node_from_spec(location.registry, spec))
+            location.add(node_from_spec(location.registry, self._rooted(spec)))
         if "rig" in self.data:
             rig = dict(self.data["rig"])
             location.rig(rig.pop("use"), **rig)
@@ -33,5 +37,16 @@ class Blueprint:
             location.mark(**mark)
         for shot in self.data.get("shots", ()):
             location.shot(**shot)
-        location.paintings.extend(PaintLayer.from_spec(spec, self.base) for spec in self.data.get("paint", ()))
+        location.paintings.extend(PaintLayer.from_spec(spec, self.base, location.marks) for spec in self.data.get("paint", ()))
+        for spec in self.data.get("cast", ()):  # {"character": a registry.cast name or {"image": a file}, "mark": ..., ...}
+            spec = dict(spec)
+            character = spec.pop("character")
+            location.cast(character if isinstance(character, str) else Portrait(self.base / character["image"]), **spec)
         return location
+
+    def _rooted(self, spec: dict) -> dict:
+        """A node's spec with any file named relative to this blueprint."""
+        rooted = {**spec, "children": [self._rooted(child) for child in spec["children"]]} if "children" in spec else dict(spec)
+        if "path" in rooted:
+            rooted["path"] = self.base / rooted["path"]
+        return rooted

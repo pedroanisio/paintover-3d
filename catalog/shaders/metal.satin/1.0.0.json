@@ -1,0 +1,22 @@
+{
+  "description": "Knurled-bright chrome trim",
+  "digest": "aef728d5eddc63ec7525681a748e714f9aa8c4f8fcdee319d357ca6527ca5dbc",
+  "kind": "shader",
+  "name": "metal.satin",
+  "payload": {
+    "color": "#d8d4cb",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 1.0,
+    "opacity": 1.0,
+    "roughness": 0.2
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

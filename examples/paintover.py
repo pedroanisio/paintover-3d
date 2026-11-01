@@ -104,7 +104,7 @@ def main() -> None:
     print(renderer.render(room, "wide", OUT / "room-wide-shaded.png", Shaded()).name)
     print(renderer.render(room, "wide", OUT / "room-wide-wireframe.png", Wireframe()).name)
     print(renderer.render(street, "town", OUT / "town-paper.png", Styled(paper_cutout(TOWN))).name)
-    print(renderer.render(street, "town", OUT / "town-ink-toon.png", Styled(ink_toon(TOWN))).name)
+    print(renderer.render(street, "town", OUT / "town-ink-toon.png", Styled(ink_toon(TOWN, cut="auto"))).name)
 
 
 if __name__ == "__main__":
