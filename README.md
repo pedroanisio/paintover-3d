@@ -386,7 +386,8 @@ engine.
 `texture_looks.py`, `mannequin.py`, `casting.py`, `polish.py` and `motion.py`. `publish_catalog.py` and `use_catalog.py` publish and read
 the catalog, `grand_tourer_paper.py` renders the car as a paper paint-over, `airliner.py` renders the published cabin,
 `flight_deck.py` renders the published flight deck with and without its crew, `park.py` renders the published park with someone on
-its bench, `news_studio.py` renders the published news studio with two anchors at its desk, portrait shots included,
+its bench, `park_night.py` renders the published park at night as a wide dance plate, its base with every lamp off, one
+light-only layer to add per light and a `set.json` of the plate's camera numbers, `news_studio.py` renders the published news studio with two anchors at its desk, portrait shots included,
 `starship_bridge.py` renders the published starship bridge with a crew at its consoles, mimic board and chart table, and
 `fit_check.py` puts mannequins in every set.
 
