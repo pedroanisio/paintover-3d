@@ -1,0 +1,22 @@
+{
+  "description": "Black command chair padding",
+  "digest": "541ca5126ea2e402cc69f5e178a96a01173e974e230de95a7b8a0e727fe43924",
+  "kind": "shader",
+  "name": "chair.black",
+  "payload": {
+    "color": "#17191c",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.55
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "leather"
+  ],
+  "version": "1.0.0"
+}

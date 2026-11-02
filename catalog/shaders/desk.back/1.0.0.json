@@ -1,0 +1,24 @@
+{
+  "description": "The dark inside of a desk",
+  "digest": "1dece353c6a506eb0228717f1095b26cd0deba1d6239d698edb6b91f83cf7b56",
+  "kind": "shader",
+  "name": "desk.back",
+  "payload": {
+    "color": "#17191e",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.6
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plastic"
+  ],
+  "version": "1.0.0"
+}

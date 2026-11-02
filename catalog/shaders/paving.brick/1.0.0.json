@@ -1,0 +1,28 @@
+{
+  "description": "Warm brick pavers in running bond, laid along a path",
+  "digest": "a66a430044fbf7a4bf81330dbd972c9969d726bdce79236c3e381757e04b0a9e",
+  "kind": "shader",
+  "name": "paving.brick",
+  "payload": {
+    "color": "#fff1e6",
+    "extra": {
+      "uvScaleX": 40.0,
+      "uvScaleY": 2.5
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "46d0682c6bf12797b73b2c3046563d55ef29c4fd909344059b25b8c9cf86d682.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.88
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "stone",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

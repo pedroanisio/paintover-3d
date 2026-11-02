@@ -1,0 +1,28 @@
+{
+  "description": "Sealed grey studio concrete",
+  "digest": "d1e10cc914a410d170f15b2a952b44e8df0e69968acbbcbdb639621536d1c2b4",
+  "kind": "shader",
+  "name": "floor.concrete",
+  "payload": {
+    "color": "#ffffff",
+    "extra": {
+      "uvScaleX": 12,
+      "uvScaleY": 10
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "08f86c92e2501a26aa0be02442eeec072d2015d93406dbf97e262309bde0767b.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.32
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "floor",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

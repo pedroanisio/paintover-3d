@@ -1,0 +1,25 @@
+{
+  "description": "A map of the world with headlines and a ticker",
+  "digest": "6c7b936f29c0673927d700e810417c574bf3cbcbafd9e16322d850c29d8b85f2",
+  "kind": "shader",
+  "name": "screen.world",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "43fe07be662a62fcd12574eac2e183cee0dd807fbd9afcfad041492a1065d6e9.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.6
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

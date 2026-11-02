@@ -1,0 +1,22 @@
+{
+  "description": "Camera cable",
+  "digest": "b65524872f73861c38ba81b4d72f6ed734d36f829582032380e2042607c3be28",
+  "kind": "shader",
+  "name": "cable.black",
+  "payload": {
+    "color": "#09090b",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.55
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "rubber"
+  ],
+  "version": "1.0.0"
+}

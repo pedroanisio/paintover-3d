@@ -1,0 +1,22 @@
+{
+  "description": "An orange light strip",
+  "digest": "2c4282144f04f2eea5fa5f60b04fddb8e859c98ed7c4b9e3a072340ffac08a67",
+  "kind": "shader",
+  "name": "glow.orange",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ff7a1e",
+    "glow_strength": 1.5,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

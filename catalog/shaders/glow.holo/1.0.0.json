@@ -1,0 +1,25 @@
+{
+  "description": "A holographic map of a planet",
+  "digest": "596906941f6ac4da721d8bf614821c2743d4f2756c4c0a6c63fbb70fa17940f3",
+  "kind": "shader",
+  "name": "glow.holo",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.6,
+    "maps": {
+      "emissiveMap": "fc5234c783accbf79d88e4939aad0d2a76804f9c2b0d290e9fcc579f4f1d55de.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

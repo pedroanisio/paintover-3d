@@ -1,0 +1,22 @@
+{
+  "description": "Script pages",
+  "digest": "d3ba78b8c0fa68e5cc318805f60a2b12291a0e40673878153ab00f7b7f3a0abc",
+  "kind": "shader",
+  "name": "paper.white",
+  "payload": {
+    "color": "#f2f2ee",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.9
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "paper"
+  ],
+  "version": "1.0.0"
+}

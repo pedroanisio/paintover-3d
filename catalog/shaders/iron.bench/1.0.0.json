@@ -1,0 +1,22 @@
+{
+  "description": "Black cast iron",
+  "digest": "a7fa6a52ceec73d3ebd04226b18e2c9cb60e563ca775d3d9d636171316bda0bf",
+  "kind": "shader",
+  "name": "iron.bench",
+  "payload": {
+    "color": "#24282a",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.7,
+    "opacity": 1.0,
+    "roughness": 0.45
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

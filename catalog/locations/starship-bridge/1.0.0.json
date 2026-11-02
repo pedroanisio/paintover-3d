@@ -1,0 +1,111 @@
+{
+  "description": "A starship's bridge with a capital ship off to port",
+  "digest": "7010b3cd2508132a0bcb88026a372fc0677e399cab47052ef9dd1015bc75ae45",
+  "kind": "location",
+  "name": "starship-bridge",
+  "payload": {
+    "marks": [
+      {
+        "at": [
+          0,
+          0.6,
+          5.34
+        ],
+        "facing": 0,
+        "name": "captain"
+      },
+      {
+        "at": [
+          -1.35,
+          0,
+          -1.6
+        ],
+        "facing": 50,
+        "name": "officer"
+      }
+    ],
+    "name": "starship-bridge",
+    "nodes": [
+      {
+        "use": "studio.starship-bridge@1.0.0"
+      }
+    ],
+    "rig": {
+      "azimuth": 150,
+      "brightness": 0.8,
+      "elevation": 20,
+      "ground": "#0a0c12",
+      "horizon": "#141a2a",
+      "strength": 2.2,
+      "sun": "#fff4e6",
+      "use": "stock.open-sky",
+      "zenith": "#0b1020"
+    },
+    "shots": [
+      {
+        "eye": [
+          0,
+          1.75,
+          -4.4
+        ],
+        "lens": 16,
+        "look_at": [
+          0,
+          1.9,
+          6
+        ],
+        "name": "from-the-pit"
+      },
+      {
+        "eye": [
+          0.5,
+          1.95,
+          3.9
+        ],
+        "lens": 22,
+        "look_at": [
+          0,
+          2.0,
+          12
+        ],
+        "name": "command-chair"
+      },
+      {
+        "eye": [
+          1.5,
+          1.8,
+          1.0
+        ],
+        "lens": 24,
+        "look_at": [
+          -0.5,
+          1.0,
+          -0.9
+        ],
+        "name": "holo-table"
+      },
+      {
+        "eye": [
+          -1.5,
+          2.2,
+          6.0
+        ],
+        "lens": 30,
+        "look_at": [
+          -8,
+          2.4,
+          14
+        ],
+        "name": "the-view"
+      }
+    ]
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "interior",
+    "scifi",
+    "vehicle"
+  ],
+  "version": "1.0.0"
+}

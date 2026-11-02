@@ -1,0 +1,16 @@
+{
+  "name": "starship-bridge",
+  "nodes": [
+    {"use": "studio.starship-bridge"}
+  ],
+  "rig": {"use": "stock.open-sky", "azimuth": 150, "elevation": 20, "strength": 2.2, "brightness": 0.8,
+          "zenith": "#0b1020", "horizon": "#141a2a", "ground": "#0a0c12", "sun": "#fff4e6"},
+  "marks": [{"name": "captain", "at": [0, 0.6, 5.34], "facing": 0},
+            {"name": "officer", "at": [-1.35, 0, -1.6], "facing": 50}],
+  "shots": [
+    {"name": "from-the-pit", "eye": [0, 1.75, -4.4], "look_at": [0, 1.9, 6], "lens": 16},
+    {"name": "command-chair", "eye": [0.5, 1.95, 3.9], "look_at": [0, 2.0, 12], "lens": 22},
+    {"name": "holo-table", "eye": [1.5, 1.8, 1.0], "look_at": [-0.5, 1.0, -0.9], "lens": 24},
+    {"name": "the-view", "eye": [-1.5, 2.2, 6.0], "look_at": [-8, 2.4, 14], "lens": 30}
+  ]
+}

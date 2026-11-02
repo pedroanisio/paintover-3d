@@ -365,7 +365,10 @@ engine.
 `examples/` holds runnable scripts, and each writes into `renders/`. A good order is `use_cases.py`, `paintover.py`,
 `texture_looks.py`, `mannequin.py`, `casting.py`, `polish.py` and `motion.py`. `publish_catalog.py` and `use_catalog.py` publish and read
 the catalog, `grand_tourer_paper.py` renders the car as a paper paint-over, `airliner.py` renders the published cabin,
-`flight_deck.py` renders the published flight deck with and without its crew, and `fit_check.py` puts mannequins in every set.
+`flight_deck.py` renders the published flight deck with and without its crew, `park.py` renders the published park with someone on
+its bench, `news_studio.py` renders the published news studio with two anchors at its desk, `starship_bridge.py` renders the
+published starship bridge with a captain in its command chair and an officer at its holo table, and `fit_check.py` puts
+mannequins in every set.
 
 ## Limits
 

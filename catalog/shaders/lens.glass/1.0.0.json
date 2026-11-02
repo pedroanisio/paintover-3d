@@ -1,0 +1,22 @@
+{
+  "description": "A camera lens",
+  "digest": "f1762c72bb30d846fa8a52517d853f3e773bd4bc91be554cc8c1aac11ad31d80",
+  "kind": "shader",
+  "name": "lens.glass",
+  "payload": {
+    "color": "#1a2230",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.3,
+    "opacity": 1.0,
+    "roughness": 0.05
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glass"
+  ],
+  "version": "1.0.0"
+}

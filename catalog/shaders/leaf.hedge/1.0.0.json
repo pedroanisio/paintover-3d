@@ -1,0 +1,28 @@
+{
+  "description": "A clipped hedge of small bright leaves",
+  "digest": "982242906bcf982d01f71c7782fde48a7f01edccf3f8e6005c2d8691d597e726",
+  "kind": "shader",
+  "name": "leaf.hedge",
+  "payload": {
+    "color": "#a6d266",
+    "extra": {
+      "uvScaleX": 4,
+      "uvScaleY": 8
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "2f7886ac54b59ccd6b91be9b2461dc08a76ac780ee394c28553a65da412b52f9.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.85
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plant",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,28 @@
+{
+  "description": "Mown lawn in summer",
+  "digest": "20de1c053d143ba2ab4dc0cc9ec6bbf9cb51552f2b8c46593068b4be956522db",
+  "kind": "shader",
+  "name": "grass.lawn",
+  "payload": {
+    "color": "#ffffff",
+    "extra": {
+      "uvScaleX": 150,
+      "uvScaleY": 150
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "3a490454290d379a398806eb0b222afd0ab7a98ce6192d92d1aadcf24266acd6.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.95
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plant",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

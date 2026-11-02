@@ -1,0 +1,24 @@
+{
+  "description": "Grey riser deck",
+  "digest": "1834c5465803dbc73a0c80aadc6644eb45540e1cdf0c1a38f2c2ec6a697b99d3",
+  "kind": "shader",
+  "name": "riser.grey",
+  "payload": {
+    "color": "#4a4e57",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plastic"
+  ],
+  "version": "1.0.0"
+}

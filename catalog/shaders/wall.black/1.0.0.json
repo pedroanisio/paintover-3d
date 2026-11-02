@@ -1,0 +1,24 @@
+{
+  "description": "Black studio wall and ceiling",
+  "digest": "c6c05f3110fcff182de3ffaee0682e770b19e179ffe0693d481a05fdac29e9d2",
+  "kind": "shader",
+  "name": "wall.black",
+  "payload": {
+    "color": "#0b0c10",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.7
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plastic"
+  ],
+  "version": "1.0.0"
+}

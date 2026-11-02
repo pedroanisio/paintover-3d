@@ -1,0 +1,22 @@
+{
+  "description": "Grey bulkhead plating",
+  "digest": "5841eae5d8e54c206a853215be5b9b77e3efff9d08cd312cbf616ba1f9ad5919",
+  "kind": "shader",
+  "name": "hull.grey",
+  "payload": {
+    "color": "#5d636b",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.45,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

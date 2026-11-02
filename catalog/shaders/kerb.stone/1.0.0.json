@@ -1,0 +1,22 @@
+{
+  "description": "Pale stone path edging",
+  "digest": "5c1f4ff32efdb2602a94a4b088ba546b7757b91c843629c1ec2aecc2802749e3",
+  "kind": "shader",
+  "name": "kerb.stone",
+  "payload": {
+    "color": "#bdb2a5",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.8
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "stone"
+  ],
+  "version": "1.0.0"
+}

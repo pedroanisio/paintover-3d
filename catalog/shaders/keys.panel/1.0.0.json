@@ -1,0 +1,26 @@
+{
+  "description": "A console top of keys and lit lamps",
+  "digest": "cdf874c585185973dfa2547db326b1edd41da2d938bf6140fa1fa1f43fa8e136",
+  "kind": "shader",
+  "name": "keys.panel",
+  "payload": {
+    "color": "#ffffff",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 0.35,
+    "maps": {
+      "baseColorMap": "3fcf07a58f0903c785b65a943b7a00954a2958bed900d3ad7dfb0f8b83c40949.png",
+      "emissiveMap": "3fcf07a58f0903c785b65a943b7a00954a2958bed900d3ad7dfb0f8b83c40949.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

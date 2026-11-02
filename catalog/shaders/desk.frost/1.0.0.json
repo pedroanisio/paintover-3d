@@ -1,0 +1,25 @@
+{
+  "description": "Frosted glass lit blue from behind",
+  "digest": "da8eaf376b589e3a8824b83f3c239de26533a0035a914278bd53dd2d23ab1e2e",
+  "kind": "shader",
+  "name": "desk.frost",
+  "payload": {
+    "color": "#4f7fd6",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "#2f6cf0",
+    "glow_strength": 0.55,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.4
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glass",
+    "glow"
+  ],
+  "version": "1.0.0"
+}

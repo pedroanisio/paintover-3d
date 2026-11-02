@@ -1,0 +1,22 @@
+{
+  "description": "Engine glow",
+  "digest": "fd9f634cbb3741a57cbc689dad42b6a0a1a308adeda01911e134c778c9da29b4",
+  "kind": "shader",
+  "name": "ship.engine",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#7fc4ff",
+    "glow_strength": 5.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

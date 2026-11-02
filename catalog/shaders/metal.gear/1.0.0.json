@@ -1,0 +1,22 @@
+{
+  "description": "Dark broadcast hardware",
+  "digest": "d23d2cd82e6881abaf3e666f7954d83a792a9cb36183ebfecf32a48011aee87d",
+  "kind": "shader",
+  "name": "metal.gear",
+  "payload": {
+    "color": "#22252b",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.6,
+    "opacity": 1.0,
+    "roughness": 0.4
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

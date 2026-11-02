@@ -1,0 +1,25 @@
+{
+  "description": "Blue curtain-wall glass, pale with distance",
+  "digest": "eb4e07f6fd132fad955ea133a08be6036dc18775b0e479b8227e152fe5ebecec",
+  "kind": "shader",
+  "name": "glass.tower",
+  "payload": {
+    "color": "#e6eef7",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "42c7efec0a0c29c9975d1d9c2935a69dd2915c33516b0ff63429d9fc43f8508b.png"
+    },
+    "metallic": 0.35,
+    "opacity": 1.0,
+    "roughness": 0.25
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glass",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

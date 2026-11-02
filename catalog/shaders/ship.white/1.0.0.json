@@ -1,0 +1,22 @@
+{
+  "description": "A capital ship's pale hull",
+  "digest": "0fe56b769300d1169aa7ed67396f275fd0c0fa89c2fe0e0d2beb1c97203ad234",
+  "kind": "shader",
+  "name": "ship.white",
+  "payload": {
+    "color": "#b8bcc2",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.3,
+    "opacity": 1.0,
+    "roughness": 0.6
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

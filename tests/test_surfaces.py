@@ -262,6 +262,33 @@ def test_the_published_flight_deck_needs_no_plugin():
     assert catalog.pins(location)["props"] == {"flight-deck": "1.0.0"}
 
 
+def test_the_published_park_needs_no_plugin():
+    catalog = SharedCatalog.open(ROOT / "catalog")
+    location = catalog.location("park")
+    assert "park" not in location.registry.plugins.loaded
+    assert location.validate() == [] and set(location.shots) == {"by-the-bench", "along-the-path", "from-the-bench", "over-the-lawn"}
+    assert catalog.pins(location)["props"] == {"park": "1.0.0"}
+    assert len(location.seats()) == 6  # three on each bench, kept when the prop was frozen
+
+
+def test_the_published_news_studio_needs_no_plugin():
+    catalog = SharedCatalog.open(ROOT / "catalog")
+    location = catalog.location("news-studio")
+    assert "newsroom" not in location.registry.plugins.loaded
+    assert location.validate() == [] and set(location.shots) == {"floor-camera", "two-shot", "from-the-desk", "wide"}
+    assert catalog.pins(location)["props"] == {"news-studio": "1.0.0"}
+    assert set(location.marks) == {"anchor-left", "anchor-right"} and len(location.lights()) < 63
+
+
+def test_the_published_starship_bridge_needs_no_plugin():
+    catalog = SharedCatalog.open(ROOT / "catalog")
+    location = catalog.location("starship-bridge")
+    assert "bridge" not in location.registry.plugins.loaded
+    assert location.validate() == [] and set(location.shots) == {"from-the-pit", "command-chair", "holo-table", "the-view"}
+    assert catalog.pins(location)["props"] == {"starship-bridge": "1.0.0"}
+    assert len(location.seats()) == 1 and len(location.lights()) < 63
+
+
 def test_every_part_of_a_published_prop_has_its_own_path():
     leaves = SharedCatalog.open(ROOT / "catalog").location("grand-tourer").solids()
     cabin = [leaf.path for leaf in leaves if isinstance(leaf.item, Surface) and leaf.path.startswith("gt-cabin")]

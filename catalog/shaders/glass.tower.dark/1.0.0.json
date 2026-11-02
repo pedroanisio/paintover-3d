@@ -1,0 +1,25 @@
+{
+  "description": "A darker curtain wall, pale with distance",
+  "digest": "ef62c3181a7c0cd9d45e77fee4ae828b3c4b1fc9b4ae7f5b9513eee9a6b03433",
+  "kind": "shader",
+  "name": "glass.tower.dark",
+  "payload": {
+    "color": "#bccbdc",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "42c7efec0a0c29c9975d1d9c2935a69dd2915c33516b0ff63429d9fc43f8508b.png"
+    },
+    "metallic": 0.35,
+    "opacity": 1.0,
+    "roughness": 0.25
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glass",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

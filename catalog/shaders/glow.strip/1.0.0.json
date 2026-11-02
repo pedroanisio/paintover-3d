@@ -1,0 +1,22 @@
+{
+  "description": "A white light panel",
+  "digest": "d8f28b7fe483ff6a6d35aaa34b4b3b37d5c97f62a7ed19faa6addcec76cb181c",
+  "kind": "shader",
+  "name": "glow.strip",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#e6f0ff",
+    "glow_strength": 3.5,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

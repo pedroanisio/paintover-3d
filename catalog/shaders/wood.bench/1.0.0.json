@@ -1,0 +1,25 @@
+{
+  "description": "Varnished hardwood slats",
+  "digest": "7a222bd01ea6b5c907faf7137cc4672f640c753ab4e524c4962379f85017294b",
+  "kind": "shader",
+  "name": "wood.bench",
+  "payload": {
+    "color": "#b8682f",
+    "extra": {
+      "clearcoat": 0.4,
+      "clearcoatRoughness": 0.4
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "wood"
+  ],
+  "version": "1.0.0"
+}

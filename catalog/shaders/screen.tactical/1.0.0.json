@@ -1,0 +1,25 @@
+{
+  "description": "A red tactical display",
+  "digest": "725e592179979ac940b63e74dfd1709beb3bb692a5907cbd602dcc7285f318dc",
+  "kind": "shader",
+  "name": "screen.tactical",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "ad81ea7273870d6251e83f45d6800a42d8901f9b84940cf640131d9620e6a1dd.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

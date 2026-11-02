@@ -1,0 +1,22 @@
+{
+  "description": "A pale blue lit panel",
+  "digest": "fefcbcb8c0186a7b43c42341fb79bbc54036784b01ff40e7414047eaa5967b7d",
+  "kind": "shader",
+  "name": "glow.column",
+  "payload": {
+    "color": "#0d2a6a",
+    "extra": {},
+    "glow": "#3f86f0",
+    "glow_strength": 0.45,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.6
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

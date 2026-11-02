@@ -1,0 +1,25 @@
+{
+  "description": "A round sensor scope",
+  "digest": "d6047f2eb5f8039e12e72657c23797c42bab5c867fa60e4945dfc89488bfd21d",
+  "kind": "shader",
+  "name": "screen.scope",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "100e57187b4f812478e8eaee1026ce5693cc002e637dbc8ce92334b81a4665ea.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

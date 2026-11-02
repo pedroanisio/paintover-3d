@@ -1,0 +1,22 @@
+{
+  "description": "Dark grey-brown bark",
+  "digest": "a0f657a5257837c09ed4940a8147d8ef7561872232fc06cccab3ede2cecd1224",
+  "kind": "shader",
+  "name": "bark.trunk",
+  "payload": {
+    "color": "#3d342c",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.95
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "wood"
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,25 @@
+{
+  "description": "A breaking news graphic on a video wall",
+  "digest": "bf33dffabf2aec822997572be7b7991cee62996353c73aae85b0568ae319c643",
+  "kind": "shader",
+  "name": "screen.breaking",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "5d3e47f99e9ca5fbc208b8340a33a787e1386395d461995a1adba13331d6ec36.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.6
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

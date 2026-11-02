@@ -1,0 +1,22 @@
+{
+  "description": "The lens of a lit studio lamp",
+  "digest": "1d3dbed1171680aaa1f571c75097a1be4d7dae5e8690419d97642e6d27a2bfbb",
+  "kind": "shader",
+  "name": "glow.lens",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#fff6e8",
+    "glow_strength": 6.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

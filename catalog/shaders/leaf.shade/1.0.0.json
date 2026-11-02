@@ -1,0 +1,28 @@
+{
+  "description": "Broadleaf canopy on its shaded side",
+  "digest": "6870d336729d5209ffcdf88021783ec11e8143a6bc97e24e8e4f0ec3c7702493",
+  "kind": "shader",
+  "name": "leaf.shade",
+  "payload": {
+    "color": "#5e8a45",
+    "extra": {
+      "uvScaleX": 6,
+      "uvScaleY": 4
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "2f7886ac54b59ccd6b91be9b2461dc08a76ac780ee394c28553a65da412b52f9.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.85
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plant",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

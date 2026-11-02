@@ -1,0 +1,29 @@
+{
+  "description": "Dark deck plates a metre square",
+  "digest": "5b44bbf6aa825adf25676368945b6a985ee0ac0fc38b76b4f83918534d8153ec",
+  "kind": "shader",
+  "name": "deck.plate",
+  "payload": {
+    "color": "#ffffff",
+    "extra": {
+      "uvScaleX": 7,
+      "uvScaleY": 5
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "d10d5630b5248f647163d3ead3d520d28eb5c511910778be56cc5d4b40f13b1d.png"
+    },
+    "metallic": 0.4,
+    "opacity": 1.0,
+    "roughness": 0.45
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal",
+    "floor",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

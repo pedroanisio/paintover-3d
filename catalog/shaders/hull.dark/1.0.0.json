@@ -1,0 +1,22 @@
+{
+  "description": "Dark ceiling and recess plating",
+  "digest": "7af0b123c0ba148c82e68f5c0493df6b12e1c8ee027494fdf7143ba2c0b02635",
+  "kind": "shader",
+  "name": "hull.dark",
+  "payload": {
+    "color": "#25282d",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.5,
+    "opacity": 1.0,
+    "roughness": 0.55
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

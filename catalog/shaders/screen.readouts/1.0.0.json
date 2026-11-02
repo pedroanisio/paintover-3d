@@ -1,0 +1,25 @@
+{
+  "description": "Bar graphs and figures",
+  "digest": "ca036fef8aba954a5b18deccaa3b48eb83b6d9bbb6e843060d29a9cc7d1900bc",
+  "kind": "shader",
+  "name": "screen.readouts",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "b14081d6f5e4ddc431a831f5f87d4ba9db1348199ecd5cf2ba5d930c5e8dccac.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,22 @@
+{
+  "description": "Lighting truss",
+  "digest": "645d0b0ef59b556ccdc3e241df4744db78fc6f5f34e0eefc015ba29645f65621",
+  "kind": "shader",
+  "name": "metal.truss",
+  "payload": {
+    "color": "#3a3d42",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.8,
+    "opacity": 1.0,
+    "roughness": 0.45
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

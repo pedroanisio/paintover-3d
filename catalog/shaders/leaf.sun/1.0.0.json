@@ -1,0 +1,28 @@
+{
+  "description": "Broadleaf canopy where the sun comes through",
+  "digest": "d538c9fc07776130eeb86f35b768b64c8d4a24c1231c6151f0f6dee2bceac5ce",
+  "kind": "shader",
+  "name": "leaf.sun",
+  "payload": {
+    "color": "#c4e07a",
+    "extra": {
+      "uvScaleX": 6,
+      "uvScaleY": 4
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "2f7886ac54b59ccd6b91be9b2461dc08a76ac780ee394c28553a65da412b52f9.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.8
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plant",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

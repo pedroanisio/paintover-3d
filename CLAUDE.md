@@ -28,6 +28,12 @@ SRSTUDIO_PYTHON=<srstudio's venv>/bin/python .venv/bin/python -m pytest -q tests
 .venv/bin/python examples/airliner.py         # the published cabin; examples/plugins/airliner.py made it
 .venv/bin/python examples/flight_deck_pictures.py   # redraws the flight deck's screens into examples/textures/flight-deck/
 .venv/bin/python examples/flight_deck.py      # the published flight deck, with and without its crew
+.venv/bin/python examples/park_pictures.py   # redraws the park's pavers, grass, leaves and tower glass into examples/textures/park/
+.venv/bin/python examples/park.py            # the published park, empty and with a figure on its bench and one on the path
+.venv/bin/python examples/news_pictures.py    # redraws the news studio's video wall and concrete into examples/textures/news/
+.venv/bin/python examples/news_studio.py      # the published news studio, empty and with two anchors at the desk
+.venv/bin/python examples/bridge_pictures.py  # redraws the bridge's screens, holo map, deck plates and stars into examples/textures/bridge/
+.venv/bin/python examples/starship_bridge.py  # the published starship bridge, empty and with a captain in the command chair and an officer at the holo table
 .venv/bin/python examples/fit_check.py        # mannequins in every set, with contact and joint angles for the car
 .venv/bin/python -m srlocations.exchange --help    # seal, browse, serve, token, revoke, fetch
 ```

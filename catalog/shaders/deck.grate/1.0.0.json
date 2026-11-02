@@ -1,0 +1,23 @@
+{
+  "description": "A floor vent grating",
+  "digest": "fdb0b7de940227de47338b9b48e78636caa0dc0f6d0ced64232e0aa4be7a0535",
+  "kind": "shader",
+  "name": "deck.grate",
+  "payload": {
+    "color": "#0e1013",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.5,
+    "opacity": 1.0,
+    "roughness": 0.7
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal",
+    "floor"
+  ],
+  "version": "1.0.0"
+}

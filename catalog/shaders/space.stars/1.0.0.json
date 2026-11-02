@@ -1,0 +1,26 @@
+{
+  "description": "Deep space with a blue nebula",
+  "digest": "d8408cb74ca745da46cd7a4963000b95ea4a64d1bda7cb72df967c988dc6d686",
+  "kind": "shader",
+  "name": "space.stars",
+  "payload": {
+    "color": "#ffffff",
+    "extra": {
+      "unlit": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "9105730d1202677f5de21a3b586a983541e25a8a27bb31b2d16940f4c7d17672.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "backdrop"
+  ],
+  "version": "1.0.0"
+}

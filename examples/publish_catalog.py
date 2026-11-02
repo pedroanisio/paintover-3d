@@ -76,6 +76,29 @@ def main() -> None:
                          description="An airliner's flight deck with lit screens, overhead and a city at dusk outside", slots=flight_deck.slots)
     catalog.publish_location("flight-deck", json.loads((ROOT / "examples/flight-deck.location.json").read_text()), "1.0.0",
                              tags=["vehicle", "interior", "aircraft"], description="A flight deck at dusk over a lit city")
+    park = registry.plugins.load_file(ROOT / "examples/plugins/park.py")
+    for name, (material, tags, description) in park.shaders.items():
+        catalog.publish_shader(name, material, tags=tags, description=description)
+    catalog.publish_prop("park", registry.create("park.park"), registry, "1.0.0", tags=["exterior", "landscape", "city"],
+                         description="A city park: a brick path, a bench before a hedge, broadleaf trees and towers beyond", slots=park.slots)
+    catalog.publish_location("park", json.loads((ROOT / "examples/park.location.json").read_text()), "1.0.0",
+                             tags=["exterior", "landscape", "city"], description="A city park on a summer afternoon")
+    newsroom = registry.plugins.load_file(ROOT / "examples/plugins/newsroom.py")
+    for name, (material, tags, description) in newsroom.shaders.items():
+        catalog.publish_shader(name, material, tags=tags, description=description)
+    catalog.publish_prop("news-studio", registry.create("news.studio"), registry, "1.0.0", tags=["interior", "broadcast"],
+                         description="A news studio: a curved desk on a lit riser, a curved video wall, a lighting grid and cameras",
+                         slots=newsroom.slots)
+    catalog.publish_location("news-studio", json.loads((ROOT / "examples/news-studio.location.json").read_text()), "1.0.0",
+                             tags=["interior", "broadcast"], description="A television news studio on air")
+    bridge = registry.plugins.load_file(ROOT / "examples/plugins/bridge.py")
+    for name, (material, tags, description) in bridge.shaders.items():
+        catalog.publish_shader(name, material, tags=tags, description=description)
+    catalog.publish_prop("starship-bridge", registry.create("ship.bridge"), registry, "1.0.0", tags=["interior", "scifi", "vehicle"],
+                         description="A starship's bridge: a holo table in a pit, consoles, a command deck and six windows onto space",
+                         slots=bridge.slots)
+    catalog.publish_location("starship-bridge", json.loads((ROOT / "examples/starship-bridge.location.json").read_text()), "1.0.0",
+                             tags=["interior", "scifi", "vehicle"], description="A starship's bridge with a capital ship off to port")
     for entry in catalog.entries():
         print(f"{entry.kind:<9}{entry.ref:<34}{entry.description}")
     print("verify:", catalog.verify() or "clean")
