@@ -302,7 +302,8 @@ other.add("studio.sofa")
 
 Published versions never change, so a fix is a new version, and old ones stay readable. `catalog/` in this repository is a
 published example: `SharedCatalog.open("catalog").location("grand-tourer")` opens the newest version of a car at a mountain
-overlook.
+overlook. The [Location Book](docs/location-book.md) lists every location in it, with its versions, shots, marks,
+pictures and known limits.
 
 `SRLOCATIONS_CATALOGS` lists catalogs that `Registry.default()` opens by itself. `studio.browse()` writes a page of what is
 in a catalog, with a thumbnail of each item, into its `browse/` folder.
