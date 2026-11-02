@@ -118,6 +118,24 @@ def test_traced_mode_asks_the_camera_for_the_path_tracer():
     assert plain.renderer != "pathtrace"
 
 
+def test_shaded_mode_can_set_the_cameras_lens_effects():
+    location = Location("x")
+    location.add(ball(at=(0, 1, 0)))
+    location.shot("wide", (0, 1, -3), (0, 1, 0))
+    mode = Shaded(camera={"depthOfField": True, "fStop": 0.6, "focusDistance": 300, "screenSpaceReflections": True, "near": 20})
+    camera = next(n for n in mode.compiler().compile(location, "wide").iter() if n.xml_name == "camera")
+    assert (str(camera.depthOfField), float(camera.fStop), float(camera.focusDistance), float(camera.near)) == ("True", 0.6, 300, 20)
+    assert str(camera.screenSpaceReflections) == "True" and float(camera.far) == 500000
+    plain = next(n for n in Shaded().compiler().compile(location, "wide").iter() if n.xml_name == "camera")
+    assert (float(plain.near), plain.depthOfField) == (5, None)
+
+
+@pytest.mark.parametrize("taken", ["yaw", "focalLength", "x", "renderer"])
+def test_shaded_mode_leaves_the_camera_where_the_shot_puts_it(taken):
+    with pytest.raises(ValueError, match=taken):
+        Shaded(camera={taken: 1}).compiler()
+
+
 def test_a_traced_shot_comes_out(tmp_path):
     location = Location("x", Registry.default())
     location.add(ball(at=(0, 0.6, 0)))

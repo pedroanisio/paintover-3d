@@ -8,7 +8,7 @@ import subprocess
 import sys
 import tempfile
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Generic, Mapping, Optional, Sequence, TypeVar, Union
 
@@ -168,8 +168,8 @@ class SceneCompiler(Compiler[Scene]):
 
     def _camera(self, composition, take: Shot) -> None:
         yaw, pitch = aim(take.eye, take.look_at)
-        camera = composition.add_camera(id="camera", focalLength=take.lens, near=5, far=500000, yaw=round(yaw, 4),
-                                        pitch=round(pitch, 4), **engine_position(take.eye), **self.camera)
+        camera = composition.add_camera(id="camera", focalLength=take.lens, yaw=round(yaw, 4), pitch=round(pitch, 4),
+                                        **engine_position(take.eye), **{"near": 5, "far": 500000, **self.camera})
         if self.clip.moving:
             written(camera, columns([camera_keys(moment) for moment in self.clip.takes]), self.fps, self.clip.frames)
 
@@ -332,9 +332,18 @@ class Shaded(RenderMode):
     supersample: int = 2
     fps: int = 30
     blur: float = 0.0  # a shutter angle in degrees: what moves in a film smears over that share of a frame
+    # Attributes of the engine's camera for this render, as its schema names them: depthOfField, fStop and focusDistance
+    # (centimetres), screenSpaceReflections, exposure. Where it points and its lens stay the shot's.
+    camera: Mapping[str, Any] = field(default_factory=dict)
 
     def compiler(self) -> Compiler[Scene]:
-        return SceneCompiler(self.width, self.height, self.fps, supersample=self.supersample, blur=self.blur)
+        compiler = SceneCompiler(self.width, self.height, self.fps, supersample=self.supersample, blur=self.blur)
+        if self.camera:
+            taken = set(self.camera) & {"id", "x", "y", "z", "yaw", "pitch", "roll", "focalLength", "fov", "renderer"}
+            if taken:
+                raise ValueError(f"camera= cannot set {', '.join(sorted(taken))}: the shot and the mode own them")
+            compiler.camera = dict(self.camera)
+        return compiler
 
 
 @dataclass
