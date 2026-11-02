@@ -1,0 +1,25 @@
+{
+  "description": "Engine display",
+  "digest": "6a0c267c1fbaabab466742c26dcc70708154ef088e39dab26db4fa8b13722814",
+  "kind": "shader",
+  "name": "screen.eicas",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "da556c2837df707dbde3f1a413f3fb4502422e72a9952cca144368f31c447b0c.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.75
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

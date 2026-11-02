@@ -1,0 +1,22 @@
+{
+  "description": "Dense navy aisle carpet",
+  "digest": "760598f9e5b31c9f8f01d3ef46410b31e07856fa7c6734c2bd3fe8f89a8b95e1",
+  "kind": "shader",
+  "name": "carpet.navy",
+  "payload": {
+    "color": "#1b2a4c",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.92
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "fabric"
+  ],
+  "version": "1.0.0"
+}

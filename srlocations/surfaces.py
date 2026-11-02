@@ -41,6 +41,7 @@ class Surface(Solid):
     closed: Sequence[bool] = (False, False)  # whether u and v wrap around
     inward: bool = False  # faces the other way, for a shell seen from inside it
     primitive = "parametric"
+    shell = True
 
     def __post_init__(self) -> None:
         self.u, self.v, self.samples, self.closed = tuple(self.u), tuple(self.v), tuple(self.samples), tuple(self.closed)
@@ -93,6 +94,29 @@ class Surface(Solid):
         rows = [[world.apply(point) for point in row] for row in _traced(self.x, self.y, self.z, self.u, self.v)]
         return [Cloud([rows[v][u], rows[v][u + 1], rows[v + 1][u + 1], rows[v + 1][u]])
                 for v in range(len(rows) - 1) for u in range(len(rows[0]) - 1)]
+
+    def encloses(self, point: Vec3, world: Transform) -> bool:
+        """Whether a point is in a closed shell: a ray up from it crosses the shell an odd number of times, and it starts a
+        hair to one side, or a ray up an axis meets every triangle at a pole. A shell seen from inside is a place to be, so
+        nothing is inside it."""
+        if self.hollow or self.inward or not self.closed[0]:
+            return False
+        low, high = self.bounds(world)
+        if not all(l <= p <= h for l, p, h in zip(low, point, high)):
+            return False
+        rows = [[world.apply(p) for p in row] for row in _traced(self.x, self.y, self.z, self.u, self.v)]
+        x, z, crossings = point.x + 1.37e-6, point.z + 2.11e-6, 0
+        for v in range(len(rows) - 1):
+            for u in range(len(rows[0]) - 1):
+                for a, b, c in ((rows[v][u], rows[v][u + 1], rows[v + 1][u + 1]), (rows[v][u], rows[v + 1][u + 1], rows[v + 1][u])):
+                    area = (b.x - a.x) * (c.z - a.z) - (c.x - a.x) * (b.z - a.z)
+                    if not area:
+                        continue
+                    s = ((x - a.x) * (c.z - a.z) - (c.x - a.x) * (z - a.z)) / area
+                    t = ((b.x - a.x) * (z - a.z) - (x - a.x) * (b.z - a.z)) / area
+                    if s >= 0 and t >= 0 and s + t <= 1 and a.y + s * (b.y - a.y) + t * (c.y - a.y) > point.y:
+                        crossings += 1
+        return crossings % 2 == 1
 
     def edges(self) -> list[Polyline]:
         rows = [[tuple(point) for point in row] for row in _traced(self.x, self.y, self.z, self.u, self.v)]

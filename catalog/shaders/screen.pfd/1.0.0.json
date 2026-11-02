@@ -1,0 +1,25 @@
+{
+  "description": "Primary flight display",
+  "digest": "b59d3d449e0a470127fc551ffe395db64435fed2f88563f91d2c1c0ebe17c5c3",
+  "kind": "shader",
+  "name": "screen.pfd",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "df082f46f5835d8850b98670c46213f5116764fa9ffc0474ae5e8a63dbb755dd.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.75
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

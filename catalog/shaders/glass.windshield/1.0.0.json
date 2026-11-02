@@ -1,0 +1,24 @@
+{
+  "description": "Clear windshield",
+  "digest": "7804edce7c043f68f0ccc9ac8d670c204e6b46e26a0e55f49b95a8999657f338",
+  "kind": "shader",
+  "name": "glass.windshield",
+  "payload": {
+    "color": "#c8d4ec",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 0.05,
+    "roughness": 0.04
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glass"
+  ],
+  "version": "1.0.0"
+}

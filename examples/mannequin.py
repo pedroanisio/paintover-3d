@@ -1,4 +1,4 @@
-"""A mannequin on a set: every stock pose, figures seated in the office, and what each one sees. Run: .venv/bin/python examples/mannequin.py
+"""A mannequin on a set: every stock pose, figures seated in the office, what each one sees, and limbs solved to points. Run: .venv/bin/python examples/mannequin.py
 
 Each picture goes into renders/mannequin/. The car needs the published catalog and the grand tourer plugin.
 """
@@ -12,7 +12,7 @@ from fit_check import DRIVER, SEAT, seated
 from use_cases import office
 
 from srlocations import Blueprint, Location, Registry, Renderer, SharedCatalog, Sky, Sun
-from srlocations.stock.mannequin import KINDS, POSES, Mannequin
+from srlocations.stock.mannequin import KINDS, POSES, Mannequin, Pose
 
 OUT = ROOT / "renders" / "mannequin"
 ROW = 1.9
@@ -46,6 +46,37 @@ def people(registry: Registry, name: str, figures: dict[str, dict]) -> Location:
     return location
 
 
+def floor(registry: Registry, name: str) -> Location:
+    location = Location(f"mannequin-{name}", registry)
+    location.add("stock.box", size=(8, 0.1, 6), at=(0, -0.05, 0), material="stock.plaster.cream")
+    location.nodes.extend([Sky(1.2, zenith="#dfe6ee", horizon="#f3efe6", ground="#b8b0a0"),
+                           Sun(2.5, yaw=-30, pitch=-50, shadows=True, softness=0.4)])
+    location.background = "#e8e6e0"
+    return location
+
+
+def reaching(registry: Registry) -> Location:
+    """Two figures put a hand over the same spot of a table, one with the elbow toward the floor and one with it out."""
+    location = floor(registry, "reach")
+    for index, (name, pole) in enumerate((("elbow-down", (-0.5, 0.9, 0.0)), ("elbow-out", (-1.0, 1.8, 0.1)))):
+        x = (index - 0.5) * 1.6
+        location.add("stock.box", size=(0.6, 0.9, 0.5), at=(x - 0.45, 0.45, 0.45), material="stock.wood.oak")
+        location.add(Mannequin(name=name, at=(x, 0, 0)))
+        location.reach(name, "left_hand", (x - 0.4, 1.08, 0.3), pole=(x + pole[0], pole[1], pole[2]))  # a pole beside the arm
+    location.shot("front", (0, 1.4, 4.2), (0, 0.9, 0), lens=35)
+    return location
+
+
+def squat(registry: Registry) -> Location:
+    """A squat with both feet planted, as one still: the figure at the bottom and ghosts on the way down."""
+    location = floor(registry, "squat")
+    figure = location.add(Mannequin(name="squatter", adjust={"spine.front_back": -10}))
+    location.move(figure, 1.0, at=(0, -0.25, -0.15), ease="ease-in-out")  # deeper, the ankles run out of range and the toes dig in
+    location.plant(figure, "left_foot").plant(figure, "right_foot")
+    location.shot("side", (3.2, 1.0, 0.6), (0, 0.6, 0), lens=35)
+    return location.onion(1.0, (0.0, 0.5))
+
+
 def main() -> None:
     renderer, registry = Renderer(), Registry.default()
     sheet = poses(registry)
@@ -59,6 +90,19 @@ def main() -> None:
     renderer.render(people(registry, "seeds", {f"seed-{seed}": {"seed": seed} for seed in range(8)}), "front",
                     OUT / "people-seeds.png", "stock.shaded")
 
+    survey = Location("mannequin-survey", registry)
+    survey.add("stock.box", size=(12, 0.1, 5), at=(0, -0.05, 0), material="stock.plaster.cream")
+    survey.nodes.extend([Sky(1.2, zenith="#dfe6ee", horizon="#f3efe6", ground="#b8b0a0"), Sun(2.5, yaw=-30, pitch=-50, shadows=True, softness=0.4)])
+    survey.background = "#e8e6e0"
+    measured = [name for name in KINDS if KINDS[name].measured]
+    for index, name in enumerate(measured):
+        survey.add(Mannequin(pose="stand", kind=name, at=((index - (len(measured) - 1) / 2) * 1.0, 0, 0), name=name))
+    survey.shot("line", (0, 1.1, 8), (0, 0.9, 0), lens=35)
+    renderer.render(survey, "line", OUT / "people-survey.png", "stock.shaded")
+
+    renderer.render(reaching(registry), "front", OUT / "reach-poles.png", "stock.shaded")
+    renderer.render(squat(registry), "side", OUT / "squat-onion.png", "stock.shaded")
+
     room = office(registry)
     room.stand("detective", pose="sit")
     room.stand("client", pose="sit", adjust={"head.turn_left_right": -20})
@@ -69,8 +113,15 @@ def main() -> None:
     room.pov("detective")
     room.pov("client")
     room.pov("visitor")
+    room.look("detective", "client")
+    room.look("client", "detective")
+    room.frame("stock.two-shot", "detective", "client", name="two-shot")
+    room.frame("stock.close-up", "detective", name="close-up")
+    room.frame("stock.over-the-shoulder", "client", "detective", name="over-the-shoulder")
+    room.repose("visitor", Pose(POSES["point"]).mirror())
     for issue in room.validate():
         print(issue)
+    print(room.report())
     for shot in room.shots:
         renderer.render(room, shot, OUT / f"office-{shot}.png", "stock.shaded")
 

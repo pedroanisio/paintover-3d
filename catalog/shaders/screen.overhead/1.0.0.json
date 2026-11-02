@@ -1,0 +1,25 @@
+{
+  "description": "Overhead panel with its lamps lit",
+  "digest": "331ab1951e424b9020b591303033d84c6b60fb5bcf950d9e82963ee6f44f1447",
+  "kind": "shader",
+  "name": "screen.overhead",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.2,
+    "maps": {
+      "emissiveMap": "0b99858c5dfdcddab51dc150e4e1394bfe13f53f57c14f51fdae573edd024987.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.75
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

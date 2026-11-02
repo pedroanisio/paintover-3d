@@ -1,0 +1,24 @@
+{
+  "description": "Cool grey window surround",
+  "digest": "e95ac61f6d46118068353ba1de6e505b221a298a27ff38bb66be21395b4e07d5",
+  "kind": "shader",
+  "name": "plastic.reveal",
+  "payload": {
+    "color": "#aeb6bb",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.45
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plastic"
+  ],
+  "version": "1.0.0"
+}

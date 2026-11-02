@@ -1,0 +1,22 @@
+{
+  "description": "Blue seat piping",
+  "digest": "7600542a57e2f709a92179be7e339150406b142127458ef72f44f21488495d58",
+  "kind": "shader",
+  "name": "fabric.quilt",
+  "payload": {
+    "color": "#31469a",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.85
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "fabric"
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,25 @@
+{
+  "description": "Standby attitude display",
+  "digest": "309a071c3580c4fa92cbb4802e8581fcc1ac15384709eeb12000b324fb4280d1",
+  "kind": "shader",
+  "name": "screen.standby",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "9787e55c8c817ceb15a6d5581cce429eefc83dcdc05a7d644f1352abd415c291.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.75
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

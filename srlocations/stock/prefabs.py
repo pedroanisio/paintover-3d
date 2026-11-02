@@ -133,10 +133,10 @@ class Chair(Prefab):
     seat: str = "stock.fabric.teal"
 
     def seats(self) -> Sequence[Seat]:
-        return [Seat(Vec3(0, 0, 0.05), 180.0, 0.49, 0.27)]
+        return [Seat(Vec3(0, 0, 0.05), 180.0, 0.49, 0.27, 0.13)]
 
     def build(self) -> Sequence[Node]:
-        parts: list[Node] = [Box(size=(0.44, 0.06, 0.44), at=(0, 0.46, 0), material=self.seat),
+        parts: list[Node] = [Box(size=(0.44, 0.06, 0.44), at=(0, 0.46, 0), material=self.seat, role="soft"),
                              Box(size=(0.44, 0.45, 0.04), at=(0, 0.72, 0.2), material=self.frame)]
         for sx, sz in ((-1, -1), (-1, 1), (1, -1), (1, 1)):
             parts.append(Box(size=(0.04, 0.44, 0.04), at=(sx * 0.19, 0.22, sz * 0.19), material=self.frame))
@@ -150,12 +150,12 @@ class Sofa(Prefab):
 
     def seats(self) -> Sequence[Seat]:
         count = max(1, int((self.width - 0.4) / 0.55))
-        return [Seat(Vec3((i - (count - 1) / 2) * (self.width - 0.4) / count, 0, 0.1), 180.0, 0.45, 0.55) for i in range(count)]
+        return [Seat(Vec3((i - (count - 1) / 2) * (self.width - 0.4) / count, 0, 0.1), 180.0, 0.45, 0.55, 0.13) for i in range(count)]
 
     def build(self) -> Sequence[Node]:
         w = self.width
-        return [Box(size=(w, 0.3, 0.9), at=(0, 0.3, 0), material=self.fabric),
-                Box(size=(w, 0.45, 0.22), at=(0, 0.62, 0.34), material=self.fabric),
+        return [Box(size=(w, 0.3, 0.9), at=(0, 0.3, 0), material=self.fabric, role="soft"),
+                Box(size=(w, 0.45, 0.22), at=(0, 0.62, 0.34), material=self.fabric, role="soft"),
                 Box(size=(0.2, 0.3, 0.9), at=(-w / 2 + 0.1, 0.55, 0), material=self.fabric),
                 Box(size=(0.2, 0.3, 0.9), at=(w / 2 - 0.1, 0.55, 0), material=self.fabric)]
 

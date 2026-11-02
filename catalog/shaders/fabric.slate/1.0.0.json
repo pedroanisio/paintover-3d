@@ -1,0 +1,22 @@
+{
+  "description": "Grey seat cloth",
+  "digest": "d4cf9ef139aef1d1ec0648e68089c7e2eed53a7182863260fa844533614a2421",
+  "kind": "shader",
+  "name": "fabric.slate",
+  "payload": {
+    "color": "#6b6a70",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.95
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "fabric"
+  ],
+  "version": "1.0.0"
+}

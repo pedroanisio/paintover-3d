@@ -2,7 +2,8 @@
 from srlocations.blueprint import Blueprint
 from srlocations.cast import Actor, Cutout, Ensemble, Performer, Portrait, alpha_box
 from srlocations.catalog import Entry, FrozenProp, SharedCatalog, TemplateProp
-from srlocations.collision import Clash, CollisionError
+from srlocations.collision import Clash, CollisionError, Contact
+from srlocations.figures import Figure
 from srlocations.compiler import (Compiler, Projection, RenderMode, Renderer, SceneCompiler, Shaded, Traced,
                                   TracedCompiler, Wireframe, WireframeCompiler)
 from srlocations.geometry import Transform, Vec3, aim, rotation

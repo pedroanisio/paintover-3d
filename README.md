@@ -119,8 +119,11 @@ renderer.render(location, "wide", "renders/flat-blocking.png", "stock.shaded")
 ```
 
 A figure comes as a `kind` (`man`, `woman`, `teen`, `child` or `toddler`) and a `pose` (`t`, `a`, `stand`, `sit`, `walk`,
-`point` or `drive`). `adjust` turns single controls on top of the pose, in degrees, and `height` overrides the kind. A figure
-in the `sit` pose takes the nearest free seat within 0.8 m of its mark.
+`point` or `drive`). `adjust` turns single controls on top of the pose, in degrees, and `height` overrides the kind. `seed`
+varies a body, and picks a kind when none is given. A figure in the `sit` pose takes the nearest free seat within 0.8 m of
+its mark and leans on its backrest. Poses and kinds are also in `registry.poses` and `registry.kinds`, and a `Pose` can be
+mirrored, blended and written as JSON. The kinds `man-5th` to `woman-95th` measure what the 2012 US Army survey (ANSUR II) gives
+for stature, sitting height, shoulders, hips, arm, head and chest at that percentile. A seed never changes them.
 
 ```python
 location.mark("guest", (-0.4, 0, 1.2), facing=180)
@@ -129,9 +132,26 @@ print(location.clashes(bodies_only=True) or "nobody passes through anything")
 ```
 
 `location.clashes()` lists what passes through what, and a render refuses a figure that still does. `solid=False` on a
-figure lets it through on purpose. These checks find overlap only, so a figure floating 15 cm off a seat back reports nothing.
-`examples/fit_check.py` goes further for the car: each limb against hard parts and cushions separately, how far the back,
-hips and thighs are from the seat, wrist to steering wheel, and joint angles.
+figure lets it through on purpose. `location.contact` sets how far things may meet: a body may sink 3 cm into anything with the
+`soft` role or a material in `cushions`. `location.faults()` names each limb at fault, including one wholly inside a closed
+`Surface`, and `location.gap()` measures how far a limb is from what is below or behind it. `validate()` warns when a figure
+is not resting on what should carry it, has settled off its mark, passes through itself, or blocks a shot of someone.
+
+`location.look()` turns a figure's head to a point, a mark or another figure, `location.reach()` moves a hand or foot to one,
+and `location.repose()` changes pose until the set stops it. A reach is solved by geometry, so it is exact: `pole=` is a
+point the elbow or knee points toward, and `keep=True` keeps the hand or foot turned as it was. `location.frame()` composes a two-shot, a close-up or an
+over-the-shoulder around figures, and keeps it composed when they move. `location.report()` gives the numbers behind the checks,
+and `location.blocking()` gives each mark as plain data for a 2D rig: where its body is, which way it faces, and where it falls
+in a shot.
+
+```python
+location.look("guest", "host")
+location.frame("stock.two-shot", "host", "guest", name="talk")
+print(location.report())
+print(location.blocking("talk")[0]["mark"])
+```
+
+`examples/fit_check.py` uses these for the car, and adds wrist to steering wheel and joint angles.
 
 `location.cast()` puts a 2D character on a mark, and furniture hides it by default. Characters come from a `Performer`. The
 optional `SrstudioCast` plugin gets them from srstudio, through that project's interpreter in `SRSTUDIO_PYTHON`.
@@ -166,12 +186,26 @@ renderer.frame(walk, "follow", "renders/walk-1s.png", 1.0, "stock.shaded")
 ```
 
 `ease` says how a move reaches its key: `linear`, `ease-in`, `ease-out`, `ease-in-out` (the default), `hold`, or `smooth`, which
-carries on through a key without stopping. Each field keeps its own keys. `move()` with no values waits, and on a shot where
+carries on through a key without stopping. Four numbers, `ease=(0.25, 0.1, 0.25, 1)`, are a curve as CSS draws one. Each
+field keeps its own keys. `move()` with no values waits, and on a shot where
 nothing else moves it gives a still a length. `location.at(time)` is the location at that moment, as an ordinary location.
 
 Every look, the wireframe and paint work in motion. A frame of a clip is the same picture as a still of that moment: the tests
 compare them byte for byte, on both engines. `validate()` and `clashes()` look along the shot and say when a fault starts, and
 a blueprint can hold the same keys under `"moves"`. `examples/motion.py` makes one film in four looks.
+
+`location.plant()` keeps a figure's foot or hand where it is at one time until another, and the knee or elbow bends to keep it
+there while the hips move. `follow()` can trail its target by `lag` seconds, ignore moves inside `dead` metres and look `ahead`,
+as an operator would. `location.shake()` shakes a shot's camera by hand, or as a blow that dies away with `decay`, the same way
+for the same `seed`. `location.onion()` is one still with see-through ghosts of each moving figure at other times, to review a
+move in one picture, and `Pose.push()` and `Pose.relax()` move an in-between away from or toward the plain blend of its keys.
+
+```python
+walk.follow("follow", "host", (0, 1, 0), lag=0.4, dead=0.1)
+walk.shake("follow", amount=0.4, seed=2)
+review = walk.onion(1.0, (0.0, 2.0))
+renderer.render(review, "follow", "renders/walk-onion.png", "stock.shaded")
+```
 
 ## Curved solids
 
@@ -233,6 +267,10 @@ Both copy every file the document reads.
 
 ## Extending it
 
+[docs/tutorial.md](docs/tutorial.md) builds a radio booth from an empty room to a published catalog. It takes in prefabs, curved
+parts, screens, light, a body to check the set, a plugin, a rig, a generator, a rule, a look, a pass, paint and publishing, with
+a table of what usually goes wrong. Its code runs as a test, as this README's does.
+
 A plugin is a class with a `register()` method. New behaviour arrives through `Prefab`, `LightRig`, `Archetype`, `Check`,
 `Library`, `PropTemplate`, `Compiler`, `RenderMode`, `Pass`, `PaintItem` and `Performer`.
 
@@ -285,23 +323,30 @@ engine.
 
 `examples/` holds runnable scripts, and each writes into `renders/`. A good order is `use_cases.py`, `paintover.py`,
 `texture_looks.py`, `mannequin.py`, `casting.py`, `polish.py` and `motion.py`. `publish_catalog.py` and `use_catalog.py` publish and read
-the catalog, `grand_tourer_paper.py` renders the car as a paper paint-over, and `fit_check.py` puts mannequins in every set.
+the catalog, `grand_tourer_paper.py` renders the car as a paper paint-over, `airliner.py` renders the published cabin,
+`flight_deck.py` renders the published flight deck with and without its crew, and `fit_check.py` puts mannequins in every set.
 
 ## Limits
 
 - Only a node's place, turn and pose can move. A prefab that changes size or number of parts over a shot is refused, and so is
   a part of a prefab on its own.
-- A figure's walk is poses blended in time: nothing keeps its feet on the floor, so they slide unless the keys are placed with
-  care. A character is one picture, so it goes with its mark and does not animate.
+- A planted foot holds only while the leg can reach it, so hips that go too far drag it, and nothing lowers them to help.
+  A foot cannot roll, so on a slope it keeps only its heading and pitch, and a plant lets go at once at its end, so key the
+  pose to meet it. A character is one picture, so it goes with its mark and does not animate.
 - Time is checked at keys and four times a second, so a body that passes through something thinner than that can be missed.
 - There is no motion blur. The engine's made no difference on 3D objects when tried in stills, and it has not been tried in a
   film, so films are sharp frames.
 - `Cel(cut="auto")` measures one cut, at the middle of a shot. Ink chooses its surfaces once, where the solids stand at the start.
 - Paint and the wireframe are redrawn for each frame, so their part of a document grows with its length.
 - H.264 needs an even width and height, which the engine reports when a mode has neither.
-- A mannequin is forward kinematics with rigid segments, and a settled figure does not change its pose to fit.
-- `location.clashes()` reports the deepest overlap for each pair of nodes, so a smaller one can hide behind it, and it cannot
-  see a limb wholly inside a `Surface`. Contact is measured only by `examples/fit_check.py`, and only for the car.
+- A mannequin has rigid segments and no skinning. `reach()` solves one arm or leg for a point, `keep=` holds a hand only
+  within its narrow side-to-side range, a settled figure does not change
+  its pose to fit, and `repose()` stops where something is in the way, without looking for a way round it.
+- `location.clashes()` reports the deepest overlap for each pair of nodes, so a smaller one can hide behind it, and
+  `location.faults()` lists every limb. A model is judged by its bounding box, and `location.report()` names those near a figure.
+- The survey kinds match ANSUR II one dimension at a time. Nobody is the 95th percentile in everything, so they mark the edges
+  of a fit and are not people, and nothing between those seven dimensions was measured.
+- Props carry no grip points yet, and a pose cannot be read from another package's rig.
 - The comfort ranges in `examples/fit_check.py` are working values, not taken from a published standard.
 - Depth for paint treats a mark as one distance, to within 15 cm, and paint casts no shadow onto the set.
 - A tiled texture runs backwards on two of a room's four walls, which only lettering would show, and still restarts on each
@@ -315,4 +360,11 @@ the catalog, `grand_tourer_paper.py` renders the car as a paper paint-over, and 
   holds the folder.
 - A seal stops a mirror winding back a reader who has fetched before. It cannot show a first-time reader that a seal is old,
   or show anyone that a mirror stopped updating.
-- A character's picture stands on its mark, while a seated mannequin settles onto the seat, so the two can differ.
+- A character goes where the figure on its mark settled, but it is one picture, so it stands where the figure sits.
+- A frozen prop keeps its seats only from this version on. A version published before has none, so a figure in the `sit` pose
+  finds nothing on it until a new version is published.
+- A catalog prop can carry point and spot lights but not a sun or ambient light, and a published location takes its rig from
+  stock.
+- A shot has no lens shift, so a reference photo with corrected verticals is matched by eye height only.
+- The engine holds 63 lights to a screen tile. Past that some lights drop out, so a set with many lamps needs short `reach`.
+- A mark warns `mark-blocked` without about 2 m of clear space above it, which a seat or a low cockpit roof does not have.

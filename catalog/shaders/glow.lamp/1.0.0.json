@@ -1,0 +1,22 @@
+{
+  "description": "A dim dome lamp",
+  "digest": "402ace4c363e714efaa86840c562cb750e6cc69e951f94ec1a467e03eade48a2",
+  "kind": "shader",
+  "name": "glow.lamp",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#d8dce8",
+    "glow_strength": 0.5,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

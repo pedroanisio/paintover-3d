@@ -1,0 +1,25 @@
+{
+  "description": "Blue-green seat cloth",
+  "digest": "a5cd3edb3e3d2674372a0ff9a8f19482e1d547e558902224b5915ce53d4b8946",
+  "kind": "shader",
+  "name": "fabric.petrol",
+  "payload": {
+    "color": "#173f58",
+    "extra": {
+      "sheenColor": "#4c86a8",
+      "sheenRoughness": 0.6
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.74
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "fabric"
+  ],
+  "version": "1.0.0"
+}

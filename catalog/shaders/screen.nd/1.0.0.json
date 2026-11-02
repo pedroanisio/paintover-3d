@@ -1,0 +1,25 @@
+{
+  "description": "Navigation display",
+  "digest": "307cf77940257ad212b74ae713e84608f8bcb91dfecb4505d0ea76609f5edc5d",
+  "kind": "shader",
+  "name": "screen.nd",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "21eb0b7f2a9f62b9b7fdd20b8ab1647cb774fd25305e9e2246e799f087245a51.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.75
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

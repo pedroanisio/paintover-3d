@@ -44,7 +44,7 @@ from srlocations.location import Issue, Location
 from srlocations.looks import Look, Styled, Texture
 from srlocations.materials import Material
 from srlocations.mesh import MODEL, Mesh
-from srlocations.nodes import Backdrop, Box, Cone, Cylinder, Light, Node, Placed, Point, Prefab, Round, Solid, Sphere, Spot
+from srlocations.nodes import Backdrop, Box, Cone, Cylinder, Light, Node, Placed, Point, Prefab, Round, Seat, Solid, Sphere, Spot
 from srlocations.paint import Decal
 from srlocations.portable import bundle, digest
 from srlocations.registry import CatalogError, Registry
@@ -90,7 +90,8 @@ def _freeze(leaf: Placed, material: Optional[str] = None) -> dict:
                 "dimensions": {k: round(v, 6) for k, v in item.dimensions().items()}}
         if isinstance(item, (Surface, Decal)):
             # A name is kept, so sectors of one shape can go on sharing it, and ink no line between them.
-            return {**part, "surface": item.spec(), **({"name": item.name} if item.name else {})}
+            return {**part, "surface": item.spec(), **({"name": item.name} if item.name else {}),
+                    **({"hollow": True} if item.hollow else {})}
         return part if not hasattr(item, "segments") else {**part, "segments": item.segments}
     if item.kind not in LIGHTS:
         raise CatalogError(f"{leaf.path}: a prop can carry point and spot lights, not {item.kind!r}")
@@ -127,7 +128,9 @@ def _thaw(part: dict, material: str) -> Node:
     kind, size = SOLIDS[part["solid"]], part["dimensions"]
     look = {"material": material, "casts_shadow": part["casts_shadow"], **place}
     if kind in (Surface, Decal):
-        return kind(**part["surface"], **look, **({"name": part["name"]} if "name" in part else {}))
+        made = kind(**part["surface"], **look, **({"name": part["name"]} if "name" in part else {}))
+        made.hollow = part.get("hollow", made.hollow)
+        return made
     if kind is Box:
         return Box((size["width"], size["height"], size["depth"]), **look)
     if kind is Backdrop:
@@ -158,6 +161,11 @@ class FrozenProp(Prefab):
     shaders: dict[str, str] = field(default_factory=dict)  # slot to the shader this instance uses instead
     nested: bool = False  # inside another prop, which pins its version
     root: Optional[Path] = None  # of the catalog, where a prop's models lie
+    seated: Sequence[dict] = ()  # the places to sit it was published with, in its frame
+    moves: bool = False  # published from a body, so it still counts as one
+
+    def seats(self) -> Sequence[Seat]:
+        return [Seat(Vec3.of(seat["at"]), seat["facing"], seat["height"], seat["depth"], seat["back"]) for seat in self.seated]
 
     def shader(self, slot: str) -> str:
         return self.shaders.get(slot) or f"{self.catalog}.{self.slots[slot]}"
@@ -390,6 +398,12 @@ class SharedCatalog:
             if isinstance(leaf.item, Mesh):
                 part["model"] = self._store_model(leaf.item, shaders)
         payload: dict[str, Any] = {"parts": parts}
+        seats = [{"at": _rounded(seat.at), "facing": round(seat.facing, 6) + 0.0, "height": seat.height, "depth": seat.depth,
+                  "back": seat.back} for seat in node.seating()]
+        if seats:  # only when there are some, so a prop without them keeps its digest
+            payload["seats"] = seats
+        if node.moves:
+            payload["moves"] = True
         if slots:
             unused = sorted(set(slots.values()) - set(shaders))
             if unused:
@@ -765,7 +779,7 @@ class SharedCatalog:
         if not payload.get("template"):
             if budget is not None:
                 budget.spend(len(payload["parts"]))
-            return FrozenProp(frozen=payload["parts"], **common)
+            return FrozenProp(frozen=payload["parts"], seated=payload.get("seats", ()), moves=payload.get("moves", False), **common)
         return TemplateProp(source=self, template=payload["parts"], values=values, budget=budget, depth=depth, **common)
 
     def _unknown(self, entry: Entry, what: str, name: str, known: Iterable[str]) -> CatalogError:

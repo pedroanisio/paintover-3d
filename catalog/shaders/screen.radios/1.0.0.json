@@ -1,0 +1,25 @@
+{
+  "description": "Radio panels",
+  "digest": "b11acde1332013de45eadcf594570f8a25876028cdd1faa3924f43ab647ded4c",
+  "kind": "shader",
+  "name": "screen.radios",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "e4e8b1eac038c444aa2e14a6eab7b6311f2ed44340ad2b2b4f64abb4bd4ac20f.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.75
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

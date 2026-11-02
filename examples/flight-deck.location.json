@@ -1,0 +1,12 @@
+{
+  "name": "flight-deck",
+  "nodes": [
+    {"use": "studio.flight-deck"}
+  ],
+  "shots": [
+    {"name": "from-the-jump-seat", "eye": [0, 1.38, -0.95], "look_at": [0, 1.05, 0.45], "lens": 24},
+    {"name": "captains-seat", "eye": [-0.55, 1.31, -0.01], "look_at": [-0.1, 1.15, 1.2], "lens": 22},
+    {"name": "pedestal", "eye": [0, 1.25, -0.1], "look_at": [0, 0.6, 0.55], "lens": 22},
+    {"name": "overhead", "eye": [0, 1.2, -0.2], "look_at": [0, 1.75, 0.9], "lens": 20}
+  ]
+}

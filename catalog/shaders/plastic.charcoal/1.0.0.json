@@ -1,0 +1,22 @@
+{
+  "description": "Dark grey moulded seat shell",
+  "digest": "526b00f2e5f2afaebb194478ebfd68510877c3afc2099b6610529a88827fd12a",
+  "kind": "shader",
+  "name": "plastic.charcoal",
+  "payload": {
+    "color": "#26282c",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.42
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plastic"
+  ],
+  "version": "1.0.0"
+}

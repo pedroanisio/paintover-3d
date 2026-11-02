@@ -1,0 +1,24 @@
+{
+  "description": "Bright sky through a window",
+  "digest": "580d6daba6f59b9a70b88dd1c53688cd0d711f072cb322a81ac04b8be93cae23",
+  "kind": "shader",
+  "name": "glow.window",
+  "payload": {
+    "color": "#000000",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "#fff4e6",
+    "glow_strength": 2.2,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

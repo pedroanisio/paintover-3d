@@ -12,6 +12,7 @@ code as a still's. A PaintItem from a plugin moves with no change.
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping, Optional, Sequence
 
@@ -19,18 +20,58 @@ from srlocations.geometry import Transform, Vec3
 from srlocations.nodes import Light, Placed, Solid
 
 SMOOTH = "smooth"
-EASES: dict[str, Callable[[float], float]] = {
+BEZIER = re.compile(r"cubic-bezier\(\s*([-+.\deE]+)\s*,\s*([-+.\deE]+)\s*,\s*([-+.\deE]+)\s*,\s*([-+.\deE]+)\s*\)")
+
+
+class MotionError(ValueError):
+    """A move that cannot be made."""
+
+
+class Eases(dict):
+    """Eases by name. A name written as CSS writes a curve, "cubic-bezier(x1, y1, x2, y2)", is an ease without being added."""
+
+    def __missing__(self, name: str) -> Callable[[float], float]:
+        found = BEZIER.fullmatch(name) if isinstance(name, str) else None
+        if found is None:
+            raise KeyError(name)
+        return _bezier(*(float(part) for part in found.groups()))
+
+    def __contains__(self, name: object) -> bool:
+        return super().__contains__(name) or isinstance(name, str) and BEZIER.fullmatch(name) is not None
+
+
+EASES: dict[str, Callable[[float], float]] = Eases({
     "linear": lambda u: u,
     "ease-in": lambda u: u * u,
     "ease-out": lambda u: u * (2 - u),
     "ease-in-out": lambda u: u * u * (3 - 2 * u),
     "hold": lambda u: 1.0 if u >= 1 else 0.0,
     SMOOTH: lambda u: u,  # passes through its keys without stopping; see `through`
-}
+})
 
 
-class MotionError(ValueError):
-    """A move that cannot be made."""
+def cubic_bezier(x1: float, y1: float, x2: float, y2: float) -> str:
+    """The name of an ease drawn as CSS draws one: a curve from (0, 0) to (1, 1), time across and progress up, pulled by two
+    handles. `move(ease=)` takes the name or the four numbers. A handle's x is within 0 to 1, so time only goes forward; its
+    y may go past them, and then the move goes past its key and comes back."""
+    if not (0 <= x1 <= 1 and 0 <= x2 <= 1):
+        raise MotionError(f"a handle's x is within 0 to 1, as time only goes forward, not {x1} and {x2}")
+    return f"cubic-bezier({x1:g}, {y1:g}, {x2:g}, {y2:g})"
+
+
+def _bezier(x1: float, y1: float, x2: float, y2: float) -> Callable[[float], float]:
+    cubic_bezier(x1, y1, x2, y2)
+    along = lambda t, a, b: 3 * (1 - t) ** 2 * t * a + 3 * (1 - t) * t * t * b + t ** 3
+
+    def ease(u: float) -> float:
+        if u <= 0 or u >= 1:
+            return 1.0 if u >= 1 else 0.0
+        low, high = 0.0, 1.0
+        for _ in range(52):  # halving to the last bit of a float: the curve's x only grows, so this always finds it
+            middle = (low + high) / 2
+            low, high = (middle, high) if along(middle, x1, x2) < u else (low, middle)
+        return along((low + high) / 2, y1, y2)
+    return ease
 
 
 def blend(a: Any, b: Any, u: float) -> Any:

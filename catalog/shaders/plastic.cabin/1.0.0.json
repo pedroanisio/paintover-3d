@@ -1,0 +1,24 @@
+{
+  "description": "Warm white cabin wall",
+  "digest": "7232030dbe6cfde06d2a4b7492b9d4fb15eb244be6cc65336f36f42891a0521f",
+  "kind": "shader",
+  "name": "plastic.cabin",
+  "payload": {
+    "color": "#efe6d6",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plastic"
+  ],
+  "version": "1.0.0"
+}

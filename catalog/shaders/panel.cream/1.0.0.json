@@ -1,0 +1,24 @@
+{
+  "description": "Pale flight deck lining",
+  "digest": "62bbb103ce0e1355205a685d7ad8d330028b62190a36f6eb2ba9ddc67650234a",
+  "kind": "shader",
+  "name": "panel.cream",
+  "payload": {
+    "color": "#b4b1aa",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plastic"
+  ],
+  "version": "1.0.0"
+}

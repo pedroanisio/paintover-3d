@@ -1,0 +1,26 @@
+{
+  "description": "A lit city at dusk from the air",
+  "digest": "a0ef7fe85b943e7492d021cfcb933d55e3184cdef7467b77e588418076cd00dd",
+  "kind": "shader",
+  "name": "view.city",
+  "payload": {
+    "color": "#ffffff",
+    "extra": {
+      "unlit": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "40f56a26fc68bbfc675e8b40c7b3435b640bf8b93a72aaab375c66cc8cdaff92.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "backdrop"
+  ],
+  "version": "1.0.0"
+}

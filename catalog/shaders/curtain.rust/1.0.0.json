@@ -1,0 +1,24 @@
+{
+  "description": "Rust curtain",
+  "digest": "e9d9a964df79e2155584a821b77318842714664277fbbee40b64614203dadfc1",
+  "kind": "shader",
+  "name": "curtain.rust",
+  "payload": {
+    "color": "#7e3517",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.8
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "fabric"
+  ],
+  "version": "1.0.0"
+}

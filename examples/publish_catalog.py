@@ -62,6 +62,20 @@ def main() -> None:
     catalog.publish_location("grand-tourer", json.loads((ROOT / "examples/grand-tourer.location.json").read_text()), "1.5.0",
                              tags=["vehicle", "interior", "landscape"],
                              description="Grand tourer parked at a mountain overlook, door open")
+    airliner = registry.plugins.load_file(ROOT / "examples/plugins/airliner.py")
+    for name, (material, tags, description) in airliner.shaders.items():
+        catalog.publish_shader(name, material, tags=tags, description=description)
+    catalog.publish_prop("airliner-cabin", registry.create("air.cabin"), registry, "1.0.1", tags=["vehicle", "interior"],
+                         description="A narrow-body cabin, three seats either side of the aisle", slots=airliner.slots)
+    catalog.publish_location("airliner", json.loads((ROOT / "examples/airliner.location.json").read_text()), "1.0.1",
+                             tags=["vehicle", "interior"], description="An empty airliner cabin in warm evening light")
+    flight_deck = registry.plugins.load_file(ROOT / "examples/plugins/flight_deck.py")
+    for name, (material, tags, description) in flight_deck.shaders.items():
+        catalog.publish_shader(name, material, tags=tags, description=description)
+    catalog.publish_prop("flight-deck", registry.create("air.flight-deck"), registry, "1.0.0", tags=["vehicle", "interior", "aircraft"],
+                         description="An airliner's flight deck with lit screens, overhead and a city at dusk outside", slots=flight_deck.slots)
+    catalog.publish_location("flight-deck", json.loads((ROOT / "examples/flight-deck.location.json").read_text()), "1.0.0",
+                             tags=["vehicle", "interior", "aircraft"], description="A flight deck at dusk over a lit city")
     for entry in catalog.entries():
         print(f"{entry.kind:<9}{entry.ref:<34}{entry.description}")
     print("verify:", catalog.verify() or "clean")

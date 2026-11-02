@@ -1,0 +1,24 @@
+{
+  "description": "Black behind the instruments",
+  "digest": "e9f54600276ac3aba385f171d26509e3ab4e980aa77ba88160f9f2d26bbe97b4",
+  "kind": "shader",
+  "name": "panel.black",
+  "payload": {
+    "color": "#0b0b0e",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.7
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plastic"
+  ],
+  "version": "1.0.0"
+}

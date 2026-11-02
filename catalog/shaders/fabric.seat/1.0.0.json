@@ -1,0 +1,22 @@
+{
+  "description": "Pale seat cushion",
+  "digest": "2c6184f7e97069cfcb63eea0eff7326962856f5071ba941a453768ce65d8a1ee",
+  "kind": "shader",
+  "name": "fabric.seat",
+  "payload": {
+    "color": "#a9a7ad",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.9
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "fabric"
+  ],
+  "version": "1.0.0"
+}

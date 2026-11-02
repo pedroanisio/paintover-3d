@@ -1,0 +1,24 @@
+{
+  "description": "Amber light washed down a wall",
+  "digest": "23cf23f1dbb36c777af22044ce837741608cff2c73314f56eba462e62d63f0bc",
+  "kind": "shader",
+  "name": "glow.wash",
+  "payload": {
+    "color": "#000000",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "#eab27f",
+    "glow_strength": 0.62,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

@@ -1,6 +1,7 @@
 from typing import Iterable
 
-from srlocations.geometry import Vec3
+from srlocations.collision import GAP, Body, blocked
+from srlocations.geometry import Transform, Vec3
 from srlocations.location import Check, Issue, Location
 from srlocations.mesh import MODEL, SLOT, Mesh
 
@@ -63,6 +64,65 @@ class SolidsClear(Check):
     def run(self, location: Location) -> Iterable[Issue]:
         for clash in location.clashes():
             yield Issue("error", "body-clash", str(clash)) if clash.moving else Issue("warning", "solids-overlap", str(clash))
+
+
+class FiguresOnMarks(Check):
+    """A body settles where there is room, which may not be its mark. A character on the mark goes with it, so a picture and a
+    stand-in agree, and a shot aimed at the mark may not."""
+    MOVED = 0.02
+
+    def run(self, location: Location) -> Iterable[Issue]:
+        origin = location.origin or location  # a moment's nodes are new, so what moves is found by place, as _shot_at does
+        moving = {new.label for old, new in zip(origin.nodes, location.nodes) if id(old) in origin.motion}  # it left on purpose
+        for figure in location.figures():
+            if figure.name in location.marks and figure.label not in moving:
+                off = (Vec3.of(figure.at) - location.marks[figure.name].at).length
+                if off > self.MOVED:
+                    yield Issue("warning", "figure-off-mark", f"{figure.label} settled {off * 100:.0f} cm from its mark")
+        for layer in location.paintings:
+            for actor in (actor for item in layer.items for actor in getattr(item, "actors", ())):
+                if actor.mark in location.marks and (Vec3.of(actor.at) - location.standing(actor.mark)).length > self.MOVED:
+                    yield Issue("warning", "cast-off-figure", f"the character on {actor.mark!r} is not where the figure on it is")
+
+
+class FiguresResting(Check):
+    """Overlap says nothing about support. A figure can pass every collision check with its back a hand off the backrest."""
+
+    def run(self, location: Location) -> Iterable[Issue]:
+        for figure in filter(lambda figure: figure.collides, location.figures()):
+            rest, seat = location.contact.rest, location.seat_of(figure)
+            below = min((location.gap(figure, joint, (0, -1, 0)) for joint in figure.footing()), default=0.0)
+            if rest < below < GAP or (seat and below > rest):
+                yield Issue("warning", "figure-not-resting", f"{figure.label} is {below * 100:.0f} cm above what should carry it")
+            if seat and seat.back:
+                behind = Transform.at(yaw=seat.facing).apply((0, 0, -1))
+                back = min(location.gap(figure, joint, behind) for joint in figure.backing())
+                if back > rest:
+                    yield Issue("warning", "figure-not-resting", f"{figure.label}'s back is {back * 100:.0f} cm off the backrest")
+
+
+class FiguresUntangled(Check):
+    """A pose is checked against its ranges one control at a time, so an arm can still go through the chest. It is a warning,
+    since rigid segments overlap at a bent joint that a real body folds around."""
+
+    def run(self, location: Location) -> Iterable[Issue]:
+        for figure in location.figures():
+            for fault in figure.tangled():
+                yield Issue("warning", "figure-tangled", f"{figure.label}: {fault}")
+
+
+class SightsClear(Check):
+    """A shot composed around figures should see them. Those it is composed around do not block it, or a shoulder in the
+    foreground of an over-the-shoulder would."""
+
+    def run(self, location: Location) -> Iterable[Issue]:
+        for title, (_, labels, _) in location.framed.items():
+            bodies = [body for body in (Body.of(node, location.contact) for node in location.nodes
+                                        if node.collides and node.label not in labels) if body]
+            for label in labels:
+                blocker = blocked(location.shots[title].eye, location.figure(label).sight()[0], bodies)
+                if blocker:
+                    yield Issue("warning", "sight-blocked", f"shot {title!r} cannot see {label}: {blocker} is in the way")
 
 
 class MarksClear(Check):

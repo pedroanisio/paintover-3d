@@ -48,4 +48,5 @@ PALETTE = {
     "mannequin.joint": Material("#3a3d42", 0.5),
     "mannequin.left": Material("#2f6db5", 0.5),
     "mannequin.right": Material("#c23b32", 0.5),
+    "mannequin.ghost": Material("#8fb3d9", 0.6, opacity=0.3),  # where a figure was or will be; see location.onion()
 }

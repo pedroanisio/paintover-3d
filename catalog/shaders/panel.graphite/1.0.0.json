@@ -1,0 +1,24 @@
+{
+  "description": "Flat dark instrument panel paint",
+  "digest": "aec312f89f8139a502a48439b9c806579e176ca15f812acfae9d70b80d942b7b",
+  "kind": "shader",
+  "name": "panel.graphite",
+  "payload": {
+    "color": "#26272b",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.6
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plastic"
+  ],
+  "version": "1.0.0"
+}

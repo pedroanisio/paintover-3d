@@ -11,7 +11,7 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Generic, Iterable, Optional, Sequence, TypeVar
+from typing import Any, Callable, Generic, Iterable, Iterator, Optional, Sequence, TypeVar
 
 from srlocations.materials import Material
 from srlocations.nodes import Group, Node, Prefab
@@ -50,6 +50,12 @@ class Catalog(Generic[T]):
     def names(self) -> list[str]:
         return sorted(self._items)
 
+    def __getitem__(self, name: str) -> T:
+        return self.get(name)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._items)
+
     def __contains__(self, name: str) -> bool:
         return name in self._items
 
@@ -63,6 +69,10 @@ class Registry:
         self.modes: Catalog[Callable[..., Any]] = Catalog("render mode")
         self.passes: Catalog[Any] = Catalog("look pass")  # Pass classes, by the name a look written as data uses
         self.cast: Catalog[Any] = Catalog("character")  # Performers
+        self.poses: Catalog[Any] = Catalog("pose")  # a figure's pose by name, such as a Mannequin's `pose="sit"`
+        self.kinds: Catalog[Any] = Catalog("body")  # a figure's body by name, such as a Mannequin's `kind="child"`
+        self.framings: Catalog[Callable[..., Any]] = Catalog("framing")  # how location.frame() composes figures
+        self.readers: dict[str, Callable[[Any], Any]] = {}  # a blueprint's section to what reads an entry into that catalog
         self.shared: dict[str, Any] = {}  # installed shared catalogs, by name
         self.resolved: dict[str, str] = {}  # an unpinned shared name to the name@version it stands for
         self.checks: list[Any] = []

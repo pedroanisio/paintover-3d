@@ -1,0 +1,22 @@
+{
+  "description": "Blue flood strip",
+  "digest": "20764ef493ffc10305c72b046b606425c595474fd722ab5e1f8afd86147b9e31",
+  "kind": "shader",
+  "name": "glow.lip",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#3a58ff",
+    "glow_strength": 3.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

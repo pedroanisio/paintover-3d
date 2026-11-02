@@ -1,0 +1,80 @@
+{
+  "description": "A flight deck at dusk over a lit city",
+  "digest": "39c8d8958023002b682fb1784d3a3b1fd139d5d62342da2a06015ca380cb3c00",
+  "kind": "location",
+  "name": "flight-deck",
+  "payload": {
+    "name": "flight-deck",
+    "nodes": [
+      {
+        "use": "studio.flight-deck@1.0.0"
+      }
+    ],
+    "shots": [
+      {
+        "eye": [
+          0,
+          1.38,
+          -0.95
+        ],
+        "lens": 24,
+        "look_at": [
+          0,
+          1.05,
+          0.45
+        ],
+        "name": "from-the-jump-seat"
+      },
+      {
+        "eye": [
+          -0.55,
+          1.31,
+          -0.01
+        ],
+        "lens": 22,
+        "look_at": [
+          -0.1,
+          1.15,
+          1.2
+        ],
+        "name": "captains-seat"
+      },
+      {
+        "eye": [
+          0,
+          1.25,
+          -0.1
+        ],
+        "lens": 22,
+        "look_at": [
+          0,
+          0.6,
+          0.55
+        ],
+        "name": "pedestal"
+      },
+      {
+        "eye": [
+          0,
+          1.2,
+          -0.2
+        ],
+        "lens": 20,
+        "look_at": [
+          0,
+          1.75,
+          0.9
+        ],
+        "name": "overhead"
+      }
+    ]
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "vehicle",
+    "interior",
+    "aircraft"
+  ],
+  "version": "1.0.0"
+}

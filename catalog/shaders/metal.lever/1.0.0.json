@@ -1,0 +1,22 @@
+{
+  "description": "Worn lever metal",
+  "digest": "fa7ed71714cfff1b704138139fd1b8d96fea51d2cf1e3ff388b4e382fe806422",
+  "kind": "shader",
+  "name": "metal.lever",
+  "payload": {
+    "color": "#b9bcc2",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 1.0,
+    "opacity": 1.0,
+    "roughness": 0.3
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

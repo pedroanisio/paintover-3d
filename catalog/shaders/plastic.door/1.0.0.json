@@ -1,0 +1,24 @@
+{
+  "description": "Paler lower edge of a bin",
+  "digest": "7de9b21823a573d8164bfb09723f9ed03d5b9834c87c2b9250555389eff1d2a1",
+  "kind": "shader",
+  "name": "plastic.door",
+  "payload": {
+    "color": "#7d8d8f",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.3
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plastic"
+  ],
+  "version": "1.0.0"
+}

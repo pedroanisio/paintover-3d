@@ -66,6 +66,11 @@ class Transform:
         moved = [sum(row[c] * v for c, v in enumerate(p)) for row in self.basis]
         return Vec3(*moved) + self.position
 
+    def undo(self, point: VecLike) -> Vec3:
+        """A point in this transform's parent frame, in its own: the inverse of apply()."""
+        d = Vec3.of(point) - self.position
+        return Vec3(*(sum(self.basis[r][c] * v for r, v in enumerate(d)) for c in range(3)))
+
     def then(self, child: "Transform") -> "Transform":
         """The child's transform expressed in this transform's parent frame."""
         return Transform(self.apply(child.position), _multiply(self.basis, child.basis))

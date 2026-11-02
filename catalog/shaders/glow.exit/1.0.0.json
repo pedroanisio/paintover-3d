@@ -1,0 +1,22 @@
+{
+  "description": "A green exit sign",
+  "digest": "0ac39cf0f34d1f314bf23a2324b0f86539493a2a7f92983b7c0c3260fd7e08b5",
+  "kind": "shader",
+  "name": "glow.exit",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#39c66b",
+    "glow_strength": 2.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

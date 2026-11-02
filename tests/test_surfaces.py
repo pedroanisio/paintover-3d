@@ -245,6 +245,23 @@ def test_the_published_grand_tourer_needs_no_plugin():
     assert catalog.pins(catalog.location("grand-tourer", "1.0.0"))["props"] == {"gt-cabin": "1.0.0", "mountain-overlook": "1.0.0"}
 
 
+def test_the_published_airliner_needs_no_plugin():
+    catalog = SharedCatalog.open(ROOT / "catalog")
+    location = catalog.location("airliner")
+    assert "airliner" not in location.registry.plugins.loaded
+    assert location.validate() == [] and set(location.shots) == {"down-the-aisle", "window-seat", "from-the-galley"}
+    assert catalog.pins(location)["props"] == {"airliner-cabin": "1.0.1"}
+    assert len(location.lights()) < 63  # past that the engine drops the far end of the cabin's lights
+
+
+def test_the_published_flight_deck_needs_no_plugin():
+    catalog = SharedCatalog.open(ROOT / "catalog")
+    location = catalog.location("flight-deck")
+    assert "flight-deck" not in location.registry.plugins.loaded
+    assert location.validate() == [] and set(location.shots) == {"from-the-jump-seat", "captains-seat", "pedestal", "overhead"}
+    assert catalog.pins(location)["props"] == {"flight-deck": "1.0.0"}
+
+
 def test_every_part_of_a_published_prop_has_its_own_path():
     leaves = SharedCatalog.open(ROOT / "catalog").location("grand-tourer").solids()
     cabin = [leaf.path for leaf in leaves if isinstance(leaf.item, Surface) and leaf.path.startswith("gt-cabin")]

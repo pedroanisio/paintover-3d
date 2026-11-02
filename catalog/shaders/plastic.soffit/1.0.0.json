@@ -1,0 +1,24 @@
+{
+  "description": "Pale glossy panel under the bins",
+  "digest": "16a1da8ad0355f2a02a402aa872c4ede0897987539773f59c8de8c70308333fc",
+  "kind": "shader",
+  "name": "plastic.soffit",
+  "payload": {
+    "color": "#a6aaa8",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.24
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plastic"
+  ],
+  "version": "1.0.0"
+}

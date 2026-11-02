@@ -1,0 +1,25 @@
+{
+  "description": "Autopilot panel",
+  "digest": "20cb4d2e3250215a48a51988593797c599489fa658acc36edcf1f2725f884aa3",
+  "kind": "shader",
+  "name": "screen.mcp",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "bacaed8c1ba3e19da1c0bea2a3fb2b9b080d484295f8a0faf1fb3e2f58f49dc0.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.75
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

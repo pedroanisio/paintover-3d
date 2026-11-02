@@ -41,12 +41,13 @@ class Placed:
 
 @dataclass(frozen=True)
 class Seat:
-    """Somewhere a figure can sit: the floor under its hips there, the way it faces, how high the seat is above that, and
-    how far ahead its front edge is."""
+    """Somewhere a figure can sit: the floor under its hips there, the way it faces, how high the seat is above that, how
+    far ahead its front edge is, and how far behind its backrest is, 0 for none."""
     at: Vec3
     facing: float
     height: float = 0.0
     depth: float = 0.0
+    back: float = 0.0
 
 
 @dataclass
@@ -74,6 +75,15 @@ class Node(ABC):
     def seats(self) -> Sequence[Seat]:
         """The places it offers to sit, in its local frame."""
         return ()
+
+    def seating(self, parent: Transform = Transform()) -> Iterator[Seat]:
+        """Every place to sit on this node and under it, in the frame `parent` is the world of."""
+        world = parent.then(self.transform)
+        for seat in self.seats():
+            ahead = world.apply(Transform.at(seat.at, seat.facing).apply((0, 0, 1))) - world.apply(seat.at)
+            yield replace(seat, at=world.apply(seat.at), facing=math.degrees(math.atan2(ahead.x, ahead.z)))
+        for part in self.parts():
+            yield from part.seating(world)
 
     def sitting(self) -> tuple[float, float]:
         """In its local frame, how high what it sits on is, and how far ahead the backs of its knees are."""
@@ -125,6 +135,7 @@ class Solid(Node):
     casts_shadow: bool = field(default=True, kw_only=True)
     primitive = ""
     hollow = False  # True when its bounds are not filled, so cameras and marks may be inside them
+    shell = False  # True when its hulls are only its skin, so it has an encloses(point, world) for what lies within
 
     def walk(self, parent: Transform = Transform(), path: str = "") -> Iterator[Placed]:
         yield Placed(self, parent.then(self.transform), f"{path}/{self.label}".lstrip("/"), frozenset(self.role.split()))

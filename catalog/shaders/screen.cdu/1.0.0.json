@@ -1,0 +1,25 @@
+{
+  "description": "Flight management keypad and screen",
+  "digest": "9b02b7d6220a137271403245703690000ea1f9da427e913d3f3394c9183ac8aa",
+  "kind": "shader",
+  "name": "screen.cdu",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "82d423226fb0f1fb28979b916cb746e349fdcdd64ebeba9312805c126e2c21e7.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.75
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

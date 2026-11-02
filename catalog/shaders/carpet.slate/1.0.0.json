@@ -1,0 +1,22 @@
+{
+  "description": "Dark flight deck carpet",
+  "digest": "45842c5fd7b68eab20edc20f4bd8236b0f34c0ce0532090bda1c0f45289a2ae4",
+  "kind": "shader",
+  "name": "carpet.slate",
+  "payload": {
+    "color": "#1b1c22",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.95
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "fabric"
+  ],
+  "version": "1.0.0"
+}

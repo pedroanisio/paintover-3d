@@ -7,6 +7,7 @@ from typing import Optional
 
 from srlocations.cast import Portrait
 from srlocations.catalog import SharedCatalog
+from srlocations.collision import Contact
 from srlocations.location import Location
 from srlocations.looks import Look
 from srlocations.paint import PaintLayer
@@ -26,6 +27,10 @@ class Blueprint:
         for source in self.data.get("catalogs", ()):  # {"path": relative to this file, "pins": as SharedCatalog.pins}
             SharedCatalog.open(self.base / source["path"]).install(registry, source.get("pins"))
         location = Location(self.data["name"], registry)
+        location.contact = Contact(**self.data.get("contact", {}))
+        for section, read in registry.readers.items():  # "poses" and "kinds", by name, as the plugin that reads them says
+            for name, spec in self.data.get(section, {}).items():
+                getattr(registry, section).add(name, read(spec), override=True)
         for name, spec in self.data.get("looks", {}).items():  # {name: as Look.from_spec}, usable as a render mode by name
             Look.from_spec(spec, registry, self.base, name).register(registry, override=True)
         for spec in self.data.get("nodes", ()):
@@ -35,6 +40,10 @@ class Blueprint:
             location.rig(rig.pop("use"), **rig)
         for mark in self.data.get("marks", ()):
             location.mark(**mark)
+        for spec in self.data.get("stand", ()):  # {"mark": ..., and what a figure takes, such as "pose" and "kind"}
+            spec = dict(spec)
+            location.stand(spec.pop("mark"), **spec)
+        location.settle_all()
         for shot in self.data.get("shots", ()):
             location.shot(**shot)
         for spec in self.data.get("moves", ()):  # {"what": a shot, a mark or a node's name, "time": seconds, and as move()}
