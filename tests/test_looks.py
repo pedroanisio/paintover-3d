@@ -18,7 +18,7 @@ from srlocations import (Blueprint, Box, CatalogError, Cel, Cone, Cylinder, Deca
 from srlocations.geometry import Vec3
 from srlocations.location import Shot
 from srlocations.looks import SHADERS, lookup, touches, vivid
-from srlocations.nodes import Ambient, Placed, Point, Sun
+from srlocations.nodes import SEAM, Ambient, Placed, Point, Sun
 from srlocations.paint import curve, paint_over, png_size
 from srlocations.stock.prefabs import Wall, door
 from srlocations.stock.looks import ink_toon, paper_cutout
@@ -195,7 +195,7 @@ def test_a_box_has_six_slabs_flush_with_its_faces():
         outer = tuple(slab.at)[axis] + normal[axis] * tuple(slab.half_extents())[axis]
         assert outer == pytest.approx(normal[axis] * (2, 4, 6)[axis] / 2)
         others = [tuple(slab.size)[i] for i in range(3) if i != axis]
-        assert others == [(2, 4, 6)[i] for i in range(3) if i != axis]
+        assert others == pytest.approx([(2, 4, 6)[i] - 2 * SEAM for i in range(3) if i != axis])
 
 
 def test_round_solids_get_a_cap_for_each_flat_end():
@@ -633,3 +633,40 @@ def test_a_shader_that_does_not_compile_stops_the_render(tmp_path, monkeypatch):
     location.rig("stock.interior")
     with pytest.raises(RuntimeError, match="GLSL"):
         Renderer().render(location, "front", tmp_path / "shot.png", Styled(Look([Lit(), Ink()]), W, H, 1))
+
+
+def specks(path: Path, width: int, height: int) -> list[tuple[int, int]]:
+    """Where ink lies in a clump of under 40 pixels, cut off from any line."""
+    raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(path), "-f", "rawvideo", "-pix_fmt", "gray", "-"],
+                         capture_output=True, check=True).stdout
+    dark, seen, found = {(i % width, i // width) for i, value in enumerate(raw) if value < 50}, set(), []
+    for start in sorted(dark):
+        if start in seen:
+            continue
+        seen.add(start)
+        stack, size = [start], 0
+        while stack:
+            x, y = stack.pop()
+            size += 1
+            for step in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                if step in dark and step not in seen:
+                    seen.add(step)
+                    stack.append(step)
+        if size < 40:
+            found.append(start)
+    return found
+
+
+@pytest.mark.parametrize("supersample", [1, 2])
+def test_a_wall_built_in_sections_inks_without_specks(tmp_path, supersample):
+    """A section's side once shared a plane with the wall's face, and ink drew a speck wherever it won."""
+    from srlocations.stock.prefabs import Room, window
+    location = Location("lounge")
+    location.add(Room(6, 5, north=[window(-1.3), window(1.3)], east=[window(0, 1.8)]))
+    location.add("stock.sofa", at=(0, 0, 1.6), yaw=180)
+    location.add("stock.table", at=(0, 0, 0.3))
+    location.rig("stock.interior")
+    location.shot("wide", (-1.6, 1.5, -2.0), (0.8, 1.3, 2.5), lens=20)
+    look = Look([Ink(width=2)], sky="#ffffff")
+    path = Renderer().render(location, "wide", tmp_path / "ink.png", Styled(look, 960, 540, supersample))
+    assert specks(path, 960, 540) == []

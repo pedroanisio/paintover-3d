@@ -140,9 +140,11 @@ optional `SrstudioCast` plugin gets them from srstudio, through that project's i
 ## Motion
 
 `location.move()` adds a key: the thing named reaches these values at this many seconds. It can name a shot (`eye`, `look_at`,
-`lens`), a mark (`at`, `facing`) or a node (`at`, `yaw`, a figure's `pose`, and any other field that keeps its parts). What
-stands on a mark goes with it, and that includes a figure, a character and paint given `mark=`. `location.follow()` keeps a
-mark or node in the middle of a shot, and a shot from `location.pov()` goes with its figure.
+`lens`), a mark (`at`, `facing`), a node (`at`, `yaw`, a figure's `pose`, or any other field), or an actor from `cast()`
+(`pose`, `height`, `flip`, `shadow`). A character's pose is a picture, so it changes when its key arrives. A node that changes
+size or number of parts is drawn in each shape for the frames it has it. What stands on a mark goes with it, and that includes
+a figure, a character and paint given `mark=`. `location.follow()` keeps a mark or node in the middle of a shot, and a shot
+from `location.pov()` goes with its figure.
 
 ```python
 from srlocations import Location, Shaded
@@ -161,17 +163,22 @@ walk.move(figure, 2, pose="stand", ease="linear")
 walk.move("table", 2, yaw=30)
 walk.move("follow", 2, lens=35)
 
-renderer.clip(walk, "follow", "renders/walk.mp4", Shaded(640, 360, 1, fps=12))
+renderer.clip(walk, "follow", "renders/walk.mp4", Shaded(640, 360, 1, fps=12, blur=180))
 renderer.frame(walk, "follow", "renders/walk-1s.png", 1.0, "stock.shaded")
 ```
 
 `ease` says how a move reaches its key: `linear`, `ease-in`, `ease-out`, `ease-in-out` (the default), `hold`, or `smooth`, which
-carries on through a key without stopping. Each field keeps its own keys. `move()` with no values waits, and on a shot where
-nothing else moves it gives a still a length. `location.at(time)` is the location at that moment, as an ordinary location.
+carries on through a key without stopping and never overshoots one. Each field keeps its own keys, and each control of a pose
+its own curve. `move()` with no values waits, and on a shot where nothing else moves it gives a still a length.
+`location.at(time)` is the location at that moment, as an ordinary location.
 
 Every look, the wireframe and paint work in motion. A frame of a clip is the same picture as a still of that moment: the tests
-compare them byte for byte, on both engines. `validate()` and `clashes()` look along the shot and say when a fault starts, and
-a blueprint can hold the same keys under `"moves"`. `examples/motion.py` makes one film in four looks.
+compare them byte for byte, on both engines. `blur=` on `Shaded`, `Traced` and `Styled` is a shutter angle in degrees, 180 for
+a film camera's usual look, and smears what moves in a film; ink and paint stay sharp, and a still has no shutter. For a film
+with ink, `supersample=4` steadies line widths. `clip()` refuses an odd width or height for `.mp4`, `.mov` and `.mkv`, which
+H.264 cannot encode. `clashes()` looks between keys often enough that no part of anything moving goes more than 3 cm unseen,
+and says when each fault starts, and so does `validate()`. A blueprint can hold the same keys under `"moves"`.
+`examples/motion.py` makes one film in four looks.
 
 ## Curved solids
 
@@ -289,16 +296,17 @@ the catalog, `grand_tourer_paper.py` renders the car as a paper paint-over, and 
 
 ## Limits
 
-- Only a node's place, turn and pose can move. A prefab that changes size or number of parts over a shot is refused, and so is
-  a part of a prefab on its own.
+- A part of a prefab cannot move on its own, and a node's lights cannot change in number or in their own values over a shot.
 - A figure's walk is poses blended in time: nothing keeps its feet on the floor, so they slide unless the keys are placed with
-  care. A character is one picture, so it goes with its mark and does not animate.
-- Time is checked at keys and four times a second, so a body that passes through something thinner than that can be missed.
-- There is no motion blur. The engine's made no difference on 3D objects when tried in stills, and it has not been tried in a
-  film, so films are sharp frames.
-- `Cel(cut="auto")` measures one cut, at the middle of a shot. Ink chooses its surfaces once, where the solids stand at the start.
-- Paint and the wireframe are redrawn for each frame, so their part of a document grows with its length.
-- H.264 needs an even width and height, which the engine reports when a mode has neither.
+  care. A character changes pose only at a key, a whole picture at a time.
+- Between keys, nothing moving goes more than 3 cm unchecked, so a finger can pass through a thinner panel unseen. On a big
+  set, a figure crossing 10 m in 3 s takes about 9 s to check.
+- Motion blur leaves ink sharp, because blurred ink came out striped, and so the ink of something moving fast sits on a smear.
+- Ink line widths waver from frame to frame, by about 0.4 px at the default `supersample=2` and 0.3 px at 4, because the
+  pass ink reads is not antialiased. A higher supersample makes the steps smaller, not rarer.
+- `Cel(cut="auto")` measures one cut, at the middle of a shot. Ink chooses its surfaces once, where the solids stand at the start,
+  and a part that was not there then is keyed as a part of its node.
+- Paint and the wireframe are redrawn for each frame in which they change. With a moving camera, that is every frame.
 - A mannequin is forward kinematics with rigid segments, and a settled figure does not change its pose to fit.
 - `location.clashes()` reports the deepest overlap for each pair of nodes, so a smaller one can hide behind it, and it cannot
   see a limb wholly inside a `Surface`. Contact is measured only by `examples/fit_check.py`, and only for the car.
@@ -309,7 +317,6 @@ the catalog, `grand_tourer_paper.py` renders the car as a paper paint-over, and 
 - A window's view is a flat picture. It shifts a little as the camera moves, and a shot from outside can see it.
 - `Building` puts windows and interiors on its front only, and those rooms are shallow.
 - `Ink(rings=...)` draws across cylinders, cones, spheres and `Surface`s. An imported model keeps its outline.
-- Ink can leave a few tiny specks on a wall built in sections around windows. The cause has not been found.
 - `Cel(cut="auto")` needs an engine while compiling, and falls back to 0.5 with a warning without one.
 - A token reads whole catalogs, so keep what one audience may not see in a catalog of its own. Publishing stays with whoever
   holds the folder.

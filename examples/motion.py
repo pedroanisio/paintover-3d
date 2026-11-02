@@ -1,5 +1,6 @@
 """One set that moves: a figure walks across a room, the camera turns to keep it, and a table slides out of its way. Each
-look makes the same film, and the frames written beside it are stills of the same moments.
+look makes the same film, and the frames written beside it are stills of the same moments. The last film has motion blur,
+which a still cannot have.
 Run: .venv/bin/python examples/motion.py"""
 import sys
 from pathlib import Path
@@ -42,10 +43,12 @@ def main() -> None:
     location, renderer = walk(), Renderer()
     print(f"{location.duration('follow')} s, faults: {[issue.message for issue in location.validate()]}")
     for name, mode in (("shaded", Shaded(960, 540, 1, fps=FPS)), ("wireframe", Wireframe(960, 540, fps=FPS)),
-                       ("toon", Styled(ink_toon(), 960, 540, 1, fps=FPS)), ("cutout", Styled(paper_cutout(), 960, 540, 1, fps=FPS))):
+                       ("toon", Styled(ink_toon(), 960, 540, 4, fps=FPS)),  # supersample 4 steadies ink's width
+                       ("cutout", Styled(paper_cutout(), 960, 540, 1, fps=FPS))):
         print(renderer.clip(location, "follow", OUT / f"{name}.mp4", mode))
         for time in (0.0, 1.5, 3.0):
             renderer.frame(location, "follow", OUT / f"{name}-{time:g}.png", time, mode)
+    print(renderer.clip(location, "follow", OUT / "shaded-blur.mp4", Shaded(960, 540, 1, fps=FPS, blur=180)))
 
 
 if __name__ == "__main__":

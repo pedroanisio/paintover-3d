@@ -18,7 +18,7 @@ from srlocations import portable
 from srlocations.collision import CollisionError
 from srlocations.geometry import Matrix, Transform, Vec3, aim, rotation
 from srlocations.location import Location, Shot
-from srlocations.motion import Clip, MotionError, written
+from srlocations.motion import Clip, Frames, MotionError, written
 from srlocations.nodes import Light, Placed, Round, Solid
 from srlocations.paint import Holdout, paint_over
 
@@ -82,16 +82,25 @@ class SceneCompiler(Compiler[Scene]):
     clip: Optional[Clip] = None  # the shot being compiled
 
     def __init__(self, width: int = 1280, height: int = 720, fps: int = 30, duration: float = 1,
-                 supersample: int = 2) -> None:
+                 supersample: int = 2, blur: float = 0.0) -> None:
         self.width, self.height, self.fps, self.duration = width, height, fps, duration
-        self.supersample = supersample
+        self.supersample, self.blur = supersample, blur
+
+    @property
+    def blurring(self) -> bool:
+        """Whether this film blurs what moves. A still has no time to blur over."""
+        return bool(self.blur and self.clip and self.clip.moving)
+
+    def shutter(self) -> dict[str, Any]:
+        """The project's motion blur: `blur` is the shutter angle, in degrees, 180 for a film camera's usual look."""
+        return {"motionBlur": True, "shutterAngle": self.blur} if self.blurring else {}
 
     def compile(self, location: Location, shot: str) -> Scene:
         self.clip = Clip(location, shot, self.fps)
         take = self.clip.takes[0]
         scene = Scene(version="auto")
         scene.add_project(width=self.width, height=self.height, fps=str(self.fps), duration=self.length,
-                          background=location.background, supersample=self.supersample)
+                          background=location.background, supersample=self.supersample, **self.shutter())
         solids = [leaf for leaf in self.clip.solids() if leaf.item.drawn_in(self.mode)]
         lights = self.clip.lights()
         self._materials(scene, location, solids)
@@ -112,11 +121,12 @@ class SceneCompiler(Compiler[Scene]):
         if not self.clip.moving:
             self._paint_frame(scene, composition, location, take, solids, effects)
             return
-        ready = False  # a mask's materials go in the document once
+        ready, frames = False, Frames(composition)  # a mask's materials go in the document once
         for frame, moment in enumerate(self.clip.moments):
             still = [leaf for leaf in moment.solids() if leaf.item.drawn_in(self.mode)]
-            holdout = self._paint_frame(scene, composition, moment, self.clip.takes[frame], still, effects, ready,
-                                        self.clip.window(frame), f"-f{frame}")
+            window = {**self.clip.window(frame), **({"motionBlur": "off"} if self.blurring else {})}  # paint is drawn
+            holdout = frames.add(frame, window, lambda: self._paint_frame(  # sharp
+                scene, composition, moment, self.clip.takes[frame], still, effects, ready, window, f"-f{frame}"))
             ready = ready or bool(holdout and holdout.ready)
 
     def _paint_frame(self, scene: Scene, composition, location: Location, take: Shot, solids: list[Placed], effects: str = "",
@@ -178,7 +188,8 @@ class SceneCompiler(Compiler[Scene]):
         size = {name: round((value + grow) * UNITS_PER_METRE, 3) for name, value in solid.dimensions().items()}
         if isinstance(solid, Round):
             size["segments"] = solid.segments
-        element = parent.add_object3D(id=safe_id(f"{prefix}{leaf.path}-{index}"), primitive=solid.primitive,
+        lives = {"start": leaf.span[0] / self.fps, "end": leaf.span[1] / self.fps} if leaf.span else {}
+        element = parent.add_object3D(id=safe_id(f"{prefix}{leaf.path}-{index}"), primitive=solid.primitive, **lives,
                                       **painted, castShadow=solid.casts_shadow if shadow is None else shadow,
                                       **size, **solid.geometry(UNITS_PER_METRE), **engine_position(leaf.world.position),
                                       **engine_angles(leaf.world.basis))
@@ -192,8 +203,9 @@ class TracedCompiler(SceneCompiler):
     """The same scene, path traced: real soft shadows, bounced light and reflections, for a final frame."""
     mode = "stock.traced"
 
-    def __init__(self, width: int = 1280, height: int = 720, samples: int = 256, bounces: int = 6, fps: int = 30) -> None:
-        super().__init__(width, height, fps, supersample=1)
+    def __init__(self, width: int = 1280, height: int = 720, samples: int = 256, bounces: int = 6, fps: int = 30,
+                 blur: float = 0.0) -> None:
+        super().__init__(width, height, fps, supersample=1, blur=blur)
         self.camera = {"renderer": "pathtrace", "pathSamples": samples, "maxBounces": bounces}
 
 
@@ -255,18 +267,31 @@ class WireframeCompiler(Compiler[Scene]):
         scene.add_project(width=self.width, height=self.height, fps=str(self.fps),
                           duration=clip.duration if clip.moving else 1, background=self.background)
         composition = scene.add_composition()
+        frames = Frames(composition)
         for frame, moment in enumerate(clip.moments):  # a still is one frame, with no window
             projection = Projection(clip.takes[frame], self.width, self.height)
             window, suffix = (clip.window(frame), f"-f{frame}") if clip.moving else ({}, "")
-            composition.add_shape(id=f"wireframe{suffix}", shape="path", path=self.path(moment, projection), x=0, y=0,
-                                  anchorX=0, anchorY=0, width=self.width, height=self.height, stroke=self.line,
-                                  strokeWidth=self.thickness, fill="#00000000", **window)
-            paint_over(scene, composition, moment.paintings, shot, projection, self.mode, None, window, suffix)
+            frames.add(frame, window, lambda: self._frame(scene, composition, moment, shot, projection, window, suffix))
         return scene
 
-    def path(self, location: Location, projection: Projection) -> str:
+    def _frame(self, scene: Scene, composition, moment: Location, shot: str, projection: Projection,
+               window: Mapping[str, float], suffix: str) -> None:
+        drawings = [("wireframe", None)]
+        if moment.origin is not None:  # a moment: what never moves is drawn apart, and a film draws it once
+            still, moved = [], []
+            for old, new in zip(moment.origin.nodes, moment.nodes):
+                (still if new is old else moved).extend(leaf for leaf in new.walk() if isinstance(leaf.item, Solid))
+            drawings = [("wireframe-still", still), ("wireframe", moved)]
+        for name, leaves in drawings:
+            composition.add_shape(id=f"{name}{suffix}", shape="path", path=self.path(moment, projection, leaves), x=0,
+                                  y=0, anchorX=0, anchorY=0, width=self.width, height=self.height, stroke=self.line,
+                                  strokeWidth=self.thickness, fill="#00000000", **window)
+        paint_over(scene, composition, moment.paintings, shot, projection, self.mode, None, window, suffix)
+
+    def path(self, location: Location, projection: Projection, leaves: Optional[Sequence[Placed]] = None) -> str:
+        """The lines of a location's solids, or of some of its `leaves`, as the camera sees them."""
         moves: list[str] = []
-        for leaf in location.solids():
+        for leaf in location.solids() if leaves is None else leaves:
             if not leaf.item.drawn_in(self.mode):
                 continue
             for line in leaf.item.edges():
@@ -306,9 +331,10 @@ class Shaded(RenderMode):
     height: int = 720
     supersample: int = 2
     fps: int = 30
+    blur: float = 0.0  # a shutter angle in degrees: what moves in a film smears over that share of a frame
 
     def compiler(self) -> Compiler[Scene]:
-        return SceneCompiler(self.width, self.height, self.fps, supersample=self.supersample)
+        return SceneCompiler(self.width, self.height, self.fps, supersample=self.supersample, blur=self.blur)
 
 
 @dataclass
@@ -319,9 +345,10 @@ class Traced(RenderMode):
     samples: int = 256
     bounces: int = 6
     fps: int = 30
+    blur: float = 0.0
 
     def compiler(self) -> Compiler[Scene]:
-        return TracedCompiler(self.width, self.height, self.samples, self.bounces, self.fps)
+        return TracedCompiler(self.width, self.height, self.samples, self.bounces, self.fps, self.blur)
 
 
 def find_engine() -> Path:
@@ -361,8 +388,13 @@ class Renderer:
             raise MotionError(f"nothing moves in shot {shot!r}, so it has no length; render() draws a still")
         output = Path(output).resolve()  # the engine reads a relative path from the document, which is about to go
         output.parent.mkdir(parents=True, exist_ok=True)
+        scene = self.compile(location, shot, mode, **params)
+        project = scene.find_all("project")[0]
+        if output.suffix.lower() in (".mp4", ".mov", ".mkv") and (int(project.width) % 2 or int(project.height) % 2):
+            raise MotionError(f"a film in {output.suffix} needs an even width and height, and this one is "
+                              f"{project.width} x {project.height}")
         with tempfile.TemporaryDirectory() as folder:
-            document = portable.package(self.compile(location, shot, mode, **params), Path(folder) / "location.scene.xml")
+            document = portable.package(scene, Path(folder) / "location.scene.xml")
             done = subprocess.run([str(self.engine), "encode", str(document), "--path", str(output), "--hw", "software"],
                                   text=True, capture_output=True)  # hardware encoders have left ghost tiles in film
         # --strict here also refuses a warning about something off camera, which any film of a room has.

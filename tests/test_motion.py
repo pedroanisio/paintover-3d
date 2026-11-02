@@ -2,6 +2,7 @@
 both and compare them."""
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
@@ -11,8 +12,8 @@ sys.path[:0] = [str(ROOT), str(ROOT / "tests")]
 
 from test_looks import deep, errors, solid_png
 
-from srlocations import (Box, Clip, Cylinder, Disc, Flat, Group, Ink, Key, Location, Look, MotionError, Point, Registry,
-                         Renderer, Shaded, Solid, Styled, Vec3, Wireframe, portable)
+from srlocations import (Box, Clip, Cylinder, Disc, Flat, Group, Ink, Key, Location, Look, MotionError, Point, Prefab,
+                         Registry, Renderer, Shaded, Solid, Styled, Vec3, Wireframe, portable)
 from srlocations.collision import CollisionError
 from sr_core.scene import Scene
 
@@ -79,6 +80,21 @@ def test_a_smooth_position_is_a_position():
     keys = [Key(0, Vec3()), Key(1, Vec3(1, 0, 2), "smooth"), Key(2, Vec3(2, 0, 0), "smooth")]
     assert value_at(keys, 1) == Vec3(1, 0, 2)
     assert isinstance(value_at(keys, 0.5), Vec3)
+
+
+def test_a_smooth_move_never_overshoots_its_keys():
+    keys = [Key(0, 0.0), Key(1, 1.0, "smooth"), Key(2, 1.0, "smooth"), Key(3, 0.0, "smooth")]
+    samples = [value_at(keys, step / 100) for step in range(301)]
+    assert min(samples) == 0 and max(samples) == 1
+    assert value_at(keys, 1.5) == 1  # a key held is held, not bulged through
+
+
+def test_a_smooth_pose_runs_each_control_on_its_own_curve():
+    keys = [Key(0, {"a": 0.0}), Key(1, {"a": 1.0, "b": 2.0}, "smooth"), Key(2, {"a": 2.0, "b": 2.0}, "smooth")]
+    middle = value_at(keys, 1)
+    assert middle == {"a": 1.0, "b": 2.0}
+    assert (value_at(keys, 1.01)["a"] - value_at(keys, 0.99)["a"]) / 0.02 == pytest.approx(1.0, abs=0.05)
+    assert value_at(keys, 1.5)["b"] == 2.0
 
 
 def test_a_pose_blends_control_by_control():
@@ -423,11 +439,49 @@ def test_a_figure_keeps_its_parts_between_poses(tmp_path):
     assert set(differing(Renderer(), location, "push", SMALL, (3,), tmp_path).values()) == {0}
 
 
-def test_a_prefab_that_changes_shape_is_refused():
+def test_a_prefab_that_changes_size_is_drawn_in_each_size_for_its_frames(tmp_path):
     location = room()
     location.add("stock.table", width=1.2, name="table")
-    location.move("table", 1, width=2.0)
-    with pytest.raises(MotionError, match="changes shape"):
+    location.move("table", 0.3, width=2.0, ease="linear")
+    scene = Renderer().compile(location, "push", SMALL)
+    tops = [element for element in deep(scene, "object3D") if "table" in element.id and element.attributes().get("end")]
+    assert len({element.attributes()["start"] for element in tops}) == 4
+    for mode in (SMALL, TOON, WIRE):
+        assert set(differing(Renderer(), location, "push", mode, (1, 3), tmp_path).values()) == {0}
+
+
+@dataclass
+class Stack(Prefab):
+    """As many crates as its height holds, so a key on its height changes how many parts it has."""
+    height: float = 0.5
+
+    def build(self):
+        return [Box(size=(0.4, 0.28, 0.4), at=(0, 0.15 + 0.3 * level, 0), material="stock.wood.oak", name=f"crate{level}")
+                for level in range(int(self.height / 0.3) + 1)]
+
+
+def test_a_prefab_that_changes_how_many_parts_it_has_is_drawn_part_by_part(tmp_path):
+    location = room()
+    location.add(Stack(at=(1, 0, 0), name="stack"))
+    location.move("stack", 1, height=1.4, yaw=30, ease="linear")  # three crates from frame 2 to 4, turning
+    assert len(location.at(1).nodes[-1].build()) > len(location.nodes[-1].build())
+    for mode in (SMALL, TOON, WIRE):
+        assert set(differing(Renderer(), location, "push", mode, (0, 4, 10), tmp_path).values()) == {0}
+
+
+@dataclass
+class Lamps(Prefab):
+    count: float = 1
+
+    def build(self):
+        return [Point(at=(level, 2, 0)) for level in range(int(self.count))]
+
+
+def test_a_node_that_changes_how_many_lights_it_has_is_refused():
+    location = room()
+    location.add(Lamps(name="lamps"))
+    location.move("lamps", 0.3, count=3)
+    with pytest.raises(MotionError, match="lights"):
         Renderer().compile(location, "push", SMALL)
 
 
@@ -440,6 +494,28 @@ def test_a_body_that_walks_into_something_is_refused_with_the_time():
     location.move("host", 2, at=(2, 0, 0), ease="linear")
     with pytest.raises(CollisionError, match=r"inside .*block.* at \d"):
         Renderer().compile(location, "push", SMALL)
+
+
+def test_a_body_cannot_pass_through_a_thin_wall_between_keys():
+    """Its keys stand either side of the wall, so only looking between them finds it."""
+    location = room()
+    location.add(Box(size=(0.05, 2, 3), at=(0, 1, 0), name="screen"))
+    location.add(Mannequin(at=(-1, 0, 0), name="host"))
+    location.move("host", 0.2, at=(1, 0, 0), ease="linear")
+    assert len(location.instants()) > 2
+    with pytest.raises(CollisionError, match="screen"):
+        Renderer().compile(location, "push", SMALL)
+    assert any(issue.code == "body-clash" for issue in location.validate())
+
+
+def test_what_stands_still_is_checked_once():
+    location = room()
+    location.add(Box(size=(1, 1, 1), at=(-2, 0.5, 1), name="a"))
+    location.add(Box(size=(1, 1, 1), at=(-1.6, 0.5, 1), name="b"))
+    location.move("push", 1, eye=(2, 1.5, -2))
+    location.add(Mannequin(at=(1, 0, -1), name="host"))
+    location.move("host", 1, at=(1.5, 0, -1))
+    assert len([issue for issue in location.validate() if issue.code == "solids-overlap"]) == 1
 
 
 def test_a_body_that_passes_clear_is_let_through():
@@ -570,6 +646,53 @@ def test_a_character_goes_with_its_mark(tmp_path):
     location.move("host", 1, at=(1, 0, 0), ease="linear")
     assert location.at(0.5).paintings[-1].items[0].actors[0].at == Vec3(0, 0, 0)
     assert set(differing(Renderer(), location, "push", SMALL, (5, 10), tmp_path).values()) == {0}
+
+
+def test_a_character_changes_pose_when_its_key_arrives(tmp_path):
+    from srlocations import Cutout, Performer
+    pictures = {name: solid_png(tmp_path / f"{name}.png", rgba, 32)
+                for name, rgba in (("red", bytes((255, 0, 0, 255))), ("blue", bytes((0, 0, 255, 255))))}
+
+    class Painted(Performer):
+        def cutout(self, pose):
+            return Cutout(pictures[pose.get("colour", "red")], (0, 0, 32, 32))
+
+    location = room().mark("host", (-1, 0, 0))
+    actor = location.cast(Painted(), "host")
+    location.move(actor, 0.5, pose={"colour": "blue"}, height=1.2)
+    location.move("host", 1, at=(1, 0, 0), ease="linear")
+    assert location.at(0.4).paintings[-1].items[0].actors[0].pose == {}
+    assert location.at(0.5).paintings[-1].items[0].actors[0].pose == {"colour": "blue"}
+    assert actor.pose == {}  # the actor itself stays
+    assert set(differing(Renderer(), location, "push", SMALL, (2, 5, 8), tmp_path).values()) == {0}
+    with pytest.raises(MotionError, match="not cast here"):
+        location.move(type(actor)(Painted(), (0, 0, 0)), 1, height=2)
+    with pytest.raises(MotionError, match="cannot move 'at'"):
+        location.move(actor, 1, at=(0, 0, 0))
+
+
+def test_motion_blur_smears_what_moves_and_leaves_ink_and_paint_sharp(tmp_path):
+    location = camera_move()
+    location.paint("notes").disc((0, 1, 2), 0.2, color="#ff0000")
+    blurred = Renderer().compile(location, "push", Styled(ink_toon(), W, H, 1, fps=FPS, blur=180))
+    project = deep(blurred, "project")[0].attributes()
+    assert project["motionBlur"] in (True, "true") and float(project["shutterAngle"]) == 180
+    assert all(group.attributes().get("motionBlur") == "off" for group in deep(blurred, "group") if group.id.startswith(("ink", "paint-")))
+    assert "motionBlur" not in deep(Renderer().compile(room(), "push", Styled(ink_toon(), W, H, 1, blur=180)), "project")[0].attributes()
+    frames = differing(Renderer(), location, "push", Shaded(W, H, 1, fps=FPS, blur=180), (5,), tmp_path)
+    assert frames[5] > 0  # a blurred frame is not a still: the still has no shutter
+
+
+def test_a_film_of_an_odd_size_is_refused(tmp_path):
+    with pytest.raises(MotionError, match="even"):
+        Renderer().clip(camera_move(), "push", tmp_path / "x.mp4", Shaded(W, 135, 1, fps=FPS))
+
+
+def test_add_sets_fields_on_a_node_it_is_given():
+    location = Location("l")
+    assert location.add(Box(size=(1, 1, 1)), at=(1, 0, 2), name="crate").at == (1, 0, 2)
+    with pytest.raises(TypeError, match="no field among colour"):
+        location.add(Box(), colour="red")
 
 
 def test_traced_follows_a_moving_camera(tmp_path):

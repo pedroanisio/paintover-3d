@@ -58,7 +58,9 @@ class ShotsClear(Check):
 
 
 class SolidsClear(Check):
-    """A figure in a solid is an error, because no film would keep it. Two set pieces sharing a volume may be a mistake."""
+    """A figure in a solid is an error, because no film would keep it. Two set pieces sharing a volume may be a mistake.
+    In a location that moves, clashes() looks often enough between keys that nothing passes through unseen."""
+    over_time = True
 
     def run(self, location: Location) -> Iterable[Issue]:
         for clash in location.clashes():

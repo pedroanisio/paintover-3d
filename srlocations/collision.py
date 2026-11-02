@@ -19,7 +19,7 @@ from __future__ import annotations
 import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, replace
-from typing import Any, Iterable, Iterator, Optional, Sequence
+from typing import Any, Collection, Iterable, Iterator, Optional, Sequence
 
 from srlocations.geometry import Transform, Vec3
 
@@ -161,9 +161,10 @@ class Body:
     high: Vec3
 
     @classmethod
-    def of(cls, node: Any) -> Optional["Body"]:
+    def of(cls, node: Any, leaves: Optional[Iterable[Any]] = None) -> Optional["Body"]:
+        """A node's body, from `leaves` if it has been walked already."""
         hulls = []
-        for leaf in node.walk():
+        for leaf in node.walk() if leaves is None else leaves:
             for hull in leaf.item.hulls(leaf.world) if hasattr(leaf.item, "hulls") else ():
                 hulls.append((hull, hull.box(), leaf.path))
         if not hulls:
@@ -192,15 +193,28 @@ def deepest(a: Body, b: Body, shift: Vec3 = Vec3(), allow: float = 0.0) -> Optio
     return worst
 
 
-def clashes(nodes: Iterable[Any], bodies_only: bool = False) -> Iterator[Clash]:
-    """Every pair of nodes that breaks the rules above. `bodies_only` looks at nothing but moving bodies."""
+def clashes(nodes: Iterable[Any], bodies_only: bool = False, among: Optional[Collection[int]] = None,
+            known: Optional[dict[int, Optional["Body"]]] = None) -> Iterator[Clash]:
+    """Every pair of nodes that breaks the rules above. `bodies_only` looks at nothing but moving bodies. With `among`, the
+    ids of some nodes, only pairs with one of them in are looked at. `known` holds bodies by node id, and keeps those of
+    the others."""
     present = [node for node in nodes if node.collides]
     if bodies_only and not any(node.moves for node in present):
         return
-    bodies = [body for body in map(Body.of, present) if body]
+    def body_of(node: Any) -> Optional[Body]:
+        if known is not None and id(node) in known:
+            return known[id(node)]
+        if known is None or among is None or id(node) in among:
+            return Body.of(node)
+        if id(node) not in known:
+            known[id(node)] = Body.of(node)
+        return known[id(node)]
+    bodies = [body for body in map(body_of, present) if body]
     bodies.sort(key=lambda body: not body.node.moves)  # a moving body is named first
     for index, body in enumerate(bodies):
         for other in bodies[index + 1:]:
+            if among is not None and id(body.node) not in among and id(other.node) not in among:
+                continue
             moving = body.node.moves or other.node.moves
             if moving or not (bodies_only or body.node.yields or other.node.yields):
                 found = deepest(body, other, allow=TOUCH if moving else DRESSED)
