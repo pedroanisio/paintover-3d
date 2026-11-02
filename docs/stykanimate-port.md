@@ -79,7 +79,7 @@ run. Tests are in `tests/test_kinematics.py` (35).
 | 1 | `srlocations/kinematics.py`, `Mannequin._aimed` | `reach_to()` takes `pole=`. Bend from the law of cosines, a hinge folding the way most of its range lies, the elbow or knee toward the pole, by default the way it bends now (or down and back for an arm, forward for a leg, when near straight). Root angles come from the rotation, with both sets tried. If that breaks a range, swivels 15° apart are tried, nearest the pole first, and only then the old search. On the test points none needed the search, and a reach lands within the 0.001° rounding of the controls. |
 | 3 | `Mannequin._kept`, `holds`, `location.plant()` | `reach_to(keep=True)` turns the forearm or shin twist and the hand or foot back to their old orientation: exact without ranges, limited by the hand's ±40° side to side with them. `Mannequin(holds=...)` keeps a hand or foot at a world point, solved in `frames()`. `plant(figure, joint, start, end)` keys those holds as a step value, so each moment is solved from its own keys and a frame is still the still of `at(t)`. |
 | 4 | `kinematics.nearest`, `Mannequin._chosen` | Of the two angle sets, the one within range and nearest the old values wins, each angle moved by whole turns. |
-| 2 | studio-73's `fix-all` | Monotone `smooth` and smoothing of poses, done there. |
+| 2 | `motion.py`, from `fix-all` | `smooth` is monotone cubic Hermite (Fritsch-Carlson) per number, per axis and per pose control, so it stays between its keys, and a pose keyed `smooth` is smoothed. |
 | 5 | `motion.cubic_bezier`, `Eases` | `move(ease=(x1, y1, x2, y2))` or `"cubic-bezier(...)"`. CSS `ease` at 0.5 gives 0.8024. |
 | 6 | `srlocations/camera.py`, `location.follow()` | `lag`, `dead`, `ahead`, worked out in fixed steps from time 0 along the target's keys. |
 | 7 | `camera.Shake`, `location.shake()` | Handheld, or a blow with `decay`, from seeded waves. A still location lasts as long as its shake. |
@@ -89,6 +89,11 @@ run. Tests are in `tests/test_kinematics.py` (35).
 `examples/mannequin.py` now draws `reach-poles.png` (one spot, elbow low and elbow out) and `squat-onion.png` (both feet
 planted, ghosts on the way down). Making the squat showed that past about 25 cm the ankles run out of range, the held feet tip,
 and the toes go into the floor. The collision check refuses it rather than drawing it.
+
+`fix-all` was merged into main on 2026-11-02. Besides #2 it brought: a node whose parts change is drawn in runs rather than
+refused, actors from `cast()` take keys, `clashes()` checks between keys often enough that nothing moving goes 3 cm unseen,
+and films take a shutter angle for motion blur while ink and paint stay sharp. Planted legs keep their sizes, so a planted
+figure still tracks as one object.
 
 Still not done: nothing solves a whole body (hips lowering to keep both feet in reach), a foot cannot roll, a plant lets go at
 once, and fingers are still searched for.

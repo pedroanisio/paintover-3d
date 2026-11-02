@@ -85,9 +85,11 @@ class Surface(Solid):
         return Vec3(*(max(abs(getattr(p, axis)) for p in self._points()) for axis in "xyz"))
 
     def bounds(self, world: Transform) -> tuple[Vec3, Vec3]:
-        points = [world.apply(point) for point in self._points()]
-        return (Vec3(*(min(getattr(p, a) for p in points) for a in "xyz")),
-                Vec3(*(max(getattr(p, a) for p in points) for a in "xyz")))
+        # world.apply() written out, with the same sum(), which compensates: a moving figure asks this at every instant
+        rows, place = world.basis, tuple(world.position)
+        points = list(self._points())
+        axes = [[sum((row[0] * p.x, row[1] * p.y, row[2] * p.z)) + offset for p in points] for row, offset in zip(rows, place)]
+        return Vec3(*(min(axis) for axis in axes)), Vec3(*(max(axis) for axis in axes))
 
     def hulls(self, world: Transform) -> list[Hull]:
         """A surface need not be convex, so it is its patches: a body crossing it is seen, and one wholly inside is not."""

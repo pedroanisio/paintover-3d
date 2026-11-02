@@ -13,9 +13,9 @@ from srlocations.cast import Actor, Ensemble, Performer
 from srlocations.collision import GAP, Body, Clash, CollisionError, Contact, blocked, clashes, clear, fits, gap, limb_clashes
 from srlocations.figures import Figure
 from srlocations.geometry import Transform, Vec3, VecLike
-from srlocations.motion import EASES, Key, MotionError, Track, cubic_bezier, value_at
+from srlocations.motion import EASES, Key, MotionError, Track, cubic_bezier, shape, value_at
 from srlocations.nodes import Light, Node, Placed, Seat, Solid
-from srlocations.paint import PaintLayer
+from srlocations.paint import PaintItem, PaintLayer
 from srlocations.registry import CatalogError, Registry
 
 if TYPE_CHECKING:
@@ -52,7 +52,9 @@ class Issue:
 
 
 class Check(ABC):
-    """One rule a location must meet; plugins add their own to registry.checks."""
+    """One rule a location must meet; plugins add their own to registry.checks. A check is run on the location as it is
+    at each key of its motion, unless it says `over_time`, and then it is run once on the moving location itself."""
+    over_time = False
 
     @abstractmethod
     def run(self, location: "Location") -> Iterable[Issue]:
@@ -77,8 +79,13 @@ class Archetype(ABC):
         ...
 
 
+def _held(pose: Mapping[str, str]) -> tuple[tuple[str, str], ...]:
+    """A character's pose as one value, which a key does not blend part by part."""
+    return tuple(sorted(dict(pose).items()))
+
+
 class Location:
-    SHOT_KEYS, MARK_KEYS = ("eye", "look_at", "lens"), ("at", "facing")
+    SHOT_KEYS, MARK_KEYS, ACTOR_KEYS = ("eye", "look_at", "lens"), ("at", "facing"), ("pose", "height", "flip", "shadow")
 
     def __init__(self, name: str, registry: Optional[Registry] = None) -> None:
         self.name = name
@@ -97,8 +104,15 @@ class Location:
         self.contact = Contact()  # how far things may meet here; see collision.py
 
     def add(self, node: Union[Node, str], **params: Any) -> Node:
-        """A node, or the name of a registered prefab and its parameters."""
-        self.nodes.append(self.registry.create(node, **params) if isinstance(node, str) else node)
+        """A node, or the name of a registered prefab and its parameters. Parameters given with a node replace its own."""
+        if isinstance(node, str):
+            node = self.registry.create(node, **params)
+        elif params:
+            try:
+                node = replace(node, **params)
+            except TypeError as error:
+                raise TypeError(f"{type(node).__name__} has no field among {', '.join(sorted(params))}: {error}") from None
+        self.nodes.append(node)
         return self.nodes[-1]
 
     def rig(self, rig: Union[LightRig, str], **params: Any) -> "Location":
@@ -117,11 +131,13 @@ class Location:
         self.shots[name] = Shot(name, Vec3.of(eye), Vec3.of(look_at), lens)
         return self
 
-    def move(self, what: Union[Node, str], time: float, ease: Union[str, Sequence[float]] = "ease-in-out", **values: Any) -> "Location":
+    def move(self, what: Union[Node, Actor, str], time: float, ease: Union[str, Sequence[float]] = "ease-in-out", **values: Any) -> "Location":
         """A key: `what` reaches these values at `time`, in seconds, having left its last key as `ease` says. `what` is a
-        shot, a mark, or a node of this location or its name. A shot takes `eye`, `look_at` and `lens`, a mark `at` and
-        `facing`, and a node any of its fields that keep its parts, such as `at`, `yaw`, or a figure's `pose`. With no values
-        it stays as it is until `time`. What stands on a mark goes with the mark. "hold" jumps at the key, and "smooth" goes
+        shot, a mark, or a node of this location or its name, or an actor from cast(). A shot takes `eye`, `look_at` and
+        `lens`, a mark `at` and `facing`, a node any of its fields, such as `at`, `yaw`, or a figure's `pose`, and an actor
+        `pose`, `height`, `flip` and `shadow`, which its mark carries. A character's pose is a picture, so it changes when it
+        arrives, whatever the ease. A node whose parts change is drawn in each shape for its frames. With no values it stays
+        as it is until `time`. What stands on a mark goes with the mark. "hold" jumps at the key, and "smooth" goes
         through a key without stopping. Four numbers, or "cubic-bezier(x1, y1, x2, y2)", are a curve as CSS draws one."""
         ease = ease if isinstance(ease, str) else cubic_bezier(*ease)
         if time <= 0:
@@ -140,12 +156,19 @@ class Location:
                 raise MotionError(f"cannot move {name!r}" + (f"; did you mean {near[0]}?" if near else f"; try {', '.join(allowed)}"))
         node = what if isinstance(what, Node) else None
         node = node or next((n for n in self.nodes if id(n) == key), None)
+        if isinstance(what, Actor):
+            values = {name: _held(value) if name == "pose" else value for name, value in values.items()}
         for name, value in (node.keyed(values) if node else {k: Vec3.of(v) if k in VECTORS else v for k, v in values.items()}).items():
             track.key(name, start(name), Key(float(time), value, ease))
         return self
 
-    def _target(self, what: Union[Node, str]) -> tuple[Any, Callable[[str], Any], Sequence[str]]:
+    def _target(self, what: Union[Node, Actor, str]) -> tuple[Any, Callable[[str], Any], Sequence[str]]:
         """How a thing that moves is filed, its value of a field now, and the fields it has."""
+        if isinstance(what, Actor):
+            if not any(actor is what for layer in self.paintings for item in layer.items if isinstance(item, Ensemble)
+                       for actor in item.actors):
+                raise MotionError("that actor is not cast here; move the one cast() gave back")
+            return ("actor", id(what)), lambda name: _held(what.pose) if name == "pose" else getattr(what, name), self.ACTOR_KEYS
         if isinstance(what, str):
             found = [kind for kind, names in (("shot", self.shots), ("mark", self.marks)) if what in names]
             if len(found) > 1:
@@ -253,13 +276,52 @@ class Location:
         return max((track.end for key, track in self.motion.items()
                     if not (isinstance(key, tuple) and key[0] == "shot" and shot not in (None, key[1]))), default=0.0)
 
-    def instants(self) -> list[float]:
-        """When something reaches a key, and four times a second while a body moves: when to check a location that moves."""
-        times = {0.0, *(time for track in self.motion.values() for time in track.times)}
-        if any(isinstance(key, int) or key[0] == "mark" for key in self.motion):
-            end = self.duration()
-            times |= {step / 4 for step in range(int(end * 4) + 1)}
-        return sorted(times)
+    STRIDE = 0.03  # metres: no part of a moving body goes further than this between two checks
+
+    def instants(self, walked: Optional[dict[float, dict[int, tuple[Node, list[Placed]]]]] = None) -> list[float]:
+        """When to check a location that moves: at every key, and between them often enough that no part of anything
+        moving goes further than STRIDE from one check to the next, so it cannot pass through something unseen. `walked`
+        is filled with what moves at each time looked at, by its index in nodes, and its leaves."""
+        walked = {} if walked is None else walked
+        times = sorted({0.0, *(time for track in self.motion.values() for time in track.times)})
+        if not any(isinstance(key, int) or key[0] == "mark" for key in self.motion):
+            return times
+        found, places = [times[0]], {times[0]: self._places(times[0], walked)}
+        pending = [(a, b) for a, b in zip(times, times[1:])][::-1]
+        while pending:
+            start, end = pending.pop()
+            if end not in places:
+                places[end] = self._places(end, walked)
+            if end - start > 1e-3 and self._apart(places[start], places[end]) > self.STRIDE:
+                middle = (start + end) / 2
+                pending += [(middle, end), (start, middle)]
+                continue
+            found.append(end)
+        return found
+
+    def _moving(self, node: Node) -> bool:
+        return id(node) in self.motion or ("mark", node.name) in self.motion
+
+    def _places(self, time: float, walked: dict[float, dict[int, tuple[Node, list[Placed]]]]) -> list[Vec3]:
+        """Where each part of what moves is at a time: the corners of its bounds, so a turn counts as well as a slide."""
+        marks, places = self._marks_at(time), []
+        walked[time] = {}
+        for index, node in enumerate(self.nodes):
+            if not self._moving(node):
+                continue
+            node = self._node_at(node, time, marks)
+            walked[time][index] = (node, list(node.walk()))
+            for leaf in walked[time][index][1]:
+                if isinstance(leaf.item, Solid):
+                    low, high = leaf.item.bounds(leaf.world)
+                    places += [low, high]
+        return places
+
+    @staticmethod
+    def _apart(before: Sequence[Vec3], after: Sequence[Vec3]) -> float:
+        if len(before) != len(after):
+            return math.inf
+        return max((math.dist(a, b) for a, b in zip(before, after)), default=0.0)
 
     def at(self, time: float) -> "Location":
         """This location as it is at `time`, with nothing moving."""
@@ -267,14 +329,18 @@ class Location:
             return self
         moment = copy.copy(self)
         moment.motion, moment.followed, moment.sights, moment.framed, moment.origin = {}, {}, {}, {}, self
-        marks = {name: replace(mark, **self.motion[("mark", name)].at(time)) if ("mark", name) in self.motion else mark
-                 for name, mark in self.marks.items()}
+        marks = self._marks_at(time)
         offset = lambda name: marks[name].at - self.marks[name].at if name in marks else Vec3()
         moment.marks = marks
         moment.nodes = [self._node_at(node, time, marks) for node in self.nodes]
-        moment.paintings = [replace(layer, items=[item.carried(offset) for item in layer.items]) for layer in self.paintings]
+        moment.paintings = [replace(layer, items=[self._item_at(item, time, offset) for item in layer.items])
+                            for layer in self.paintings]
         moment.shots = {name: self._shot_at(shot, time, moment) for name, shot in self.shots.items()}
         return moment
+
+    def _marks_at(self, time: float) -> dict[str, Mark]:
+        return {name: replace(mark, **self.motion[("mark", name)].at(time)) if ("mark", name) in self.motion else mark
+                for name, mark in self.marks.items()}
 
     def _node_at(self, node: Node, time: float, marks: Mapping[str, Mark]) -> Node:
         moved = node.posed(self.motion[id(node)].at(time)) if id(node) in self.motion else node
@@ -283,6 +349,17 @@ class Location:
             return replace(moved, at=Vec3.of(moved.at) + marks[node.name].at - before.at,
                            yaw=moved.yaw + marks[node.name].facing - before.facing)
         return moved
+
+    def _item_at(self, item: PaintItem, time: float, offset: Callable[[str], Vec3]) -> PaintItem:
+        """Paint as it is at a time: carried by its mark, and an actor with its own keys."""
+        carried = item.carried(offset)
+        if not isinstance(item, Ensemble):
+            return carried
+        actors = []
+        for old, new in zip(item.actors, carried.actors):
+            keyed = self.motion[("actor", id(old))].at(time) if ("actor", id(old)) in self.motion else {}
+            actors.append(replace(new, **{name: dict(value) if name == "pose" else value for name, value in keyed.items()}))
+        return replace(carried, actors=actors)
 
     def _shot_at(self, shot: Shot, time: float, moment: "Location") -> Shot:
         return shaken(self._taken_at(shot, time, moment), self.shaken.get(shot.name, ()), time)
@@ -437,12 +514,22 @@ class Location:
         return [body for body in (Body.of(other, self.contact) for other in self.nodes if other.collides and not other.moves) if body]
 
     def clashes(self, bodies_only: bool = False) -> list[Clash]:
-        """What is passing through what, by the rules in collision.py, the first time it happens if this location moves."""
-        for time in self.instants():
-            found = list(clashes(self.at(time).nodes, bodies_only, self.contact))
-            if found:
-                return [replace(clash, time=time) for clash in found]
-        return []
+        """What is passing through what, by the rules in collision.py, each at the first time it happens if this location
+        moves, earliest first."""
+        known: dict = {}  # what stands still is the same node at every moment, and its body is found once
+        walked: dict = {}  # and what moves was built and walked once already, to find the instants
+        found: dict[tuple[str, str], Clash] = {}
+        for index, time in enumerate(self.instants(walked)):
+            nodes = list(self.at(time).nodes)
+            for place, (node, leaves) in walked.get(time, {}).items():
+                nodes[place] = node
+                known[id(node)] = Body.of(node, self.contact, leaves)
+            among = None if index == 0 else {id(new) for old, new in zip(self.nodes, nodes) if self._moving(old)}
+            for clash in clashes(nodes, bodies_only, self.contact, among, known):
+                found.setdefault((clash.first, clash.second), replace(clash, time=time))
+            for node, _ in walked.get(time, {}).values():
+                del known[id(node)]
+        return list(found.values())
 
     def faults(self, figure: Union[Node, str]) -> list[Clash]:
         """Each limb of a figure that passes through the set or lies inside it, solid or not, where a clash names the deepest."""
@@ -542,7 +629,21 @@ class Location:
         return report(self)
 
     def placed(self) -> list[Placed]:
-        return [leaf for node in self.nodes for leaf in node.walk()]
+        """Every leaf. In a moment, what moved knows where it stood when the shot began, as a clip's frames do."""
+        if self.origin is None:
+            return [leaf for node in self.nodes for leaf in node.walk()]
+        placed = []
+        for old, new in zip(self.origin.nodes, self.nodes):
+            leaves = list(new.walk())
+            if new is not old:
+                before = list(old.walk())
+                kept = shape(before) == shape(leaves)
+                leaves = [replace(leaf, start=began.world) for leaf, began in zip(leaves, before)] if kept else \
+                    [replace(leaf, reshaped=number) for number, leaf in
+                     enumerate(leaf for leaf in leaves if not isinstance(leaf.item, Light))] + \
+                    [leaf for leaf in leaves if isinstance(leaf.item, Light)]
+            placed += leaves
+        return placed + [leaf for node in self.nodes[len(self.origin.nodes):] for leaf in node.walk()]  # onion()'s ghosts
 
     def solids(self) -> list[Placed]:
         return [leaf for leaf in self.placed() if isinstance(leaf.item, Solid)]
@@ -551,10 +652,12 @@ class Location:
         return [leaf for leaf in self.placed() if isinstance(leaf.item, Light)]
 
     def validate(self) -> list[Issue]:
-        """What is wrong here, at each moment something reaches a key. A fault is told once, at the first moment it appears."""
+        """What is wrong here, at each moment something reaches a key. A fault is told once, at the first moment it appears.
+        A check `over_time` looks between the keys itself, and runs once."""
         issues: dict[Issue, Issue] = {}
-        for time in self.instants():
+        for time in sorted({0.0, *(time for track in self.motion.values() for time in track.times)}):
             moment = self.at(time)
-            for issue in (issue for check in self.registry.checks for issue in check.run(moment)):
+            for issue in (issue for check in self.registry.checks if not (check.over_time and time)
+                          for issue in check.run(self if check.over_time else moment)):
                 issues.setdefault(issue, replace(issue, message=f"{issue.message}, at {time:g} s") if time else issue)
         return list(issues.values())

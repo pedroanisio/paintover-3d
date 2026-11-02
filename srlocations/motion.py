@@ -128,16 +128,55 @@ def value_at(keys: Sequence[Key], time: float) -> Any:
     index = next(i for i, key in enumerate(keys) if key.time > time)
     before, after = keys[index - 1], keys[index]
     u = (time - before.time) / (after.time - before.time)
-    if after.ease == SMOOTH and isinstance(before.value, (int, float, Vec3)) and not isinstance(before.value, bool):
+    if after.ease == SMOOTH and _parts(before.value) is not None:
         return through(keys, index, u)
     return blend(before.value, after.value, EASES[after.ease](u))
 
 
+def _parts(value: Any) -> Optional[dict[Any, float]]:
+    """A value as numbers that can each run along a curve: a number, a position's three, or a pose's controls."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return {"": float(value)}
+    if isinstance(value, Vec3):
+        return dict(enumerate(value))
+    if isinstance(value, Mapping):
+        return {name: float(control) for name, control in value.items()}
+    return None
+
+
+def _slope(before: float, here: float, after: float, behind: float, ahead: float) -> float:
+    """How fast a curve runs through a key, from the slopes either side. It is zero where the keys turn back or hold, and
+    never steeper than the slopes allow, so the curve never goes past a key (Fritsch and Carlson's monotone cubic)."""
+    into, out = (here - before) / behind, (after - here) / ahead
+    if into * out <= 0:
+        return 0.0
+    first, second = 2 * ahead + behind, ahead + 2 * behind
+    return (first + second) / (first / into + second / out)
+
+
 def through(keys: Sequence[Key], index: int, u: float) -> Any:
     """A curve through the keys either side, in time, so that a move with several keys never stops at them. It starts and
-    ends at rest."""
+    ends at rest, and it never passes a key's value, so a body that is keyed to stop short of a wall stays short of it."""
     span = keys[index].time - keys[index - 1].time
-    parts = lambda key: tuple(key.value) if isinstance(key.value, Vec3) else (key.value,)
+    parts = [_parts(key.value) or {} for key in keys]
+    names = sorted({name for part in parts for name in part}, key=str)
+
+    def tangent(at: int, name: Any) -> float:
+        if at in (0, len(keys) - 1):
+            return 0.0
+        values = [parts[k].get(name, 0.0) for k in (at - 1, at, at + 1)]
+        return _slope(*values, keys[at].time - keys[at - 1].time, keys[at + 1].time - keys[at].time) * span
+
+    curve = {name: _hermite(parts[index - 1].get(name, 0.0), parts[index].get(name, 0.0), tangent(index - 1, name),
+                            tangent(index, name), u) for name in names}
+    value = keys[index].value
+    if isinstance(value, Vec3):
+        return Vec3(*(curve[axis] for axis in range(3)))
+    if isinstance(value, Mapping):
+        return curve
+    return curve[""]
 
     def tangents(at: int) -> Sequence[float]:
         if at in (0, len(keys) - 1):
@@ -159,6 +198,38 @@ def written(element: Any, values: Mapping[str, Sequence[float]], fps: float, fra
             for frame, value in enumerate(column):
                 if frame in (0, last) or value != column[frame - 1] or value != column[frame + 1]:
                     animate.add_key(time=frame / fps, value=str(value))
+
+
+class Frames:
+    """What is drawn frame by frame under a parent, as paint and the wireframe are. Where a frame begins by adding the
+    same as the frame before, but for ids and windows, those nodes of the frame before live on instead: a film whose camera
+    stands still holds its paint once. Only a frame's first nodes can, so that what comes later stays on top."""
+
+    def __init__(self, parent: Any) -> None:
+        self.parent, self.last = parent, None
+
+    def add(self, frame: int, window: Mapping[str, float], draw: Callable[[], Any]) -> Any:
+        """Calls `draw`, which adds this frame's nodes to the parent with `window` and ids ending in -f and the frame."""
+        count = len(self.parent.elements())
+        result = draw()
+        added = self.parent.elements()[count:]
+        suffix = re.compile(f"-f{frame}(?![0-9])")
+        signature = [_signature(element, suffix) for element in added]
+        same = 0
+        while self.last and same < min(len(added), len(self.last[0])) and signature[same] == self.last[0][same]:
+            same += 1
+        for element, held in zip(added[:same], self.last[1][:same] if self.last else ()):
+            self.parent.remove(element)
+            held.end = window["end"]
+        self.last = (signature, (self.last[1][:same] if self.last else []) + added[same:])
+        return result
+
+
+def _signature(element: Any, suffix: "re.Pattern[str]") -> tuple:
+    return (element.xml_name, element.content.strip(),
+            tuple(sorted((name, suffix.sub("", str(value))) for name, value in element.attributes().items()
+                         if name not in ("id", "start", "end"))),
+            tuple(_signature(child, suffix) for child in element.elements()))
 
 
 class Clip:
@@ -194,20 +265,42 @@ class Clip:
         return self._placed
 
     def _frames(self) -> list[Placed]:
-        columns = [[leaf for node in moment.nodes for leaf in self._walk(node)] for moment in self.moments]
-        if any(len(column) != len(columns[0]) for column in columns):
-            raise MotionError("a moving prefab changed how many parts it has; only what keeps its parts can move")
-        return [self._tracked(leaves) for leaves in zip(*columns)]
+        placed = []
+        for index in range(len(self.location.nodes)):
+            columns = [self._walk(moment.nodes[index]) for moment in self.moments]
+            shapes = [] if all(column is columns[0] for column in columns) else [shape(column) for column in columns]
+            if all(each == shapes[0] for each in shapes):
+                placed += [self._tracked(leaves) for leaves in zip(*columns)]
+            else:
+                placed += self._reshaped(columns, shapes)
+        return placed
 
     def _tracked(self, leaves: Sequence[Placed]) -> Placed:
         first = leaves[0]
         if all(leaf is first for leaf in leaves):
             return first
-        size = _size(first.item)
-        for leaf in leaves:
-            if leaf.path != first.path or _size(leaf.item) != size:
-                raise MotionError(f"{first.path} changes shape as it moves, and only its place and its turn can change")
         return Placed(first.item, first.world, first.path, first.roles, tuple(leaf.world for leaf in leaves))
+
+    def _reshaped(self, columns: Sequence[list[Placed]], shapes: Sequence[tuple]) -> list[Placed]:
+        """A node whose parts change: its solids in each shape, each living for the frames it has that shape. Its lights
+        stay, because they are the document's, and so must not change in number."""
+        lights = [[leaf for leaf in column if isinstance(leaf.item, Light)] for column in columns]
+        if any(len(each) != len(lights[0]) for each in lights):
+            raise MotionError(f"{columns[0][0].path.split('/')[0]} changes how many lights it has, which a film cannot")
+        placed, first = [], 0
+        for last in range(1, len(columns) + 1):
+            if last < len(columns) and shapes[last] == shapes[first]:
+                continue
+            kept = shapes[first] == shapes[0]  # what has the parts it began with is keyed where they began
+            solids = [[leaf for leaf in column if not isinstance(leaf.item, Light)] for column in columns[first:last]]
+            for number, leaves in enumerate(zip(*solids)):
+                worlds = [leaves[min(max(frame - first, 0), last - first - 1)].world for frame in range(self.frames)]
+                placed.append(Placed(leaves[0].item, leaves[0].world, leaves[0].path, leaves[0].roles,
+                                     tuple(worlds) if len(set(worlds)) > 1 else (), (first, last),
+                                     [leaf for leaf in columns[0] if not isinstance(leaf.item, Light)][number].world
+                                     if kept else None, None if kept else number))
+            first = last
+        return placed + [self._tracked(leaves) for leaves in zip(*lights)]
 
     def solids(self) -> list[Placed]:
         return [leaf for leaf in self.placed() if isinstance(leaf.item, Solid)]
@@ -216,5 +309,7 @@ class Clip:
         return [leaf for leaf in self.placed() if isinstance(leaf.item, Light)]
 
 
-def _size(item: Any) -> Optional[Mapping[str, float]]:
-    return item.dimensions() if isinstance(item, Solid) else None
+def shape(leaves: Sequence[Placed]) -> tuple:
+    """What a node's leaves are, apart from where: two moments of the same shape draw as one object that moves."""
+    return tuple((leaf.path, type(leaf.item), leaf.item.dimensions(), leaf.item.geometry(1.0), leaf.item.skins())
+                 if isinstance(leaf.item, Solid) else (leaf.path, leaf.item) for leaf in leaves)

@@ -30,13 +30,17 @@ class Placed:
     path: str
     roles: frozenset[str] = frozenset()
     track: tuple[Transform, ...] = ()  # its world at each frame of a clip, when it moves
+    span: tuple[int, ...] = ()  # the frames it lives for, first and after last, when its node changes shape in a clip
+    start: Optional[Transform] = None  # where it stood when the shot began, in a moment, for what keys by that
+    reshaped: Optional[int] = None  # its node's parts are not those it began the shot with: which part it is, for keys
 
     def within(self, part: "Solid") -> "Placed":
         """A part of this solid, which moves with it. A part that `is` the solid must not apply its transform again."""
         if part is self.item:
             return self
         return replace(self, item=part, world=self.world.then(part.transform),
-                       track=tuple(world.then(part.transform) for world in self.track))
+                       track=tuple(world.then(part.transform) for world in self.track),
+                       start=self.start.then(part.transform) if self.start else None)
 
 
 @dataclass(frozen=True)
@@ -207,6 +211,9 @@ class Solid(Node):
                 Vec3(*(max(getattr(p, a) for p in points) for a in "xyz")))
 
 
+SEAM = 0.0001  # in metres: far too thin to see as a gap, and enough that no two faces share a plane
+
+
 @dataclass
 class Box(Solid):
     size: VecLike = (1, 1, 1)
@@ -221,12 +228,15 @@ class Box(Solid):
         return Vec3(w / 2, h / 2, d / 2)
 
     def facets(self) -> list[tuple[Solid, Vec3]]:
-        """A thin slab inside each face, flush with it: one primitive has one material, and creases need six."""
+        """A thin slab inside each face, flush with it: one primitive has one material, and creases need six. Each stops
+        SEAM short of the other faces' planes. Reaching them, a slab's edge lay in the plane of a face beside it, of this
+        box or of one built against it, and the two fought for the same pixels: a wall built in sections showed the side
+        of a section through its face, and ink drew a speck there."""
         half, slabs = tuple(self.half_extents()), []
         depth = min(0.001, min(half) / 2)
         for axis in range(3):
             for sign in (-1, 1):
-                size, at, normal = [2 * h for h in half], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
+                size, at, normal = [2 * h - 2 * SEAM for h in half], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]
                 size[axis], at[axis], normal[axis] = depth, sign * (half[axis] - depth / 2), float(sign)
                 slabs.append((Box(tuple(size), at=tuple(at), casts_shadow=False), Vec3(*normal)))
         return slabs

@@ -23,7 +23,7 @@ from __future__ import annotations
 import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, replace
-from typing import Any, Callable, Iterable, Iterator, NamedTuple, Optional, Sequence
+from typing import Any, Callable, Collection, Iterable, Iterator, NamedTuple, Optional, Sequence
 
 from srlocations.geometry import Transform, Vec3
 
@@ -204,9 +204,10 @@ class Body:
                    Vec3(*(max(getattr(piece.box[1], a) for piece in hulls) for a in "xyz")), list(shells))
 
     @classmethod
-    def of(cls, node: Any, contact: Contact = Contact()) -> Optional["Body"]:
+    def of(cls, node: Any, contact: Contact = Contact(), leaves: Optional[Iterable[Any]] = None) -> Optional["Body"]:
+        """A node's body, from `leaves` if it has been walked already."""
         hulls, shells = [], []
-        for leaf in node.walk():
+        for leaf in node.walk() if leaves is None else leaves:
             if not hasattr(leaf.item, "hulls"):
                 continue
             soft = contact.soft(leaf)
@@ -271,16 +272,27 @@ def limb_clashes(limb: Body, others: Iterable[Body], contact: Contact = Contact(
         yield replace(worst, moving=True)
 
 
-def clashes(nodes: Iterable[Any], bodies_only: bool = False, contact: Contact = Contact()) -> Iterator[Clash]:
+def clashes(nodes: Iterable[Any], bodies_only: bool = False, contact: Contact = Contact(),
+            among: Optional[Collection[int]] = None, known: Optional[dict[int, Optional["Body"]]] = None) -> Iterator[Clash]:
     """Every pair of nodes that breaks the rules above, the deepest place standing for the pair. `bodies_only` looks at nothing
-    but moving bodies."""
+    but moving bodies. With `among`, the ids of some nodes, only pairs with one of them in are looked at. `known` holds
+    bodies by node id, and keeps those of the others."""
     present = [node for node in nodes if node.collides]
     if bodies_only and not any(node.moves for node in present):
         return
-    bodies = [body for body in (Body.of(node, contact) for node in present) if body]
+    def body_of(node: Any) -> Optional[Body]:
+        if known is not None and id(node) in known:
+            return known[id(node)]
+        if known is None or among is None or id(node) in among:
+            return Body.of(node, contact)
+        known[id(node)] = Body.of(node, contact)
+        return known[id(node)]
+    bodies = [body for body in map(body_of, present) if body]
     bodies.sort(key=lambda body: not body.node.moves)  # a moving body is named first
     for index, body in enumerate(bodies):
         for other in bodies[index + 1:]:
+            if among is not None and id(body.node) not in among and id(other.node) not in among:
+                continue
             moving = body.node.moves or other.node.moves
             if moving or not (bodies_only or body.node.yields or other.node.yields):
                 found = _broken(body, other, moving, contact)

@@ -404,10 +404,8 @@ class Ink(Pass):
         surface with no lines across it, while two objects never share one. A key is taken where the solid stood when the
         shot began, so what moves keeps its colours here and its lines do not flicker."""
         drawn = []
-        origin = stage.location.origin
-        starts = origin.solids() if origin else stage.solids
-        for leaf, start in zip(stage.solids, starts if len(starts) == len(stage.solids) else stage.solids):
-            owner = leaf.path.rpartition("/")[0] or leaf.path
+        for leaf in stage.solids:
+            owner, start = leaf.path.rpartition("/")[0] or leaf.path, leaf.start or leaf.world
             for facet, normal in leaf.item.facets() if self.creases else [(leaf.item, Vec3(0, 0, 0))]:
                 placed = leaf.within(facet)
                 if normal == Vec3(0, 0, 0):
@@ -416,10 +414,12 @@ class Ink(Pass):
                     if bands:
                         drawn += [(replace(placed, item=band), f"{key}|{number}") for number, band in enumerate(bands)]
                         continue
+                elif leaf.reshaped is not None:  # it was not there when the shot began: keyed as a part of its node
+                    key = f"{owner}|{leaf.reshaped}|{[round(v, 3) + 0.0 for v in normal]}"
                 else:
-                    turned = start.world.apply(normal) - start.world.position
+                    turned = start.apply(normal) - start.position
                     reach = sum(abs(a * b) for a, b in zip(leaf.item.half_extents(), normal))
-                    plane = sum(a * b for a, b in zip(turned, start.world.position)) + reach  # of the real surface
+                    plane = sum(a * b for a, b in zip(turned, start.position)) + reach  # of the real surface
                     key = f"{owner}|{leaf.item.material}|{[round(v, 3) + 0.0 for v in turned]}|{plane:.3f}"
                 drawn.append((placed, key))
         return drawn
@@ -431,7 +431,7 @@ class Ink(Pass):
                              wobble=self.wobble, inkR=r, inkG=g, inkB=b, shadow=self.shadow,
                              shadowX=self.shadow_offset[0], shadowY=self.shadow_offset[1])
         clean = stage.shader("ink-clean", "clean", pixelsX=width, pixelsY=height)
-        group = stage.group("ink", [clean, lines])
+        group = stage.group("ink", [clean, lines], **({"motionBlur": "off"} if stage.compiler.blurring else {}))
         for index, (leaf, key) in enumerate(self.surfaces(stage)):
             def keyed(key: str, skin: Skin) -> str:
                 digest, sided = hashlib.sha256(key.encode()).hexdigest(), stage.sided(skin, leaf)
@@ -520,8 +520,8 @@ class StyledCompiler(SceneCompiler):
     """Compiles a location through a Look. The lights stay in the document for any pass that uses them."""
 
     def __init__(self, look: Look, width: int = 1280, height: int = 720, fps: int = 30, duration: float = 1,
-                 supersample: int = 2) -> None:
-        super().__init__(width, height, fps, duration, supersample)
+                 supersample: int = 2, blur: float = 0.0) -> None:
+        super().__init__(width, height, fps, duration, supersample, blur)
         self.look, self.mode = look, look.name
 
     def _relit(self, leaf: Placed) -> Placed:
@@ -535,7 +535,8 @@ class StyledCompiler(SceneCompiler):
         take = self.clip.takes[0]
         scene = Scene(version="auto")
         scene.add_project(width=self.width, height=self.height, fps=str(self.fps), duration=self.length,
-                          background=self.look.sky or location.background, supersample=self.supersample)
+                          background=self.look.sky or location.background, supersample=self.supersample,
+                          **self.shutter())
         self._lights(scene, [self._relit(leaf) for leaf in self.clip.lights()])
         composition = scene.add_composition()
         self._camera(composition, take)
@@ -569,6 +570,7 @@ class Styled(RenderMode):
     height: int = 720
     supersample: int = 2
     fps: int = 30
+    blur: float = 0.0  # a shutter angle in degrees; ink stays sharp, since a line blurred is a line drawn several times
 
     def compiler(self) -> Compiler[Scene]:
-        return StyledCompiler(self.look, self.width, self.height, self.fps, supersample=self.supersample)
+        return StyledCompiler(self.look, self.width, self.height, self.fps, supersample=self.supersample, blur=self.blur)
