@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path[:0] = [str(ROOT)]
 
 from srlocations import Blueprint, Location, Projection, Registry, Renderer, SceneCompiler, Shaded, SharedCatalog, Vec3
+from srlocations.figures import angle
 from srlocations.registry import CatalogError
 from srlocations.stock.mannequin import (ALIASES, BY_NAME, JOINTS, KINDS, PARAMETERS, POSES, Mannequin, PoseError, both,
                                          curled, joint_named)
@@ -48,11 +49,13 @@ def mirrored(key: str) -> str:
     return key.replace("left_", "\0").replace("right_", "left_").replace("\0", "right_")
 
 
-def test_the_parameters_are_unitys_muscles_and_the_root():
+def test_the_parameters_are_unitys_muscles_the_root_and_a_foot_roll():
     muscles = [dof.muscle for dof in PARAMETERS.values() if dof.muscle]
     assert len(MUSCLES) == 95 and muscles == MUSCLES
     assert [key for key, dof in PARAMETERS.items() if not dof.muscle] == [
-        "hips.right", "hips.up", "hips.forward", "hips.front_back", "hips.left_right", "hips.twist_left_right"]
+        "hips.right", "hips.up", "hips.forward", "hips.front_back", "hips.left_right", "hips.twist_left_right",
+        "left_foot.roll_in_out", "right_foot.roll_in_out"]
+    assert len(PARAMETERS) == 103
 
 
 def test_the_skeleton_is_unitys_humanoid():
@@ -74,6 +77,7 @@ def test_other_packages_names_reach_a_joint():
     assert joint_named("LeftHandIndex3").name == "left_index_distal"
     assert joint_named("thigh_r").name == "right_upper_leg"
     assert joint_named("pinky_02_l").name == "left_little_intermediate"
+    assert joint_named("mixamorig:LeftHandPinky1").name == joint_named("LeftHandPinky1").name == "left_little_proximal"
     assert joint_named("RightUpperArm").name == "right_upper_arm"
     assert where({"mixamorig:LeftArm.down_up": 40}, "left_hand") == where({"left_upper_arm.down_up": 40}, "left_hand")
 
@@ -106,8 +110,8 @@ def test_an_angle_means_the_same_motion_on_either_side(key):
 
 @pytest.mark.parametrize("key, value, joint, axis, sign", [
     ("spine.front_back", -30, "head", "z", 1),            # forward
-    ("spine.left_right", 30, "head", "x", 1),             # to its right
-    ("neck.nod_down_up", -30, "left_eye", "y", -1),       # down, so the eyes drop
+    ("spine.left_right", 10, "head", "x", 1),             # to its right
+    ("neck.nod_down_up", -20, "left_eye", "y", -1),       # down, so the eyes drop
     ("right_upper_leg.front_back", -45, "right_foot", "z", 1),
     ("right_upper_leg.in_out", 30, "right_foot", "x", 1),
     ("left_upper_leg.in_out", 30, "left_foot", "x", -1),
@@ -177,7 +181,7 @@ def test_sitting_meets_a_chair():
 
 
 def test_a_control_past_its_range_is_refused():
-    with pytest.raises(PoseError, match=r"left_lower_leg.stretch is 40.*-150 to 5"):
+    with pytest.raises(PoseError, match=r"left_lower_leg.stretch is 40.*-142 to 2"):
         Mannequin(pose={"left_lower_leg.stretch": 40})
     assert Mannequin(pose={"left_lower_leg.stretch": 40}, limits=False).values()["left_lower_leg.stretch"] == 40
 
@@ -317,7 +321,7 @@ def test_a_body_stands_as_tall_as_it_says(kind, seed):
 
 
 def test_the_kinds_are_the_sizes_they_should_be():
-    assert [Mannequin(kind=kind).height for kind in ("man", "woman", "teen", "child", "toddler")] == [1.75, 1.63, 1.55, 1.2, 0.85]
+    assert [Mannequin(kind=kind).height for kind in ("man", "woman", "teen", "child", "toddler")] == [1.75, 1.63, 1.668, 1.254, 0.902]
 
 
 def test_a_younger_body_has_a_bigger_head_for_its_height():
@@ -343,7 +347,7 @@ def test_seeds_give_different_bodies_and_all_the_kinds():
 
 
 def test_a_seed_stays_inside_a_kind_it_is_given():
-    assert all(1.1 < Mannequin(kind="child", seed=seed).height < 1.3 for seed in range(20))
+    assert all(1.16 < Mannequin(kind="child", seed=seed).height < 1.35 for seed in range(20))
 
 
 def test_height_overrides_a_kind():
@@ -366,3 +370,116 @@ def test_a_body_comes_from_a_blueprint():
     built = Blueprint({"name": "plain", "nodes": [{"use": "stock.mannequin", "kind": "child", "seed": 3}],
                        "shots": [{"name": "front", "eye": [0, 1.2, -4], "look_at": [0, 1, 0]}]}).build()
     assert built.nodes[0].height == Mannequin(kind="child", seed=3).height
+
+
+@pytest.mark.parametrize("control, low, high", [
+    ("left_upper_leg.front_back", -134, 30), ("left_upper_leg.in_out", -30, 45), ("left_upper_leg.twist_in_out", -45, 45),
+    ("left_lower_leg.stretch", -142, 2), ("left_foot.up_down", -39, 62), ("left_toes.up_down", -70, 45),
+    ("left_lower_arm.stretch", -150, 5), ("left_lower_arm.twist_in_out", -82, 91), ("left_upper_arm.twist_in_out", -90, 90),
+    ("left_hand.down_up", -80, 70), ("left_hand.in_out", -20, 45),
+    ("left_index_proximal.stretched", -90, 45), ("left_index_intermediate.stretched", -100, 0),
+    ("left_index_distal.stretched", -90, 10), ("left_thumb_intermediate.stretched", -50, 0), ("left_thumb_distal.stretched", -80, 0)])
+def test_a_range_a_clinical_table_measures_is_its_widest_normal(control, low, high):
+    joint, _, name = control.partition(".")
+    dof = next(dof for dof in BY_NAME[joint].dofs if dof.name == name)
+    assert (dof.low, dof.high) == (low, high)
+
+
+def test_the_spine_and_neck_share_what_the_tables_give_them():
+    def total(joints, name, end):
+        return sum(abs(getattr(next(dof for dof in BY_NAME[joint].dofs if dof.name == name), end)) for joint in joints)
+    spine, neck = ("spine", "chest", "upper_chest"), ("neck", "head")
+    assert [total(spine, "front_back", "low"), total(spine, "front_back", "high")] == [90, 30]  # flexion, extension
+    assert [total(spine, "left_right", "high"), total(spine, "twist_left_right", "high")] == [30, 30]
+    assert [total(neck, "nod_down_up", "high"), total(neck, "tilt_left_right", "high"), total(neck, "turn_left_right", "high")] == [45, 45, 80]
+
+
+# More stock poses, each checked for what it is for
+
+def joints(figure) -> dict:
+    return {name: figure.transform.then(frame).position for name, frame in figure.frames().items()}
+
+
+def lowest(figure, *prefixes) -> float:
+    return min(part.bounds(part.transform)[0].y for part in figure.build() if part.name.startswith(prefixes))
+
+
+@pytest.mark.parametrize("pose", ["crouch", "kneel", "sit-floor", "lie", "run", "wave", "arms-crossed", "hands-on-hips",
+                                  "phone", "type"])
+def test_a_new_pose_is_in_range_on_the_floor_and_untangled(pose):
+    for kind in ("man", "woman-5th", "child"):
+        figure = Mannequin(pose=pose, kind=kind)
+        assert lowest(figure, "") == pytest.approx(0, abs=1e-6)
+        assert figure.tangled() == [], (kind, figure.tangled())
+
+
+def test_a_crouch_has_the_hips_low_and_the_heels_down():
+    at, stand = joints(Mannequin(pose="crouch")), joints(Mannequin(pose="stand"))
+    assert at["hips"].y < stand["hips"].y * 0.55
+    figure = Mannequin(pose="crouch")
+    assert lowest(figure, "left_foot") < 0.01 and lowest(figure, "right_foot") < 0.01
+
+
+def test_a_kneeling_figure_is_upright_on_its_knees():
+    figure = Mannequin(pose="kneel")
+    at = joints(figure)
+    assert lowest(figure, "left_lower_leg") < 0.01 and lowest(figure, "right_lower_leg") < 0.01
+    assert at["head"].y > figure.height * 0.6
+
+
+def test_a_figure_sitting_on_the_floor_sits_on_it():
+    figure = Mannequin(pose="sit-floor")
+    assert lowest(figure, "hips") < 0.06 and joints(figure)["head"].y > figure.height * 0.4  # the thighs are fuller than the pelvis
+
+
+def test_a_lying_figure_is_flat_on_its_back():
+    figure = Mannequin(pose="lie")
+    at = joints(figure)
+    assert max(part.bounds(part.transform)[1].y for part in figure.build()) < 0.3
+    assert abs(at["head"].z - at["left_foot"].z) > figure.height * 0.8
+    assert figure.transform.then(figure.frames()["chest"]).basis[1][2] > 0.9  # the chest's front faces up
+
+
+def test_a_runner_has_a_knee_up_and_the_elbows_bent():
+    at = joints(Mannequin(pose="run"))
+    assert at["right_lower_leg"].y > at["hips"].y - 0.25
+    for side in ("left", "right"):
+        assert angle(at[f"{side}_upper_arm"], at[f"{side}_lower_arm"], at[f"{side}_hand"]) < 110
+
+
+def test_a_wave_has_the_hand_above_the_head():
+    at = joints(Mannequin(pose="wave"))
+    assert at["right_hand"].y > at["head"].y + 0.05
+
+
+def test_crossed_arms_fold_each_forearm_across_toward_the_other_elbow():
+    at = joints(Mannequin(pose="arms-crossed"))
+    for side, other, way in (("left", "right", -1), ("right", "left", 1)):
+        assert at[f"{side}_hand"].x * way < -0.02  # the wrist is past the middle
+        assert (at[f"{side}_hand"] - at[f"{other}_lower_arm"]).length < 0.24
+        assert at[f"{side}_hand"].z > at["chest"].z
+        assert abs(at[f"{side}_hand"].y - at[f"{side}_lower_arm"].y) < 0.08  # the forearms lie nearly level
+        assert angle(at[f"{side}_upper_arm"], at[f"{side}_lower_arm"], at[f"{side}_hand"]) < 80  # folded
+        assert at[f"{side}_lower_arm"].y < at[f"{side}_upper_arm"].y - 0.15  # the elbows hang by the sides
+
+
+def test_hands_on_hips_rest_beside_them():
+    at = joints(Mannequin(pose="hands-on-hips"))
+    for side, way in (("left", -1), ("right", 1)):
+        assert abs(at[f"{side}_hand"].y - at["hips"].y) < 0.12 and at[f"{side}_hand"].x * way > 0.1
+        assert at[f"{side}_lower_arm"].x * way > at[f"{side}_hand"].x * way  # the elbows stick out
+
+
+def test_a_phone_is_held_to_the_ear():
+    figure = Mannequin(pose="phone")
+    at = joints(figure)
+    ear = at["head"] + Vec3(0.07 * figure.height / 1.75, 0.03, 0)
+    assert (at["right_hand"] - ear).length < 0.08
+
+
+def test_typing_sits_with_the_hands_out_in_front_at_elbow_height():
+    pose = POSES["type"]
+    at = joints(Mannequin(pose="type"))
+    assert pose.sits
+    for side in ("left", "right"):
+        assert at[f"{side}_hand"].z > at["chest"].z + 0.25 and abs(at[f"{side}_hand"].y - at[f"{side}_lower_arm"].y) < 0.06

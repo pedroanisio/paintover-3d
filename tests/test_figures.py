@@ -15,7 +15,7 @@ from srlocations import (Blueprint, Box, CollisionError, Contact, Cutout, Figure
                          SharedCatalog, Surface, Vec3)
 from srlocations.figures import angle
 from srlocations.geometry import Transform
-from srlocations.stock.mannequin import KINDS, POSES, SURVEY, Build, Mannequin, Pose, PoseError, both
+from srlocations.stock.mannequin import KINDS, POSES, SURVEY, YOUNG, Build, Mannequin, Pose, PoseError, both
 
 
 INCH = 0.0254
@@ -51,23 +51,43 @@ def test_a_mannequin_is_a_figure_and_a_character_is_not():
     assert Mannequin().moves and Mannequin().collides and not Mannequin(solid=False).collides
 
 
-def test_the_base_of_a_figure_has_no_rig():
-    class Statue(Figure):
-        def build(self):
-            return [Box()]
-        def sight(self):
-            return Vec3(0, 1, 0), Vec3(0, 1, 1)
-        def values(self):
-            return {}
-        def take(self, values, sits=False):
-            pass
-        def aiming(self, pose=None, adjust=None):
-            return {}, False
+class Statue(Figure):
+    def build(self):
+        return [Box(size=(0.5, 1.8, 0.4), at=(0, 0.9, 0))]
+    def sight(self):
+        return Vec3(0, 1, 0), Vec3(0, 1, 1)
+    def values(self):
+        return {}
+    def take(self, values, sits=False):
+        pass
+    def aiming(self, pose=None, adjust=None):
+        return {}, False
 
+
+def test_the_base_of_a_figure_has_no_rig():
     statue = Statue()
     assert statue.look_at((0, 0, 1)) is statue and statue.posture() == {} and statue.tangled() == () and statue.arm_reach() == 0
+    assert statue.shoulders() == () and statue.stature() == pytest.approx(1.8)
     with pytest.raises(NotImplementedError):
         statue.reach_to("left_hand", (0, 0, 0))
+
+
+def test_a_figure_without_a_rig_is_reported_and_blocked():
+    location = bare(("a", (1, 0, 0), 90))
+    location.add(Statue(name="a", at=(1, 0, 0), yaw=90))
+    location.shot("wide", (1, 1.5, -4), (1, 1, 0))
+    found = location.report().figures[0]
+    assert found.height == pytest.approx(1.8) and found.within_reach == []
+    mark = location.blocking("wide", 640, 360)[0]
+    assert mark["height"] == pytest.approx(1.8) and mark["facing"] == pytest.approx(90)
+
+
+def test_a_mannequin_stands_its_height_and_reaches_from_its_shoulders():
+    figure = Mannequin(kind="woman", at=(0.5, 0, 0))
+    assert figure.stature() == figure.height
+    shoulders = figure.shoulders()
+    assert len(shoulders) == 2 and all(1.2 < point.y < 1.45 for point in shoulders)
+    assert sorted(point.x for point in shoulders) == pytest.approx([0.5 - 0.17, 0.5 + 0.17], abs=0.04)
 
 
 def test_angle_is_at_the_joint():
@@ -566,6 +586,14 @@ def test_a_standard_figure_measures_what_the_survey_says(sex, index, name):
     measures = Mannequin(kind=f"{sex}-{name}").measures()
     for key, row in SURVEY[sex].items():
         assert measures[key] == pytest.approx(row[index] * INCH, abs=0.003), key
+
+
+@pytest.mark.parametrize("kind", ["toddler", "child", "teen"])
+def test_a_young_figure_measures_the_median_its_surveys_give(kind):
+    measures = Mannequin(kind=kind).measures()
+    assert set(YOUNG[kind]) == {"stature", "sitting"}
+    for key, centimetres in YOUNG[kind].items():
+        assert measures[key] == pytest.approx(centimetres / 100, abs=0.003), key
 
 
 def test_measures_ignore_the_pose_and_the_place():

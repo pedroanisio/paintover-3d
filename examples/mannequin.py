@@ -16,20 +16,24 @@ from srlocations.stock.mannequin import KINDS, POSES, Mannequin, Pose
 
 OUT = ROOT / "renders" / "mannequin"
 ROW = 1.9
+DEPTH = 2.2  # metres between the two rows of poses
 
 
 def poses(registry: Registry) -> Location:
-    """Every pose in a line on a plain floor, with shots from the front, the back and three quarters, and on a hand."""
+    """Every pose in two staggered rows on a plain floor, with shots from the front, the back and three quarters."""
     location = Location("mannequin-poses", registry)
-    location.add("stock.box", size=(16, 0.1, 6), at=(0, -0.05, 0), material="stock.plaster.cream")
+    location.add("stock.box", size=(19, 0.1, 9), at=(0, -0.05, -1.1), material="stock.plaster.cream")
     location.nodes.extend([Sky(1.2, zenith="#dfe6ee", horizon="#f3efe6", ground="#b8b0a0"),
                            Sun(2.5, yaw=-30, pitch=-50, shadows=True, softness=0.4)])
     location.background = "#e8e6e0"
+    front = (len(POSES) + 1) // 2
     for index, name in enumerate(POSES):
-        location.add(Mannequin(pose=name, at=((index - (len(POSES) - 1) / 2) * ROW, 0, 0), name=name))
-    location.shot("front", (0, 1.1, 15), (0, 0.85, 0), lens=30)
-    location.shot("back", (0, 1.1, -15), (0, 0.85, 0), lens=30)
-    location.shot("turned", (11, 1.3, 11), (0, 0.8, 0), lens=30)
+        row, place = divmod(index, front)
+        across = (place - (front - 1) / 2) * ROW + row * ROW / 2  # the back row stands in the gaps of the front one
+        location.add(Mannequin(pose=name, at=(across, 0, -row * DEPTH), name=name))
+    location.shot("front", (0, 5, 16), (0, 0.6, -1.1), lens=30)
+    location.shot("back", (0, 5, -18), (0, 0.6, -1.1), lens=30)
+    location.shot("turned", (12, 2.4, 11), (0, 0.7, -1.1), lens=30)
     return location
 
 

@@ -77,7 +77,7 @@ def blocking(location: "Location", shot: str, width: int, height: int) -> list[d
     bodies = {figure.name: figure for figure in location.figures()}
     for mark in location.marks.values():
         at = location.standing(mark.name)
-        tall = bodies[mark.name].height if mark.name in bodies else 1.7
+        tall = bodies[mark.name].stature() if mark.name in bodies else 1.7
         feet, head = view.pixel(at), view.pixel(at + Vec3(0, tall, 0))
         facing = Transform.at(yaw=bodies[mark.name].yaw if mark.name in bodies else mark.facing).apply((0, 0, 1))
         marks.append({"mark": mark.name, "at": [*at], "facing": math.degrees(math.atan2(facing.x, facing.z)), "framing": mark.framing,

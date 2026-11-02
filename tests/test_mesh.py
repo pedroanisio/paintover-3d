@@ -12,10 +12,12 @@ from sr_core.vpkg import archive as vpkg
 ROOT = Path(__file__).resolve().parent.parent
 sys.path[:0] = [str(ROOT), str(ROOT / "tests")]
 
-from srlocations import (Cel, Flat, Group, Ink, Lit, Look, Material, Mesh, MeshError, Projection, Registry, Renderer,
+from srlocations import (Box, Cel, Flat, Group, Ink, Lit, Look, Material, Mesh, MeshError, Projection, Registry, Renderer,
                          SceneCompiler, Shaded, Styled, Texture, Vec3, Wireframe, WireframeCompiler, read_model)
 from srlocations.location import Location, Shot
-from srlocations.mesh import MODEL, tone
+from srlocations.collision import overlap
+from srlocations.geometry import Transform
+from srlocations.mesh import MODEL, PIECES, tone
 from srlocations.nodes import Sun
 from srlocations.portable import bundle, package
 from test_looks import BLUE, GREEN, GREY, H, RED, W, deep, errors, flat_set, near, pixel, solid_png, stage
@@ -279,6 +281,49 @@ def test_a_hollow_model_is_a_set_cameras_can_stand_in(tmp_path):
     blocked.add(Mesh(path, at=(0, 0, 0), scale=6))
     blocked.shot("in", (0, 1, 0), (0, 1, 3))
     assert [i.code for i in blocked.validate()] == ["shot-inside-solid"]
+
+
+def touches(mesh: Mesh, world: Transform, at, size=0.2) -> bool:
+    probe = Box(size=(size, size, size)).hulls(Transform.at(at))[0]
+    return any(overlap(probe, piece) for piece in mesh.hulls(world))
+
+
+def test_a_models_body_is_each_of_its_pieces_and_not_its_box(tmp_path):
+    mesh, world = Mesh(two_parts(tmp_path)), Transform.at((1, 0, 2), yaw=90)  # the second box lands 1.5 m along -x
+    assert len(mesh.hulls(world)) == 2
+    assert touches(mesh, world, (1, 0.5, 2)) and touches(mesh, world, (-0.5, 0.5, 2))
+    assert not touches(mesh, world, (0.25, 0.5, 2))  # between them, inside their box
+    scaled = Mesh(two_parts(tmp_path), scale=2)  # boxes 1 m on a side, 3 m apart, the gap 2 m to 1 m off along -z
+    assert touches(scaled, Transform(), (0, 1.5, -2.6)) and not touches(scaled, Transform(), (0, 1, -1.5))
+
+
+def test_a_model_in_one_piece_is_its_convex_hull(tmp_path):
+    path = tmp_path / "wedge.obj"  # a right triangle in x and y, 1 m deep along z
+    points = [(0, 0, -0.5), (1, 0, -0.5), (0, 1, -0.5), (0, 0, 0.5), (1, 0, 0.5), (0, 1, 0.5)]
+    faces = [(1, 3, 2), (4, 5, 6), (1, 2, 5, 4), (2, 3, 6, 5), (3, 1, 4, 6)]
+    path.write_text("".join(f"v {x} {y} {z}\n" for x, y, z in points) + "".join("f " + " ".join(map(str, f)) + "\n" for f in faces))
+    mesh = Mesh(path)
+    assert len(mesh.hulls(Transform())) == 1
+    assert touches(mesh, Transform(), (0.2, 0.2, 0)) and not touches(mesh, Transform(), (0.85, 0.85, 0))
+
+
+def test_a_model_of_many_pieces_is_one_hull_round_them_all(tmp_path):
+    lines: list[str] = []
+    count = 0
+    for number in range(PIECES + 1):
+        count = obj_box(lines, f"leaf{number}", "paint", (number * 0.1, 0.5, 0), (0.02, 0.02, 0.02), count)
+    path = tmp_path / "leaves.obj"
+    path.write_text("\n".join(lines) + "\n")
+    mesh = Mesh(path)
+    assert len(mesh.hulls(Transform())) == 1
+    assert touches(mesh, Transform(), (3, 0.5, 0), size=0.02)  # between two leaves, inside the one hull
+
+
+def test_a_model_given_a_size_is_its_box(tmp_path):
+    path = tmp_path / "scan.fbx"
+    path.write_bytes(b"x")
+    mesh = Mesh(path, size=(2, 1, 4))
+    assert len(mesh.hulls(Transform())) == 1 and touches(mesh, Transform(), (0.9, 0.9, 1.9))
 
 
 def textured_model(folder: Path) -> Path:

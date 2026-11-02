@@ -3,7 +3,7 @@
 The skeleton is the humanoid one animation packages share: the 55 bones of Unity's Humanoid. `Joint.known_as` gives each
 one's name in Unity and its nearest bone in Mixamo, Maya HumanIK and Unreal's mannequin, whose bodies have no eyes or jaw.
 Its controls are Unity's 95 muscles, each with `Dof.muscle` its name there, plus the six channels of the root, on the
-hips: 101 parameters, all in `PARAMETERS`.
+hips, and a roll at each foot: 103 parameters, all in `PARAMETERS`.
 
 A parameter is written "joint.control", in degrees, or metres for the hips' `right`, `up` and `forward`:
 
@@ -12,8 +12,9 @@ A parameter is written "joint.control", in degrees, or metres for the hips' `rig
 A control's name reads from its negative end to its positive end, so `front_back` is forward below 0 and back above it,
 and an angle means the same motion on either side of the body. Zero everywhere is the T-stance that software
 characterises in: standing, arms out, palms down, fingers straight, every joint turned as the body is. That rest is not
-Unity's muscle zero, and Unity publishes no table of its default ranges, so the ranges here are this SDK's own working
-ranges measured from the T-stance. They are a guard against a broken pose, not anatomy. `limits=False` lifts them.
+Unity's muscle zero, and Unity publishes no table of its default ranges. Where a clinical table measures a motion, its
+range is the widest normal among the sources cited beside `_torso`, and the rest are this SDK's working ranges measured
+from the T-stance. They are a guard against a broken pose, not a verdict on comfort. `limits=False` lifts them.
 
 Rotations apply in the order a joint lists its controls, the first outermost, so a twist is always about the bone. Bones
 scale with `height`, from Drillis and Contini's proportions; a hip offset is in plain metres. The figure faces +z at yaw
@@ -58,12 +59,20 @@ NEIGHBOURS = 3  # bones apart that always overlap, as an upper arm hangs against
 LIMB_ONLY = FINGERS + ("eye", "jaw")  # too small to tangle, or inside the head
 SWIVELS = sorted(range(-165, 181, 15), key=lambda turn: (abs(turn), turn))  # degrees from a pole, nearest first
 POLES = {"arm": Vec3(0, -1, -1), "leg": Vec3(0, 0, 1)}  # where an elbow or knee points, in the figure's frame, when nothing says
+FINGER_ROUNDS = 24  # times a finger reach moves the wrist again, after the hand turned as far back as its ranges let
+LOWEST = 0.1  # the most the hips come down for a held foot, as a share of the leg's length
+TIPPED = 50  # degrees: the most a held foot rises onto its toes when the hips leave it behind
+BEHIND = 0.1  # a held foot this share of the leg behind the hips rises onto its toes before they come down
 STRAIGHTENED = 170  # degrees at an elbow or knee past which a limb is too straight to say which way it bends
 Triple = tuple[float, float, float]
 
 
 class PoseError(ValueError):
     pass
+
+
+def _times(a: Matrix, b: Matrix) -> Matrix:
+    return tuple(tuple(sum(a[r][k] * b[k][c] for k in range(3)) for c in range(3)) for r in range(3))
 
 
 @dataclass(frozen=True)
@@ -137,9 +146,9 @@ STACK = (1.0, 0.55, 0.318, 0.132)  # the man's height, then what his legs, torso
 KINDS = {
     "man": Build(),
     "woman": Build(1.63, head=1.03, legs=1.01, arms=0.97, shoulders=0.87, hips=1.08, waist=0.86, girth=0.9),
-    "teen": Build(1.55, head=1.08, legs=1.0, arms=0.98, shoulders=0.88, hips=0.92, waist=0.92, girth=0.84),
-    "child": Build(1.2, head=1.3, legs=0.93, arms=0.95, shoulders=0.8, hips=0.84, waist=1.0, girth=0.86),
-    "toddler": Build(0.85, head=1.85, legs=0.72, torso=1.05, arms=0.86, shoulders=0.82, hips=0.86, waist=1.12, girth=1.05),
+    "teen": Build(1.668, head=1.08, legs=0.961, arms=0.98, shoulders=0.88, hips=0.92, waist=0.92, girth=0.84),
+    "child": Build(1.254, head=1.3, legs=1.009, arms=0.95, shoulders=0.8, hips=0.84, waist=1.0, girth=0.86),
+    "toddler": Build(0.902, head=1.85, legs=0.964, torso=1.05, arms=0.86, shoulders=0.82, hips=0.86, waist=1.12, girth=1.05),
     # These fit SURVEY below, each dimension at one percentile. No one is that percentile in everything, so they bound a set's
     # fit and are not people, and none of them stands in for a character's approved proportions.
     "man-5th": Build(1.651, head=0.938, legs=0.934, arms=0.938, shoulders=0.855, hips=1.206, girth=0.804, measured=True),
@@ -157,18 +166,43 @@ SURVEY = {
     "woman": {"stature": (60.04, 64.02, 68.50), "sitting": (31.61, 33.74, 35.91), "shoulders": (13.19, 14.37, 15.59), "hips": (12.24, 13.90, 15.75),
               "limb": (26.10, 28.35, 30.91), "head": (7.01, 7.48, 7.95), "chest": (8.07, 9.65, 11.65)},
 }
+# What the toddler (2), child (7) and teen (15) are fitted to: the 50th percentile at that age in centimetres, the mean of
+# the boys' and the girls'. Only these two are measured, being measured as SURVEY's are: the head, the arms, the widths and
+# the girths are as drawn, and a seed still varies them. Stature is from Fryar et al., "Anthropometric Reference Data for
+# Children and Adults: United States, 2015-2018", Vital Health Stat 3(46), 2021, Table 7. Sitting height is from McDowell,
+# Fryar and Ogden, "... United States, 1988-1994", Vital Health Stat 11(249), 2009, Table 17, the latest national figures.
+YOUNG = {
+    "toddler": {"stature": (91.1 + 89.7) / 2, "sitting": (52.3 + 51.4) / 2},
+    "child": {"stature": (126.1 + 123.7) / 2, "sitting": (65.6 + 65.4) / 2},
+    "teen": {"stature": (172.7 + 160.0) / 2, "sitting": (89.0 + 85.2) / 2},
+}
 
 
-def _torso(label: str, bend: float, side: float, twist: float) -> tuple[Dof, ...]:
-    return (Dof("front_back", "pitch", -bend, bend, muscle=f"{label} Front-Back"),
+# The ranges of the joints a clinical table measures are the widest normal among three sources, because a range bounds
+# what any body may be posed in: the VA rating schedule (38 CFR 4.71, Plates I and II, and 4.71a); the AAOS's "Joint
+# Motion: Method of Measuring and Recording" (1965), as reproduced in a rehabilitation text's "Normal Range of Motion and
+# Capsular Patterns", Table 3; and the means for adults of 20 to 44 in Soucie et al., "Range of motion measurements:
+# reference values and a database for comparison studies", Haemophilia 17(3), 2011, which are passive. The spine's and the
+# neck's are shared among their bones, which sum to the table. Hip flexion 134 and knee flexion 142 are Soucie's, ankle
+# plantarflexion 62, pronation 82 and supination 91 too; wrist ulnar deviation 45 and shoulder internal rotation 90 are
+# the VA's; fingers and toes are the AAOS's. Ankle dorsiflexion is 39, not the tables' 20, because they measure it
+# unloaded and a foot flat in a full squat needs 39 +/- 6 (Hemmerich et al., J Orthop Res 24(4), 2006, as quoted by Howe,
+# "Restricted ankle dorsiflexion", UKSCA Professional Strength & Conditioning 37, 2015; not checked against the paper).
+# Rotation is "in" toward the body's middle. The rest, which no table measures
+# from a T-stance (the shoulder girdle, the arm's swing, twists of the shin and foot, the foot's roll, the thumb's root,
+# eyes and jaw) are this SDK's working ranges.
+
+
+def _torso(label: str, bend: float, back: float, side: float, twist: float) -> tuple[Dof, ...]:
+    return (Dof("front_back", "pitch", -bend, back, muscle=f"{label} Front-Back"),
             Dof("left_right", "roll", -side, side, -1, f"{label} Left-Right"),
             Dof("twist_left_right", "yaw", -twist, twist, muscle=f"{label} Twist Left-Right"))
 
 
-def _head(label: str) -> tuple[Dof, ...]:
-    return (Dof("nod_down_up", "pitch", -40, 40, muscle=f"{label} Nod Down-Up"),
-            Dof("tilt_left_right", "roll", -40, 40, -1, f"{label} Tilt Left-Right"),
-            Dof("turn_left_right", "yaw", -40, 40, muscle=f"{label} Turn Left-Right"))
+def _head(label: str, nod: float, tilt: float, turn: float) -> tuple[Dof, ...]:
+    return (Dof("nod_down_up", "pitch", -nod, nod, muscle=f"{label} Nod Down-Up"),
+            Dof("tilt_left_right", "roll", -tilt, tilt, -1, f"{label} Tilt Left-Right"),
+            Dof("turn_left_right", "yaw", -turn, turn, muscle=f"{label} Turn Left-Right"))
 
 
 HIPS = (Dof("right", "right", -5, 5), Dof("up", "up", -2, 2), Dof("forward", "forward", -5, 5),
@@ -176,12 +210,12 @@ HIPS = (Dof("right", "right", -5, 5), Dof("up", "up", -2, 2), Dof("forward", "fo
         Dof("twist_left_right", "yaw", -180, 180))
 MIDDLE = (
     Joint("hips", None, (0, 0.55, 0), HIPS, Bulk((0, -0.006, 0), (0.092, 0.05, 0.07))),
-    Joint("spine", "hips", (0, 0.04, 0), _torso("Spine", 40, 40, 40), Bulk((0, 0.04, 0), (0.078, 0.062, 0.058)), 0.03),
-    Joint("chest", "spine", (0, 0.085, 0), _torso("Chest", 40, 40, 40), Bulk((0, 0.038, 0), (0.09, 0.06, 0.066))),
-    Joint("upper_chest", "chest", (0, 0.075, 0), _torso("UpperChest", 30, 30, 30),
+    Joint("spine", "hips", (0, 0.04, 0), _torso("Spine", 40, 12, 12, 12), Bulk((0, 0.04, 0), (0.078, 0.062, 0.058)), 0.03),
+    Joint("chest", "spine", (0, 0.085, 0), _torso("Chest", 30, 10, 10, 10), Bulk((0, 0.038, 0), (0.09, 0.06, 0.066))),
+    Joint("upper_chest", "chest", (0, 0.075, 0), _torso("UpperChest", 20, 8, 8, 8),
           Bulk((0, 0.03, 0), (0.122, 0.078, 0.076))),
-    Joint("neck", "upper_chest", (0, 0.118, 0), _head("Neck"), Bulk((0, 0.018, 0), (0.027, 0.036, 0.027))),
-    Joint("head", "neck", (0, 0.03, 0), _head("Head"), Bulk((0, 0.042, 0.006), (0.05, 0.06, 0.058)), 0.024),
+    Joint("neck", "upper_chest", (0, 0.118, 0), _head("Neck", 25, 25, 40), Bulk((0, 0.018, 0), (0.027, 0.036, 0.027))),
+    Joint("head", "neck", (0, 0.03, 0), _head("Head", 20, 20, 40), Bulk((0, 0.042, 0.006), (0.05, 0.06, 0.058)), 0.024),
     Joint("left_eye", "head", (-0.017, 0.046, 0.05),
           (Dof("down_up", "pitch", -10, 15, muscle="Left Eye Down-Up"), Dof("in_out", "yaw", -20, 20, muscle="Left Eye In-Out")),
           Bulk((0, 0, 0.004), (0.008, 0.008, 0.008)), side=-1),
@@ -194,19 +228,20 @@ MIDDLE = (
 )
 LEG = (
     ("upper_leg", "hips", (0.05, -0.02, 0),
-     (Dof("front_back", "pitch", -125, 30, -1, "{side} Upper Leg Front-Back"),
-      Dof("in_out", "roll", -30, 60, muscle="{side} Upper Leg In-Out"),
+     (Dof("front_back", "pitch", -134, 30, -1, "{side} Upper Leg Front-Back"),
+      Dof("in_out", "roll", -30, 45, muscle="{side} Upper Leg In-Out"),
       Dof("twist_in_out", "yaw", -45, 45, muscle="{side} Upper Leg Twist In-Out")),
      Bulk((0, -0.122, 0), (0.05, 0.135, 0.052)), 0.03),
     ("lower_leg", "upper_leg", (0, -0.245, 0),
-     (Dof("stretch", "pitch", -150, 5, muscle="{side} Lower Leg Stretch"),
+     (Dof("stretch", "pitch", -142, 2, muscle="{side} Lower Leg Stretch"),
       Dof("twist_in_out", "yaw", -30, 30, muscle="{side} Lower Leg Twist In-Out")),
      Bulk((0, -0.122, -0.006), (0.04, 0.132, 0.045)), 0.034),
     ("foot", "lower_leg", (0, -0.246, 0),
-     (Dof("up_down", "pitch", -30, 50, -1, "{side} Foot Up-Down"),
-      Dof("twist_in_out", "yaw", -30, 30, muscle="{side} Foot Twist In-Out")),
+     (Dof("up_down", "pitch", -39, 62, -1, "{side} Foot Up-Down"),
+      Dof("twist_in_out", "yaw", -30, 30, muscle="{side} Foot Twist In-Out"),
+      Dof("roll_in_out", "roll", -15, 35, -1)),  # not in Unity: inversion and eversion, so a foot can lie on a slope
      Bulk((0, -0.014, 0.03), (0.034, 0.024, 0.074)), 0.024),
-    ("toes", "foot", (0, -0.024, 0.098), (Dof("up_down", "pitch", -60, 40, -1, "{side} Toes Up-Down"),),
+    ("toes", "foot", (0, -0.024, 0.098), (Dof("up_down", "pitch", -70, 45, -1, "{side} Toes Up-Down"),),
      Bulk((0, 0, 0.018), (0.033, 0.013, 0.03))),
 )
 ARM = (
@@ -215,16 +250,16 @@ ARM = (
       Dof("front_back", "yaw", -15, 15, muscle="{side} Shoulder Front-Back")),
      Bulk((0.055, 0, 0), (0.06, 0.02, 0.03))),
     ("upper_arm", "shoulder", (0.11, 0.013, 0),
-     (Dof("down_up", "roll", -100, 90, muscle="{side} Arm Down-Up"),
+     (Dof("down_up", "roll", -135, 90, muscle="{side} Arm Down-Up"),  # down past the side is across the front
       Dof("front_back", "yaw", -135, 100, muscle="{side} Arm Front-Back"),
       Dof("twist_in_out", "pitch", -90, 90, muscle="{side} Arm Twist In-Out")),
      Bulk((0.093, 0, 0), (0.105, 0.035, 0.037)), 0.034),
     ("lower_arm", "upper_arm", (0.186, 0, 0),
      (Dof("stretch", "yaw", -150, 5, muscle="{side} Forearm Stretch"),
-      Dof("twist_in_out", "pitch", -90, 90, muscle="{side} Forearm Twist In-Out")),
+      Dof("twist_in_out", "pitch", -82, 91, muscle="{side} Forearm Twist In-Out")),
      Bulk((0.073, 0, 0), (0.082, 0.028, 0.03)), 0.027),
     ("hand", "lower_arm", (0.146, 0, 0),
-     (Dof("down_up", "roll", -80, 80, muscle="{side} Hand Down-Up"), Dof("in_out", "yaw", -40, 40, muscle="{side} Hand In-Out")),
+     (Dof("down_up", "roll", -80, 70, muscle="{side} Hand Down-Up"), Dof("in_out", "yaw", -20, 45, muscle="{side} Hand In-Out")),
      Bulk((0.03, 0, 0), (0.038, 0.012, 0.029)), 0.016),
 )
 FINGER_ROOTS = {"thumb": (0.012, -0.004, 0.021), "index": (0.058, 0, 0.019), "middle": (0.06, 0, 0.0065),
@@ -232,8 +267,9 @@ FINGER_ROOTS = {"thumb": (0.012, -0.004, 0.021), "index": (0.058, 0, 0.019), "mi
 FINGER_LENGTHS = {"thumb": (0.024, 0.02, 0.016), "index": (0.022, 0.014, 0.011), "middle": (0.024, 0.016, 0.012),
                   "ring": (0.022, 0.015, 0.012), "little": (0.018, 0.011, 0.01)}
 FINGER_SPREAD = {"thumb": (25, -1), "index": (20, -1), "middle": (7.5, -1), "ring": (7.5, 1), "little": (20, 1)}
-CURLS = {"thumb": (-50, -50, -80), "index": (-90, -100, -80), "middle": (-90, -100, -80), "ring": (-90, -100, -80),
-         "little": (-90, -100, -80)}
+CURLS = {"thumb": (-50, -50, -80), "index": (-90, -100, -90), "middle": (-90, -100, -90), "ring": (-90, -100, -90),
+         "little": (-90, -100, -90)}
+BENT_BACK = {"thumb": (20, 0, 0), **{name: (45, 0, 10) for name in ("index", "middle", "ring", "little")}}
 THUMB_REST = (-42.0, 0.0, -12.0)
 
 
@@ -241,7 +277,7 @@ def _finger(name: str) -> Iterator[tuple]:
     """The three bones of a finger, each with its stretch; the spread is at the root."""
     label, parent, offset = name.title(), "hand", FINGER_ROOTS[name]
     for number, (bone, length, curl) in enumerate(zip(PHALANGES, FINGER_LENGTHS[name], CURLS[name]), 1):
-        controls = [Dof("stretched", "roll", curl, 20 if number == 1 else 0, muscle=f"{{side}} {label} {number} Stretched")]
+        controls = [Dof("stretched", "roll", curl, BENT_BACK[name][number - 1], muscle=f"{{side}} {label} {number} Stretched")]
         if number == 1:
             reach, way = FINGER_SPREAD[name]
             controls.append(Dof("spread", "yaw", -reach, reach, way, f"{{side}} {label} Spread"))
@@ -268,7 +304,7 @@ def _known_as(bare: str, side: int) -> dict[str, str]:
         human, unreal = upper + limbs[bare][0], f"{limbs[bare][1]}_{tail}"
     elif end[0] in FINGERS:
         number = PHALANGES.index(end[2]) + 1
-        human = f"{upper}Hand{end[0].title()}{number}"
+        human = f"{upper}Hand{'Pinky' if end[0] == 'little' else end[0].title()}{number}"
         unreal = f"{'pinky' if end[0] == 'little' else end[0]}_0{number}_{tail}"
     else:
         return named
@@ -377,7 +413,7 @@ def curled(amount: float) -> dict[str, float]:
 
 
 RELAXED = {**both({"upper_arm.down_up": -80, "upper_arm.twist_in_out": -10, "lower_arm.stretch": -10}), **curled(0.2)}
-POSES: dict[str, Pose] = {name: Pose(controls, sits=name in ("sit", "drive")) for name, controls in {
+POSES: dict[str, Pose] = {name: Pose(controls, sits=name in ("sit", "drive", "type")) for name, controls in {
     "t": {},
     "a": both({"upper_arm.down_up": -45}),
     "stand": RELAXED,
@@ -396,6 +432,30 @@ POSES: dict[str, Pose] = {name: Pose(controls, sits=name in ("sit", "drive")) fo
     "drive": {**curled(0.6), "hips.front_back": 18, "spine.front_back": -6, "neck.nod_down_up": -6, "head.nod_down_up": -6,
               **both({"upper_leg.front_back": -68, "lower_leg.stretch": -48, "foot.up_down": -10, "upper_arm.down_up": -95,
                       "upper_arm.front_back": -40, "lower_arm.stretch": -20, "lower_arm.twist_in_out": 40})},
+    # The arms below were solved with reach_to() for where the hands go, and rounded.
+    "crouch": {**curled(0.3), "hips.forward": -0.2, "spine.front_back": -25, "chest.front_back": -15, "neck.nod_down_up": 15,
+               "head.nod_down_up": 10, **both({"upper_leg.front_back": -90.5, "lower_leg.stretch": -122.6, "foot.up_down": -32.1,
+                                               "upper_arm.down_up": -75, "upper_arm.front_back": -55, "lower_arm.stretch": -30})},
+    "kneel": {**RELAXED, **both({"lower_leg.stretch": -98, "foot.up_down": 62})},
+    "sit-floor": {**curled(0.3), "spine.front_back": -10, **both({"upper_leg.front_back": -90, "lower_leg.stretch": -5, "foot.up_down": 15,
+                                                                  "upper_arm.down_up": -78, "upper_arm.front_back": -35, "lower_arm.stretch": -35})},
+    "lie": {**RELAXED, "hips.front_back": 90, **both({"foot.up_down": 45})},
+    "run": {**curled(0.5), "spine.front_back": -8, "right_upper_leg.front_back": -70, "right_lower_leg.stretch": -100,
+            "right_foot.up_down": 10, "left_upper_leg.front_back": 25, "left_lower_leg.stretch": -45, "left_foot.up_down": 30,
+            "left_toes.up_down": -30, **both({"upper_arm.down_up": -78, "lower_arm.stretch": -95}), "left_upper_arm.front_back": -45,
+            "right_upper_arm.front_back": 35},
+    "wave": {**RELAXED, "right_upper_arm.down_up": 38.9, "right_upper_arm.front_back": 5.8, "right_upper_arm.twist_in_out": 71.9,
+             "right_lower_arm.stretch": -107.6, **{f"right_{name}_{bone}.stretched": 0 for name in FINGERS for bone in PHALANGES}},
+    "arms-crossed": {**RELAXED, **curled(0.4), "right_upper_arm.down_up": -93.1, "right_upper_arm.front_back": -54.9,
+                     "right_upper_arm.twist_in_out": -90, "right_lower_arm.stretch": -105, "left_upper_arm.down_up": -91,
+                     "left_upper_arm.front_back": -40.3, "left_upper_arm.twist_in_out": -90, "left_lower_arm.stretch": -105},
+    "hands-on-hips": {**RELAXED, **both({"upper_arm.down_up": -48.8, "upper_arm.front_back": 19.8, "upper_arm.twist_in_out": -73.1,
+                                         "lower_arm.stretch": -83.8})},
+    "phone": {**RELAXED, "right_upper_arm.down_up": -65.5, "right_upper_arm.front_back": -128.6, "right_upper_arm.twist_in_out": -5.3,
+              "right_lower_arm.stretch": -146},
+    "type": {**curled(0.3), **both({"upper_leg.front_back": -88, "lower_leg.stretch": -88, "foot.up_down": 12,
+                                    "upper_arm.down_up": -78.8, "upper_arm.front_back": -24, "upper_arm.twist_in_out": -26.7,
+                                    "lower_arm.stretch": -75.7})},
 }.items()}
 
 
@@ -452,7 +512,9 @@ class Mannequin(Figure):
     on the floor under the hips: with `grounded` its lowest part rests there, whatever the pose, and without it the hips
     stay at their height above the origin, for a figure on a stool or in the air. `looks` limits it to some, as paint.
     `kind` is a body from KINDS and `seed` varies it, or picks one too; `height` overrides what they give. `holds` keeps
-    hands and feet at points in the location, solved after the pose and after it is set on the floor."""
+    hands and feet at points in the location, solved after the pose and after it is set on the floor. With `lower`, the
+    whole figure comes down as far as a held foot needs to stay in reach, up to a tenth of the leg, and a free foot that
+    would go below the floor bends up onto it. `let_go` says how far each held joint has gone back to where the pose puts it, from 0 to 1."""
     pose: Union[str, Mapping[str, float]] = "stand"
     adjust: Mapping[str, float] = field(default_factory=dict)
     height: Optional[float] = None
@@ -462,6 +524,8 @@ class Mannequin(Figure):
     limits: bool = True
     looks: Sequence[str] = ()
     holds: Sequence[Hold] = ()
+    let_go: Mapping[str, float] = field(default_factory=dict)
+    lower: bool = True
     body: str = "stock.mannequin.body"
     joint: str = "stock.mannequin.joint"
     left: str = "stock.mannequin.left"
@@ -665,13 +729,23 @@ class Mannequin(Figure):
 
     def _kept(self, values: Mapping[str, float], bone: Joint, basis: Matrix) -> dict[str, float]:
         """The forearm or shin's twist and the hand or foot's controls that turn `bone` to `basis`, in the figure's frame,
-        as near as their ranges let. A foot cannot roll, so a foot held on a slope keeps only its heading and its pitch."""
+        as near as their ranges let. A foot has a turn more than a rotation needs, so its shin's twist is tried across its
+        range, and the foot's three turns are solved for each."""
         mid = LINEAGE[bone.name][-2]
-        bare = {**values, f"{mid.name}.{mid.dofs[1].name}": 0.0, **{f"{bone.name}.{dof.name}": 0.0 for dof in bone.dofs}}
+        twist = mid.dofs[1]
+        bare = {**values, f"{mid.name}.{twist.name}": 0.0, **{f"{bone.name}.{dof.name}": 0.0 for dof in bone.dofs}}
         upon = self._solved(bare)[mid.name].basis  # the forearm or shin before it twists
         wanted = tuple(tuple(sum(upon[k][r] * basis[k][c] for k in range(3)) for c in range(3)) for r in range(3))
-        controls = [(mid, mid.dofs[1]), *((bone, dof) for dof in bone.dofs)]
-        return self._chosen(controls, angles(wanted, [dof.turn for _, dof in controls]), values)[0]
+        controls = [(mid, twist), *((bone, dof) for dof in bone.dofs)]
+        if len(controls) == 3:
+            return self._chosen(controls, angles(wanted, [dof.turn for _, dof in controls]), values)[0]
+        sets = []
+        for step in range(int(twist.low), int(twist.high) + 1, 5):
+            turn = mid.turned(twist.turn, step * twist.sign)
+            rest = Transform.at(**{twist.turn: turn}).basis
+            left = tuple(tuple(sum(rest[k][r] * wanted[k][c] for k in range(3)) for c in range(3)) for r in range(3))
+            sets += [(turn, *found) for found in angles(left, [dof.turn for dof in bone.dofs])]
+        return self._chosen(controls, sets, values)[0]
 
     def _searched(self, values: dict[str, float], bone: Joint, wanted: Vec3, tolerance: float) -> dict[str, float]:
         """An arm or a leg turned a step at a time toward `wanted`, from `values`, for when geometry's answer breaks a range."""
@@ -705,20 +779,43 @@ class Mannequin(Figure):
             values.update(self._kept(values, bone, basis))
         return values
 
+    def stepping(self, lead: str) -> Pose:
+        """The stock walk, which has the right foot forward, or its mirror."""
+        walk = Pose(dict(self.poses["walk"]))
+        return walk if lead == "right" else walk.mirror()
+
+    def passing(self, lead: str) -> Pose:
+        between = self.stepping("right").blend(self.stepping("left"), 0.5)
+        return Pose({**between, f"{lead}_upper_leg.front_back": -22, f"{lead}_lower_leg.stretch": -48, f"{lead}_foot.up_down": -6})
+
+    def stride(self) -> float:
+        feet = replace(self, pose=self.stepping("right"), adjust={}, holds=(), let_go={}, at=Vec3(), yaw=0.0).frames()
+        return feet["right_foot"].position.z - feet["left_foot"].position.z
+
     def ghosted(self, name: str) -> "Mannequin":
         ghost = "stock.mannequin.ghost"
         return replace(super().ghosted(name), body=ghost, joint=ghost, left=ghost, right=ghost)
 
-    def hold(self, joint: str, keep: bool = True) -> Hold:
-        """A hold that keeps a hand or a foot where it is now in the location, and with `keep` turned as it is now."""
+    def hold(self, joint: str, keep: bool = True, flat: bool = False) -> Hold:
+        """A hold that keeps a hand or a foot where it is now in the location, and with `keep` turned as it is now. With
+        `flat` a foot is set down level on the figure's floor, as it stands, below where it is now and facing the way it
+        points."""
         bone = joint_named(joint)
         world = self.transform.then(self.frames()[bone.name])
-        return Hold(bone.name, world.position, world.basis if keep else None)
+        if not flat:
+            return Hold(bone.name, world.position, world.basis if keep else None)
+        if not bone.name.endswith("_foot"):
+            raise PoseError(f"only a foot is set down flat, not {bone.name}")
+        standing = replace(self, pose="stand", adjust={}, holds=(), let_go={})
+        height = standing.transform.then(standing.frames()[bone.name]).position.y
+        forward = apply(world.basis, Vec3(0, 0, 1))
+        level = Transform.at(yaw=math.degrees(math.atan2(forward.x, forward.z))).basis
+        return Hold(bone.name, Vec3(world.position.x, height, world.position.z), level)
 
     def reach_to(self, joint: str, point: VecLike, tolerance: float = 0.01, pole: Optional[VecLike] = None,
                  keep: bool = False) -> float:
-        """Turns an arm or a leg until `joint`, a hand or a foot, is at a point in the location, and gives how far off it
-        stopped. Within the ranges of its controls while `limits` holds. A point out of reach raises PoseError and changes
+        """Turns an arm or a leg until `joint`, a hand, a foot or a finger, is at a point in the location, and gives how far
+        off it stopped. A finger is reached with the hand turned as it was, or searched for where that cannot get there. Within the ranges of its controls while `limits` holds. A point out of reach raises PoseError and changes
         nothing. The elbow or knee points toward `pole`, a point in the location, or stays on the side it is on now, and
         with `keep` the hand or foot keeps the way it is turned, as far as its ranges let. A held joint stays held."""
         bone, target = joint_named(joint), Vec3.of(point)
@@ -727,10 +824,20 @@ class Mannequin(Figure):
         start, solved, frames = self.values(), self._solved(), self.frames()
         drop = solved[bone.name].position - frames[bone.name].position  # set on the floor, as a frame is
         wanted = self.transform.undo(target) + drop
+        pole = None if pole is None else self.transform.undo(pole) + drop
         if bone.name.endswith(("_hand", "_foot")):
-            pole = None if pole is None else self.transform.undo(pole) + drop
             values = self._limb(start, bone, wanted, pole, solved[bone.name].basis if keep else None, tolerance / 2)
-        else:  # a finger or a forearm has no geometry of its own here, so it is searched for
+        elif bone.name.split("_")[1] in FINGERS:  # the hand goes where the finger lands, turned as it was, as is the finger
+            hand, values, now = joint_named(f"{SIDES[bone.side][0]}_hand"), dict(start), solved
+            for _ in range(FINGER_ROUNDS):  # where a range keeps the hand from turning back, the finger lands elsewhere on it
+                wrist = wanted - (now[bone.name].position - now[hand.name].position)
+                values = self._limb(values, hand, wrist, pole, solved[hand.name].basis, tolerance / 4)
+                now = self._solved(values)
+                if (now[bone.name].position - wanted).length < 1e-5:
+                    break
+            if (now[bone.name].position - wanted).length > tolerance / 2:  # out of reach turned so
+                values = self._searched(dict(start), bone, wanted, tolerance)
+        else:  # a forearm has no geometry of its own here, so it is searched for
             values = self._searched(dict(start), bone, wanted, tolerance)
         changed = {key: round(value, 3) for key, value in values.items() if value != start.get(key, 0.0)}
         before, self.adjust = self.adjust, {**self.adjust, **changed}
@@ -800,6 +907,13 @@ class Mannequin(Figure):
         unit, body = self.height * self.build_of.fit, self.build_of
         return unit * sum(abs(BY_NAME[f"right_{bone}"].offset[0]) for bone in ("lower_arm", "hand")) * body.arms
 
+    def shoulders(self) -> list[Vec3]:
+        frames = self.frames()
+        return [self.transform.then(frames[f"{side}_upper_arm"]).position for side in ("left", "right")]
+
+    def stature(self) -> float:
+        return self.height
+
     def _parts(self, frames: Mapping[str, Transform]) -> list[Limb]:
         parts, h = [], self.height * self.build_of.fit
         common = {"casts_shadow": True, "looks": self.looks}
@@ -824,26 +938,102 @@ class Mannequin(Figure):
         """How far the lowest part of the figure is above the floor."""
         return min(part.bounds(part.transform)[0].y for part in self._parts(frames)) if self.grounded else 0.0
 
-    def _holding(self, drop: float) -> dict[str, float]:
-        """Every control, with each held hand or foot solved to its hold."""
+    def _reach(self, frames: Mapping[str, Transform], foot: str) -> float:
+        *_, upper, lower, end = LINEAGE[foot]
+        return ((frames[upper.name].position - frames[lower.name].position).length +
+                (frames[lower.name].position - frames[end.name].position).length) * (1 - kinematics.STRAIGHT)
+
+    def _tipped(self, frames: Mapping[str, Transform], hold: Hold, at: Vec3, basis: Optional[Matrix],
+                most: bool = False) -> tuple[Vec3, Optional[Matrix], float]:
+        """Where a held foot's ankle goes and how it is turned when it rises onto its toes, the heel coming up as little as
+        lets the leg reach it, or all of `TIPPED` with `most`, and the degrees it turned. A foot under the hips, or one not
+        kept turned, stays flat."""
+        hip, reach = frames[LINEAGE[hold.joint][-3].name].position, self._reach(frames, hold.joint)
+        if basis is None or (hip - at).length <= reach and not most:
+            return at, basis, 0.0
+        forward = apply(basis, Vec3(0, 0, 1))
+        if (hip.x - at.x) * forward.x + (hip.z - at.z) * forward.z < BEHIND * reach:
+            return at, basis, 0.0
+        foot = frames[hold.joint]
+        toes = at + apply(basis, apply(transposed(foot.basis), frames[hold.joint.replace("_foot", "_toes")].position - foot.position))
+        side = kinematics.unit(apply(basis, Vec3(1, 0, 0)))
+        heel = 1 if kinematics.turned(side, 0.1, at - toes).y > (at - toes).y else -1
+        place = lambda degrees: toes + kinematics.turned(side, math.radians(degrees * heel), at - toes)
+        if most or (hip - place(TIPPED)).length > reach:
+            degrees = TIPPED
+        else:
+            low, high = 0.0, float(TIPPED)
+            for _ in range(30):
+                low, high = (low, (low + high) / 2) if (hip - place((low + high) / 2)).length <= reach else ((low + high) / 2, high)
+            degrees = high
+        columns = [kinematics.turned(side, math.radians(degrees * heel), Vec3(*(row[c] for row in basis))) for c in range(3)]
+        return place(degrees), tuple(tuple(tuple(column)[r] for column in columns) for r in range(3)), degrees * heel
+
+    def _lowered(self, frames: Mapping[str, Transform], drop: float) -> float:
+        """How far the figure comes down for its held feet to be in reach, from `frames` as the pose puts them. A foot the
+        hips have left behind rises onto its toes first."""
+        if not self.lower:
+            return 0.0
+        held = [hold for hold in self.holds if hold.joint.endswith("_foot")]
+        wanted, inward = 0.0, transposed(self.transform.basis)
+        for hold in held:
+            upper = LINEAGE[hold.joint][-3]
+            reach = self._reach(frames, hold.joint)
+            at = self.transform.undo(hold.at) + Vec3(0, drop, 0)
+            at, *_ = self._tipped(frames, hold, at, None if hold.basis is None else _times(inward, hold.basis), most=True)
+            apart = frames[upper.name].position - at
+            across = math.hypot(apart.x, apart.z)
+            if apart.length > reach and across < reach:  # coming down cannot help a foot too far to the side
+                needed = min(apart.y - math.sqrt(reach * reach - across * across), reach * LOWEST)
+                wanted = max(wanted, needed * (1 - self.let_go.get(hold.joint, 0.0)))
+        return max(0.0, wanted)
+
+    def _cleared(self, values: dict[str, float], drop: float) -> dict[str, float]:
+        """`values` with each free foot that the hips coming down put below the floor bent up onto it, turned as it was."""
+        if not self.grounded:
+            return values
+        held = {hold.joint for hold in self.holds if not self.let_go.get(hold.joint, 0.0)}  # one letting go may dip
+        for foot in ("left_foot", "right_foot"):
+            if foot in held:
+                continue
+            frames = self._solved(values)
+            side = foot.partition("_")[0]
+            parts = [part for part in self._parts(frames) if part.name.startswith((f"{side}_foot", f"{side}_toes"))]
+            under = drop - min(part.bounds(part.transform)[0].y for part in parts)
+            if under > 1e-6:
+                values = self._limb(values, BY_NAME[foot], frames[foot].position + Vec3(0, under, 0), None, frames[foot].basis)
+        return values
+
+    def _holding(self, drop: float, frames: Mapping[str, Transform]) -> dict[str, float]:
+        """Every control, with each held hand or foot solved to its hold, a foot rising onto its toes if the hips have left
+        it behind."""
         values, lifted, inward = dict(self.values()), Vec3(0, drop, 0), transposed(self.transform.basis)
         for hold in self.holds:
             pole = None if hold.pole is None else self.transform.undo(hold.pole) + lifted
-            basis = None if hold.basis is None else tuple(
-                tuple(sum(inward[r][k] * hold.basis[k][c] for k in range(3)) for c in range(3)) for r in range(3))
-            values = self._limb(values, BY_NAME[hold.joint], self.transform.undo(hold.at) + lifted, pole, basis)
+            basis = None if hold.basis is None else _times(inward, hold.basis)
+            at, basis, tipped = self.transform.undo(hold.at) + lifted, basis, 0.0
+            if hold.joint.endswith("_foot"):
+                at, basis, tipped = self._tipped(frames, hold, at, basis)
+            held = self._limb(dict(values), BY_NAME[hold.joint], at, pole, basis)
+            if tipped:
+                toes = BY_NAME[hold.joint.replace("_foot", "_toes")].dofs[0]
+                key = f"{hold.joint.replace('_foot', '_toes')}.{toes.name}"
+                held[key] = max(toes.low, min(toes.high, held.get(key, 0.0) + tipped * toes.sign))
+            free = self.let_go.get(hold.joint, 0.0)
+            values = {key: value + (values.get(key, 0.0) - value) * free for key, value in held.items()}
         return values
 
     def frames(self) -> dict[str, Transform]:
         """Each joint in the figure's frame, as it stands; `transform.then()` of one is where it is in the location."""
         pose = self.pose if isinstance(self.pose, str) else tuple(sorted(self.pose.items()))
-        key = pose, tuple(sorted(self.adjust.items())), self.height, self.kind, self.seed, self.grounded, self.limits
-        key += (tuple(self.holds), self.transform) if self.holds else ()  # a hold is in the location, so it moves with nothing
+        key = pose, tuple(sorted(self.adjust.items())), self.height, self.kind, self.seed, self.grounded, self.limits, self.lower
+        key += (tuple(self.holds), tuple(sorted(self.let_go.items())), self.transform) if self.holds else ()  # a hold is in the location, so it moves with nothing
         if getattr(self, "_framed", (None, None))[0] != key:
             solved = self._solved()
             drop = self._drop(solved)  # from the pose alone, so a held foot does not lift the floor out from under the rest
             if self.holds:
-                solved = self._solved(self._holding(drop))
+                drop += self._lowered(solved, drop)
+                solved = self._solved(self._cleared(self._holding(drop, solved), drop))
             self._framed = key, {name: Transform(frame.position - Vec3(0, drop, 0), frame.basis) for name, frame in solved.items()}
         return self._framed[1]
 

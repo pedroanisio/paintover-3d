@@ -17,7 +17,7 @@ import math
 import re
 import struct
 from dataclasses import dataclass, field
-from functools import lru_cache
+from functools import cached_property, lru_cache
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Optional, Sequence, Union
 from urllib.parse import unquote
@@ -37,6 +37,9 @@ CREASE = math.cos(math.radians(32))  # two faces meeting more sharply than this 
 TURNING = 1e-9  # two normals with a product of a component below minus this point opposite ways along it
 MAX_TRIANGLES = 400000  # past this a wireframe draws the bounding box: it is a blocking view, not a model viewer
 MAX_LINES = 6000
+PIECES = 64  # past this many separate pieces a model's body is one hull round them all, as foliage would be thousands
+AROUND = tuple((x, y, z) for x in (-1, 0, 1) for y in (-1, 0, 1) for z in (-1, 0, 1) if x or y or z)  # a piece's body is its
+# furthest points along these: a cube's faces, edges and corners
 COMPONENTS = {5120: "b", 5121: "B", 5122: "h", 5123: "H", 5125: "I", 5126: "f"}
 GLB_MAGIC, GLB_JSON, GLB_BIN = b"glTF", 0x4E4F534A, 0x004E4942
 Matrix4 = list[list[float]]
@@ -64,6 +67,31 @@ class Model:
     low: Vec3
     high: Vec3
     two_sided: frozenset[str] = frozenset()  # the materials whose faces show from behind, "" for one with no name
+
+    @cached_property
+    def pieces(self) -> tuple[tuple[tuple[float, float, float], ...], ...]:
+        """Its separate pieces, each as its furthest points along AROUND, whose hull is near the piece's own. Triangles that
+        share a point are one piece, counting points at one place as one. None past MAX_TRIANGLES."""
+        if len(self.triangles) > MAX_TRIANGLES:
+            return ()
+        welded: dict[tuple[float, ...], int] = {}
+        index = [welded.setdefault(tuple(round(value, 5) for value in point), len(welded)) for point in self.points]
+        root = list(range(len(welded)))
+
+        def found(at: int) -> int:
+            while root[at] != at:
+                root[at] = root[root[at]]
+                at = root[at]
+            return at
+        for triangle in self.triangles:
+            first, *rest = (found(index[corner]) for corner in triangle)
+            for other in rest:
+                root[found(other)] = found(first)
+        groups: dict[int, list[tuple[float, float, float]]] = {}
+        for at, corner in {index[corner]: corner for triangle in self.triangles for corner in triangle}.items():
+            groups.setdefault(found(at), []).append(self.points[corner])
+        return tuple(tuple({max(points, key=lambda p: p[0] * x + p[1] * y + p[2] * z) for x, y, z in AROUND})
+                     for points in groups.values())
 
     def lines(self) -> list[Polyline]:
         """Open edges, creases and outlines, the longest first if there are too many. An outline is where a surface turns
@@ -355,11 +383,17 @@ class Mesh(Solid):
                 Vec3(*(max(getattr(p, a) for p in points) for a in "xyz")))
 
     def hulls(self, world: Transform) -> list[Hull]:
-        """Its box, which is as near as this SDK knows a model's shape. A hollow model is a set to stand in, so it has none."""
+        """One hull to each separate piece of the model, or round them all when there are more than PIECES, or its box when
+        this SDK cannot read the file or it is too big to. A hollow model is a set to stand in, so it has none."""
         if self.hollow:
             return []
-        low, high = self.extent()
-        return [Cloud([world.apply(Vec3(x, y, z)) for x in (low.x, high.x) for y in (low.y, high.y) for z in (low.z, high.z)])]
+        model = self.model()
+        if model is None or not model.pieces:
+            low, high = self.extent()
+            return [Cloud([world.apply(Vec3(x, y, z)) for x in (low.x, high.x) for y in (low.y, high.y) for z in (low.z, high.z)])]
+        pieces = model.pieces if len(model.pieces) <= PIECES else (tuple(point for piece in model.pieces for point in piece),)
+        fx, fy, fz = self.factors
+        return [Cloud([world.apply(Vec3(x * fx, y * fy, z * fz)) for x, y, z in piece]) for piece in pieces]
 
     def spans(self) -> list[tuple["Solid", float, float]]:
         low, high = self.extent()

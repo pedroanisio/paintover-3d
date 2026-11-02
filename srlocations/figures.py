@@ -56,9 +56,22 @@ class Figure(Prefab):
         """A copy of it to show where it was or will be: named `name`, with the "ghost" role, passing through everything."""
         return replace(self, name=name, role=" ".join(filter(None, (self.role, "ghost"))), solid=False)
 
-    def hold(self, joint: str, keep: bool = True) -> Hold:
-        """A hold that keeps `joint` where it is now in the location, for a figure with `holds`."""
+    def hold(self, joint: str, keep: bool = True, flat: bool = False) -> Hold:
+        """A hold that keeps `joint` where it is now in the location, for a figure with `holds`. With `flat` a foot is set
+        down level on the floor, below where it is."""
         raise NotImplementedError(f"{type(self).__name__} cannot hold a joint")
+
+    def stepping(self, lead: str) -> Mapping[str, float]:
+        """A walk's contact pose, with the `lead` foot, "left" or "right", forward, for `location.walk()`."""
+        raise NotImplementedError(f"{type(self).__name__} cannot walk")
+
+    def passing(self, lead: str) -> Mapping[str, float]:
+        """A walk's passing pose, halfway to the contact where `lead` is forward, its leg lifting as it swings."""
+        raise NotImplementedError(f"{type(self).__name__} cannot walk")
+
+    def stride(self) -> float:
+        """How far apart its feet are along the way in a walk's contact pose, in metres."""
+        raise NotImplementedError(f"{type(self).__name__} cannot walk")
 
     def look_at(self, point: VecLike) -> "Figure":
         """Turns to look at a point in the location, as far as it can. A figure that cannot turn stays as it is."""
@@ -83,3 +96,12 @@ class Figure(Prefab):
     def arm_reach(self) -> float:
         """How far its hands get from its shoulders, in metres."""
         return 0.0
+
+    def shoulders(self) -> Sequence[Vec3]:
+        """Where in the location `arm_reach` is measured from."""
+        return ()
+
+    def stature(self) -> float:
+        """How tall it stands, in metres: here the top of its solids above its feet."""
+        tops = [leaf.item.bounds(leaf.world)[1].y for leaf in self.walk() if hasattr(leaf.item, "bounds")]
+        return max(tops, default=Vec3.of(self.at).y) - Vec3.of(self.at).y

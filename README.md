@@ -119,11 +119,13 @@ renderer.render(location, "wide", "renders/flat-blocking.png", "stock.shaded")
 ```
 
 A figure comes as a `kind` (`man`, `woman`, `teen`, `child` or `toddler`) and a `pose` (`t`, `a`, `stand`, `sit`, `walk`,
-`point` or `drive`). `adjust` turns single controls on top of the pose, in degrees, and `height` overrides the kind. `seed`
+`point`, `drive`, `crouch`, `kneel`, `sit-floor`, `lie`, `run`, `wave`, `arms-crossed`, `hands-on-hips`, `phone` or `type`). `adjust` turns single controls on top of the pose, in degrees, and `height` overrides the kind. `seed`
 varies a body, and picks a kind when none is given. A figure in the `sit` pose takes the nearest free seat within 0.8 m of
 its mark and leans on its backrest. Poses and kinds are also in `registry.poses` and `registry.kinds`, and a `Pose` can be
 mirrored, blended and written as JSON. The kinds `man-5th` to `woman-95th` measure what the 2012 US Army survey (ANSUR II) gives
-for stature, sitting height, shoulders, hips, arm, head and chest at that percentile. A seed never changes them.
+for stature, sitting height, shoulders, hips, arm, head and chest at that percentile. A seed never changes them. The `teen`,
+`child` and `toddler` stand and sit at the US medians for ages 15 to 18, 7 to 8 and 2 to 3 (NHANES), and the joint ranges
+are clinical ones, cited in `stock/mannequin.py`.
 
 ```python
 location.mark("guest", (-0.4, 0, 1.2), facing=180)
@@ -137,7 +139,7 @@ figure lets it through on purpose. `location.contact` sets how far things may me
 `Surface`, and `location.gap()` measures how far a limb is from what is below or behind it. `validate()` warns when a figure
 is not resting on what should carry it, has settled off its mark, passes through itself, or blocks a shot of someone.
 
-`location.look()` turns a figure's head to a point, a mark or another figure, `location.reach()` moves a hand or foot to one,
+`location.look()` turns a figure's head to a point, a mark or another figure, `location.reach()` moves a hand, foot or finger to one,
 and `location.repose()` changes pose until the set stops it. A reach is solved by geometry, so it is exact: `pole=` is a
 point the elbow or knee points toward, and `keep=True` keeps the hand or foot turned as it was. `location.frame()` composes a two-shot, a close-up or an
 over-the-shoulder around figures, and keeps it composed when they move. `location.report()` gives the numbers behind the checks,
@@ -202,16 +204,48 @@ and says when each fault starts, and so does `validate()`. A blueprint can hold 
 `examples/motion.py` makes one film in four looks.
 
 `location.plant()` keeps a figure's foot or hand where it is at one time until another, and the knee or elbow bends to keep it
-there while the hips move. `follow()` can trail its target by `lag` seconds, ignore moves inside `dead` metres and look `ahead`,
+there while the hips move. The hips come down a little when a held foot is out of reach, a foot they leave behind rises onto
+its toes, `release=` lets go over that many seconds, and `flat=True` sets a foot down level on the floor. `location.walk()`
+walks a figure to a point or a mark, a step at a time, with each foot planted while it stands on it. `follow()` can trail its target by `lag` seconds, ignore moves inside `dead` metres and look `ahead`,
 as an operator would. `location.shake()` shakes a shot's camera by hand, or as a blow that dies away with `decay`, the same way
 for the same `seed`. `location.onion()` is one still with see-through ghosts of each moving figure at other times, to review a
 move in one picture, and `Pose.push()` and `Pose.relax()` move an in-between away from or toward the plain blend of its keys.
 
 ```python
+stroll = Location("stroll")
+stroll.mark("guest", (0, 0, 0))
+stroll.stand("guest")
+stroll.walk("guest", (0, 0, 3), start=0.5)
+print(f"{stroll.duration():.1f} s to walk 3 m")
 walk.follow("follow", "host", (0, 1, 0), lag=0.4, dead=0.1)
 walk.shake("follow", amount=0.4, seed=2)
 review = walk.onion(1.0, (0.0, 2.0))
 renderer.render(review, "follow", "renders/walk-onion.png", "stock.shaded")
+```
+
+## Other packages
+
+`srlocations.interchange` writes a mannequin's skeleton and motion for animation packages. `save_bvh()` writes BVH: the 55
+bones, the hips with positions and turns and every other bone with turns, standing in the T-stance when every channel is 0, and
+a frame `fps` times a second over a location, or a figure alone in its pose. `names="mixamo"`, `"unity"`, `"humanik"` or
+`"ue5"` uses that package's bone names. `save_glb()` writes a skinned GLB: each limb a mesh bound to its bone where the figure
+stands at the start, in the figure's materials, with an animation of every joint. Both files are right-handed and y-up, and a
+model file's z is the SDK's reversed, so a figure that faces +z here faces -z in the file, and a `Mesh` of the GLB stands
+where the figure stood.
+
+`load_bvh()` reads a BVH as a `Take`: a `Pose` to a frame, in the body of the figure it is given, and the fps. It knows a bone
+by this SDK's name or by a package's in `Joint.known_as`, and lists the others in `take.unknown`. A file whose rest pose is
+not a T-stance, arms down for example, is retargeted bone by bone from the way each bone points at rest. A value outside its
+range is held there and listed in `take.clamped`, unless the figure has `limits=False`. The file's root goes into the hips'
+controls, so `Mannequin(pose=take.poses[0], grounded=False)` stands where the file's figure stood.
+
+```python
+from srlocations.interchange import load_bvh, save_bvh, save_glb
+
+save_bvh("renders/walk.bvh", figure, walk, fps=12)
+save_glb("renders/walk.glb", figure, walk, fps=12)
+take = load_bvh("renders/walk.bvh")
+print(len(take.poses), take.fps, take.unknown or "every bone known")
 ```
 
 ## Curved solids
@@ -336,9 +370,9 @@ the catalog, `grand_tourer_paper.py` renders the car as a paper paint-over, `air
 ## Limits
 
 - A part of a prefab cannot move on its own, and a node's lights cannot change in number or in their own values over a shot.
-- A planted foot holds only while the leg can reach it, so hips that go too far drag it, and nothing lowers them to help.
-  A foot cannot roll, so on a slope it keeps only its heading and pitch, and a plant lets go at once at its end, so key the
-  pose to meet it. A character changes pose only at a key, a whole picture at a time.
+- A planted foot holds while the leg can reach it. The hips come down by up to a tenth of the leg to help and go no other
+  way, so hips that go further drag it. A held foot keeps its turn as far as its ranges let, and one the hips leave behind
+  rises onto its toes, by up to 50°. A character changes pose only at a key, a whole picture at a time.
 - Between keys, nothing moving goes more than 3 cm unchecked, so a finger can pass through a thinner panel unseen. On a big
   set, a figure crossing 10 m in 3 s takes about 9 s to check.
 - Motion blur leaves ink sharp, because blurred ink came out striped, and so the ink of something moving fast sits on a smear.
@@ -347,14 +381,19 @@ the catalog, `grand_tourer_paper.py` renders the car as a paper paint-over, `air
 - `Cel(cut="auto")` measures one cut, at the middle of a shot. Ink chooses its surfaces once, where the solids stand at the start,
   and a part that was not there then is keyed as a part of its node.
 - Paint and the wireframe are redrawn for each frame in which they change. With a moving camera, that is every frame.
-- A mannequin has rigid segments and no skinning. `reach()` solves one arm or leg for a point, `keep=` holds a hand only
-  within its narrow side-to-side range, a settled figure does not change
-  its pose to fit, and `repose()` stops where something is in the way, without looking for a way round it.
+- A mannequin has rigid segments and no skinning. `reach()` solves one arm or leg for a hand, foot or finger at a point,
+  `keep=` holds a hand only within its narrow side-to-side range, a settled figure does not change its pose to fit, and
+  `repose()` stops where something is in the way, without looking for a way round it.
 - `location.clashes()` reports the deepest overlap for each pair of nodes, so a smaller one can hide behind it, and
-  `location.faults()` lists every limb. A model is judged by its bounding box, and `location.report()` names those near a figure.
+  `location.faults()` lists every limb. A model is judged by the convex hull of each separate piece of it, so a seat made in
+  one piece is solid underneath, and `location.report()` names those near a figure.
 - The survey kinds match ANSUR II one dimension at a time. Nobody is the 95th percentile in everything, so they mark the edges
   of a fit and are not people, and nothing between those seven dimensions was measured.
-- Props carry no grip points yet, and a pose cannot be read from another package's rig.
+- Props carry no grip points yet.
+- `load_bvh()` reads BVH, not glTF or FBX. It retargets by the way each bone points, so a joint with fewer controls than the
+  file's bone, such as an elbow, drops the turn it cannot make and the bone below turns to make up for it. The bone names in
+  `Joint.known_as` have not been checked against files from those packages.
+- A GLB is bound where the figure stands at its first frame, not at the T-stance, and its limbs are rigid, as the mannequin's are.
 - The comfort ranges in `examples/fit_check.py` are working values, not taken from a published standard.
 - Depth for paint treats a mark as one distance, to within 15 cm, and paint casts no shadow onto the set.
 - A tiled texture runs backwards on two of a room's four walls, which only lettering would show, and still restarts on each

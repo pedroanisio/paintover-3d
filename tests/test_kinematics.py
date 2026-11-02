@@ -133,9 +133,32 @@ def test_a_reach_through_the_location_takes_a_pole_and_keep():
     assert location.reach("reacher", "right_hand", (0.3, 1.0, 0.3), pole=(0.6, 0.4, 0.0), keep=True) < 0.01
 
 
-def test_a_finger_is_still_searched_for():
+def test_a_finger_is_reached_exactly_with_the_hand_turned_as_it_was():
+    for point in (Vec3(0.3, 1.1, 0.35), Vec3(-0.1, 1.2, 0.3), Vec3(0.25, 0.9, 0.25)):
+        figure = Mannequin(limits=False)
+        before = figure.frames()["right_hand"].basis
+        assert figure.reach_to("right_index_distal", point) < 1e-4  # a search stops at half the tolerance
+        assert apart(figure.frames()["right_hand"].basis, before) < 1e-3
+
+
+def test_a_finger_reach_takes_a_pole():
+    elbows = {}
+    for name, pole in (("down", (0.4, 0.4, 0.0)), ("out", (1.2, 1.1, 0.1))):
+        figure = Mannequin()
+        figure.reach_to("right_middle_distal", (0.35, 1.0, 0.3), pole=pole)
+        elbows[name] = world(figure, "right_lower_arm").position
+    assert elbows["down"].y < elbows["out"].y
+
+
+def test_a_finger_the_hand_turned_as_it_was_cannot_take_there_is_searched_for():
     target = world(Mannequin(adjust={"right_upper_arm.down_up": -30, "right_upper_arm.front_back": -20}), "right_index_distal")
     assert Mannequin().reach_to("right_index_distal", target.position) < 0.01
+
+
+def test_a_finger_still_reaches_within_its_ranges():
+    figure = Mannequin()
+    assert figure.reach_to("left_thumb_distal", (-0.25, 1.05, 0.35)) < 0.01
+    assert not figure.tangled() or all("thumb" not in clash for clash in figure.tangled())
 
 
 def test_a_hold_keeps_a_foot_where_it_was_as_the_hips_drop():
@@ -152,9 +175,91 @@ def test_a_hold_keeps_a_foot_where_it_was_as_the_hips_drop():
 
 def test_a_hold_out_of_reach_points_the_leg_at_it():
     hold = Mannequin().hold("left_foot")
-    figure = Mannequin(at=(0, 0.3, 0), holds=(hold,))
+    figure = Mannequin(at=(0, 0.3, 0), holds=(hold,), lower=False)
     foot, hip = world(figure, "left_foot").position, world(figure, "left_upper_leg").position
     assert 0.25 < (foot - hold.at).length < 0.35 and abs(foot.x - hip.x) < 0.01
+
+
+def test_held_feet_bring_the_hips_down_to_stay_down():
+    still = Mannequin()
+    holds = (still.hold("left_foot"), still.hold("right_foot"))
+    for at in ((0, 0.08, 0), (0, 0.05, 0.05), (0.04, 0.07, -0.05)):  # nowhere near far enough ahead to rise onto the toes
+        figure = Mannequin(at=at, holds=holds)
+        for hold in holds:
+            assert tuple(world(figure, hold.joint).position) == pytest.approx(tuple(hold.at), abs=1e-4)
+        free = Mannequin(at=at, holds=holds, lower=False)
+        assert world(figure, "hips").position.y < world(free, "hips").position.y - 0.01
+        assert (world(free, "left_foot").position - holds[0].at).length > 0.01  # without lower, the raised feet drag
+
+
+def test_the_hips_come_down_no_more_than_a_tenth_of_the_leg():
+    still = Mannequin()
+    holds = (still.hold("left_foot"), still.hold("right_foot"))
+    leg = sum((world(still, a).position - world(still, b).position).length
+              for a, b in (("left_upper_leg", "left_lower_leg"), ("left_lower_leg", "left_foot")))
+    figure, free = Mannequin(at=(0, 0.3, 0), holds=holds), Mannequin(at=(0, 0.3, 0), holds=holds, lower=False)
+    assert world(free, "hips").position.y - world(figure, "hips").position.y == pytest.approx(leg * 0.1, rel=0.05)
+
+
+def test_a_foot_held_flat_is_set_down_on_the_floor_facing_the_way_it_points():
+    figure = Mannequin(pose="walk", at=(0.3, 0.2, -0.4), yaw=35)
+    lifted = world(figure, "right_foot")
+    hold, flat = figure.hold("right_foot", flat=True), world(Mannequin(at=(0.3, 0.2, -0.4), yaw=35), "right_foot")
+    assert hold.at.y == pytest.approx(flat.position.y, abs=1e-6) and lifted.position.y > hold.at.y + 0.02
+    assert (hold.at.x, hold.at.z) == pytest.approx((lifted.position.x, lifted.position.z), abs=0.03)
+    up = tuple(hold.basis[row][1] for row in range(3))
+    assert up == pytest.approx((0, 1, 0), abs=1e-6)  # level
+    forward, pointed = Vec3(*(hold.basis[row][2] for row in range(3))), Vec3(*(lifted.basis[row][2] for row in range(3)))
+    assert math.atan2(forward.x, forward.z) == pytest.approx(math.atan2(pointed.x, pointed.z), abs=1e-6)
+    with pytest.raises(ValueError):
+        figure.hold("right_hand", flat=True)
+
+
+def test_a_held_foot_the_hips_leave_behind_rises_onto_its_toes():
+    still = Mannequin()
+    hold, toes = still.hold("left_foot"), world(still, "left_toes")
+    figure = Mannequin(at=(0, 0, 0.3), holds=(hold,))
+    assert tuple(world(figure, "left_toes").position) == pytest.approx(tuple(toes.position), abs=0.002)
+    assert world(figure, "left_foot").position.y > hold.at.y + 0.02  # the heel comes up
+    flat = world(figure, "left_toes").basis
+    assert all(abs(flat[r][c] - toes.basis[r][c]) < 0.03 for r in range(3) for c in range(3))  # the toes stay on the floor
+    assert world(figure, "hips").position.y > world(Mannequin(at=(0, 0, 0.3)), "hips").position.y - 0.03
+
+
+def test_a_held_foot_under_the_hips_stays_flat_as_they_come_down():
+    hold = Mannequin().hold("left_foot")
+    figure = Mannequin(at=(0, 0.05, 0), holds=(hold,))
+    assert tuple(world(figure, "left_foot").position) == pytest.approx(tuple(hold.at), abs=1e-4)
+
+
+def test_a_free_foot_bends_up_off_the_floor_as_the_hips_come_down():
+    hold = Mannequin().hold("left_foot")
+    figure = Mannequin(at=(0, 0.06, 0), holds=(hold,))
+    free = [part for part in figure.build() if part.name.startswith(("right_foot", "right_toes"))]
+    assert min(part.bounds(figure.transform.then(part.transform))[0].y for part in free) >= 0.06 - 1e-4
+    assert world(figure, "hips").position.y < world(Mannequin(at=(0, 0.06, 0)), "hips").position.y - 0.03
+    assert tuple(world(figure, "left_foot").position) == pytest.approx(tuple(hold.at), abs=1e-4)
+    assert figure.values().get("right_lower_leg.stretch", 0) == 0 and angle(*(world(figure, f"right_{bone}").position
+                                                                         for bone in ("upper_leg", "lower_leg", "foot"))) < 175
+
+
+def test_a_foot_rolls_in_with_its_inner_edge_up():
+    for side, inner in (("right", -1), ("left", 1)):
+        rolled = Mannequin(adjust={f"{side}_foot.roll_in_out": 20})
+        toes, frame = world(rolled, f"{side}_toes").position, world(rolled, f"{side}_foot")
+        edge = frame.apply(Vec3(inner * 0.03, 0, 0.05))  # a point on the inner edge of the sole
+        assert edge.y > frame.apply(Vec3(-inner * 0.03, 0, 0.05)).y + 0.01
+    assert PARAMETERS["left_foot.roll_in_out"].low < 0 < PARAMETERS["left_foot.roll_in_out"].high
+
+
+@pytest.mark.parametrize("roll", [-10, 12, 25])
+def test_a_foot_held_on_a_slope_rolls_to_lie_on_it(roll):
+    still = Mannequin()
+    hold = still.hold("left_foot")
+    sloped = Transform(basis=hold.basis).then(Transform.at(roll=roll)).basis
+    figure = Mannequin(at=(0, -0.04, 0.03), holds=(Hold("left_foot", hold.at, sloped),))
+    assert apart(world(figure, "left_foot").basis, sloped) < 1e-3
+    assert tuple(world(figure, "left_foot").position) == pytest.approx(tuple(hold.at), abs=1e-4)
 
 
 def test_only_a_hand_or_a_foot_is_held():
@@ -175,6 +280,20 @@ def test_plant_keeps_a_foot_down_until_it_is_lifted():
     assert world(location.at(0.6).nodes[1], "left_foot").position.z > start["left"].z + 0.05  # let go, it goes with the pose
 
 
+def test_a_plant_lets_go_over_its_release():
+    location, figure = walking()
+    location.plant(figure, "left_foot", 0.0, 0.4, release=0.3)
+    foot = lambda time: world(location.at(time).nodes[1], "left_foot").position
+    free = lambda time: world(walking()[0].at(time).nodes[1], "left_foot").position
+    assert tuple(foot(0.39)) == pytest.approx(tuple(foot(0.0)), abs=1e-4)
+    assert tuple(foot(0.7)) == pytest.approx(tuple(free(0.7)), abs=1e-4)
+    gaps = [(foot(0.4 + step * 0.03) - free(0.4 + step * 0.03)).length for step in range(11)]
+    assert all(later <= earlier + 1e-6 for earlier, later in zip(gaps, gaps[1:]))  # it goes over to the pose bit by bit
+    assert max(abs(a - b) for a, b in zip(gaps, gaps[1:])) < gaps[0] / 3  # with no jump
+    location.plant(figure, "left_foot", 0.8, 1.0)
+    assert tuple(foot(0.9)) == pytest.approx(tuple(foot(0.8)), abs=1e-4)  # a later plant holds fully again
+
+
 def test_a_planted_film_is_its_stills():
     location, figure = walking()
     location.plant(figure, "left_foot")
@@ -193,6 +312,58 @@ def test_plant_refuses_what_has_no_feet_and_backward_time():
     location.nodes.append(location.nodes.pop(0))  # the floor is not a figure
     with pytest.raises(Exception):
         location.plant("floor", "left_foot")
+
+
+def strolling(to=(0, 0, 2.6), start: float = 0.0) -> tuple[Location, Mannequin]:
+    location = Location("stroll", Registry.default())
+    location.add("stock.box", size=(12, 0.1, 12), at=(0, -0.05, 0), material="stock.concrete")
+    figure = location.add(Mannequin(name="walker", pose="stand"))
+    location.walk(figure, to, start=start)
+    return location, figure
+
+
+def test_a_walk_ends_where_it_was_sent_facing_that_way():
+    for to, yaw in (((0, 0, 2.6), 0), ((2.0, 0, 0), 90)):
+        location, _ = strolling(to)
+        end = location.at(location.duration()).nodes[1]
+        assert (end.at.x, end.at.z) == pytest.approx((to[0], to[2]), abs=1e-6)
+        assert end.yaw % 360 == pytest.approx(yaw, abs=1e-6)
+        assert location.duration() == pytest.approx(math.hypot(to[0], to[2]) / 1.2, rel=0.25)  # at about walking pace
+
+
+def test_a_walk_keeps_each_foot_still_while_it_stands_on_it():
+    location, _ = strolling()
+    stances = {"left": [[]], "right": [[]]}
+    for frame in range(round(location.duration() * 60) + 1):
+        moment = location.at(frame / 60).nodes[1]
+        held = {hold.joint for hold in moment.holds if not moment.let_go.get(hold.joint, 0.0)}
+        for side, runs in stances.items():
+            if f"{side}_foot" in held:
+                runs[-1].append(world(moment, f"{side}_toes").position)  # the heel may rise, the toes stay
+            elif runs[-1]:
+                runs.append([])
+    for side, runs in stances.items():
+        assert len([run for run in runs if run]) >= 2
+        for run in runs:
+            assert max(((point - run[0]).length for point in run), default=0) < 0.002
+
+
+def test_a_walk_lifts_its_feet_and_never_sinks_them():
+    location, _ = strolling()
+    lows, lifted = [], 0.0
+    for step in range(41):
+        figure = location.at(location.duration() * step / 40).nodes[1]
+        feet = [part for part in figure.build() if part.name.endswith(("_foot", "_toes"))]
+        lows.append(min(part.bounds(figure.transform.then(part.transform))[0].y for part in feet))
+        lifted = max(lifted, max(part.bounds(figure.transform.then(part.transform))[0].y for part in feet))
+    assert min(lows) > -0.01 and lifted > 0.03
+
+
+def test_a_walk_starts_when_told_and_refuses_going_nowhere():
+    location, _ = strolling(start=1.0)
+    assert location.at(1.0).nodes[1].at == location.at(0.0).nodes[1].at
+    with pytest.raises(MotionError):
+        strolling(to=(0, 0, 0))
 
 
 def test_a_cubic_bezier_ease_is_the_css_curve():

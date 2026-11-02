@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from srlocations.location import Location
 
 HEADROOM = 1.5  # the furthest up a report looks, in metres
-BOXED = 1.5  # how near a model must be to matter that it is judged by its bounding box
+BOXED = 1.5  # how near a model must be to matter that it is judged by the convex hulls of its pieces
 
 
 @dataclass
@@ -34,7 +34,7 @@ class FigureReport:
     posture: dict[str, float]  # degrees
     faults: list[str]  # every limb that passes through the set
     tangled: list[str]  # its limbs that pass through each other
-    boxed: list[str] = field(default_factory=list)  # models near it, judged by their bounding box and so by more than their shape
+    boxed: list[str] = field(default_factory=list)  # models near it, judged by their pieces' hulls and so by more than their shape
 
     def lines(self) -> list[str]:
         out = [f"{self.name} ({self.height:.2f} m)"]
@@ -46,7 +46,7 @@ class FigureReport:
         out.extend(f"  {name:<16} {value * 100:.1f} cm" for name, value in self.resting.items())
         out.extend(f"  {name:<16} {value:.0f} degrees" for name, value in self.posture.items())
         out.extend(f"  FAULT {fault}" for fault in (*self.faults, *self.tangled))
-        out.extend(f"  judged by its box: {name}" for name in self.boxed)
+        out.extend(f"  judged by its hulls: {name}" for name in self.boxed)
         return out
 
 
@@ -61,14 +61,19 @@ class Report:
 
 def _within_reach(location: "Location", figure: Figure) -> list[str]:
     """Top-level pieces of the set a hand can get to, measured from the shoulders."""
-    frames, reach = figure.frames(), figure.arm_reach()
-    spheres = [Egg(figure.transform.then(frames[f"{side}_upper_arm"]), (reach, reach, reach)) for side in ("left", "right")]
+    reach = figure.arm_reach()
+    spheres = [Egg(Transform.at(shoulder), (reach, reach, reach)) for shoulder in figure.shoulders()]
     found = []
     for node in location.nodes:
         body = Body.of(node, location.contact) if node.collides and node is not figure and not node.moves else None
         if body and any(overlap(sphere, piece.hull) for sphere in spheres for piece in body.hulls):
             found.append(node.label)
     return list(dict.fromkeys(found))
+
+
+def _head(figure: Figure) -> str:
+    """The joint headroom is measured above, or none for a figure with no head, which is then measured as a whole."""
+    return "head" if any(leaf.path.rpartition("/")[2] == "head" for leaf in figure.walk()) else ""
 
 
 def _boxed(location: "Location", figure: Figure) -> list[str]:
@@ -90,9 +95,9 @@ def report(location: "Location") -> Report:
     figures = location.figures()
     others = {*(figure.label for figure in figures), *location.marks}
     return Report(location.name, [
-        FigureReport(figure.label, figure.height,
+        FigureReport(figure.label, figure.stature(),
                      (Vec3.of(figure.at) - location.marks[figure.name].at).length if figure.name in location.marks else None,
-                     location.gap(figure, "head", (0, 1, 0), HEADROOM), figure.arm_reach(), _within_reach(location, figure),
+                     location.gap(figure, _head(figure), (0, 1, 0), HEADROOM), figure.arm_reach(), _within_reach(location, figure),
                      {name: location.sees(figure, name) for name in sorted(others - {figure.label})}, _resting(location, figure),
                      figure.posture(), [str(clash) for clash in location.faults(figure)],
                      list(figure.tangled()), _boxed(location, figure)) for figure in figures])

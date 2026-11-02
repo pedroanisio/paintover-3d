@@ -234,26 +234,84 @@ class Location:
         return self
 
     def plant(self, figure: Union[Node, str], joint: str, start: float = 0.0, end: Optional[float] = None,
-              keep: bool = True) -> "Location":
+              keep: bool = True, release: float = 0.0, flat: bool = False) -> "Location":
         """Keeps a figure's hand or foot where it is at `start` until `end`, or for good, while the rest of it moves: a foot
-        stays down as the hips walk over it, and the knee bends to keep it there. With `keep` it stays turned as it was. A
-        foot the hips leave out of reach follows them as far as the straight leg lets it. It is a key on the figure's
-        `holds`, so each moment is solved from its own keys, and at `end` the joint goes back to where the pose puts it."""
+        stays down as the hips walk over it, and the knee bends to keep it there, the hips coming down if the leg cannot
+        reach. With `keep` it stays turned as it was. A foot the hips leave out of reach follows them as far as the straight
+        leg lets it. With `flat` a foot is first set down level on the floor below it. It is a key on the figure's `holds`, so
+        each moment is solved from its own keys. At `end` the joint goes back to where the pose puts it, evenly over
+        `release` seconds."""
         if end is not None and end <= start:
             raise MotionError(f"a plant ends after it starts, and {end} is not after {start}")
+        if release < 0 or (release and end is None):
+            raise MotionError("a plant lets go over a time of zero or more, and only if it ends")
         found = self.figure(figure)
         key, _, allowed = self._target(found)
         if "holds" not in allowed:
             raise MotionError(f"{found.label} cannot hold a hand or a foot in place")
         index = next(place for place, node in enumerate(self.nodes) if node is found)
-        hold = self.at(start).nodes[index].hold(joint, keep)
+        hold = self.at(start).nodes[index].hold(joint, keep, flat)
         track = self.motion.setdefault(key, Track())
+        gone = None if end is None else end + release
         keys = track.fields.get("holds") or [Key(0.0, tuple(found.holds))]
         was = lambda time: next(old.value for old in reversed(keys) if old.time <= time)
-        within = lambda time: start <= time and (end is None or time < end)
-        cuts = sorted({old.time for old in keys} | {start} | (set() if end is None else {end}))
+        within = lambda time: start <= time and (gone is None or time < gone)
+        cuts = sorted({old.time for old in keys} | {start} | (set() if gone is None else {gone}))
         track.fields["holds"] = [Key(time, tuple(other for other in was(time) if other.joint != hold.joint) + (hold,)
                                      if within(time) else was(time), "hold") for time in cuts]
+        loose = track.fields.get("let_go") or [Key(0.0, dict(found.let_go))]
+        def freed(time: float) -> float:
+            if time < start:
+                return value_at(loose, time).get(hold.joint, 0.0)
+            return 0.0 if end is None or time <= end else min(1.0, (time - end) / release) if release else 1.0
+        times = sorted({old.time for old in loose} | {start} | (set() if end is None else {end, gone}))
+        track.fields["let_go"] = [Key(time, {**value_at(loose, time), hold.joint: freed(time)}, "linear") for time in times]
+        return self
+
+    def walk(self, figure: Union[Node, str], to: Union[VecLike, str], start: float = 0.0, speed: float = 1.2,
+             stride: Optional[float] = None) -> "Location":
+        """Walks a figure from where it is at `start` to a point or a mark, at `speed` metres a second: it turns to face the
+        way, steps with its walk poses (`stepping` and `passing`), lifts each foot as it passes the other, and keeps each foot planted
+        while it stands on it. A step is `stride` long, or as long as the walk pose makes it, rounded to fit the way. At
+        the end it stands in the pose it had."""
+        found = self.figure(figure)
+        index = next(place for place, node in enumerate(self.nodes) if node is found)
+        now = self.at(start).nodes[index]
+        here = Vec3.of(now.at)
+        goal = self.marks[to].at if isinstance(to, str) and to in self.marks else Vec3.of(self._point(to))
+        way = Vec3(goal.x - here.x, 0, goal.z - here.z)
+        if way.length < 1e-6:
+            raise MotionError(f"{found.label} is already there")
+        try:
+            stride = stride or found.stride()
+        except NotImplementedError as error:
+            raise MotionError(str(error)) from None
+        steps = max(1, round(way.length / stride))
+        step = way.length / steps / speed
+        yaw = math.degrees(math.atan2(way.x, way.z))
+        yaw = now.yaw + (yaw - now.yaw + 180) % 360 - 180  # the short way round
+        end = start + steps * step
+        stand = dict(now.values())
+        if start > 0:
+            self.move(found, start, at=here, yaw=now.yaw, pose=stand)
+        self.move(found, end, ease="linear", at=Vec3(goal.x, here.y, goal.z))
+        self.move(found, start + step, yaw=yaw)
+        # The first and last steps are halves, so every foot lands a whole step from the last and the trailing foot is half
+        # a step behind the hips when the leading one lands.
+        leads = ["right" if number % 2 else "left" for number in range(1, steps + 1)]
+        contact = lambda number: start + (number - 0.5) * step
+        for number, lead in enumerate(leads, start=1):
+            self.move(found, start + max(number - 1, 0.25) * step, pose=dict(found.passing(lead)))
+            self.move(found, contact(number), pose=dict(found.stepping(lead)))
+        if steps > 1:
+            self.move(found, contact(steps) + 0.25 * step, pose=dict(found.passing(leads[-2])))
+        self.move(found, end, pose=stand)
+        lift, release = 0.05 * step, 0.15 * step
+        self.plant(found, "right_foot", start, start + lift, release=release, flat=True)
+        self.plant(found, "left_foot", start, contact(1) + lift, release=release, flat=True)
+        for number, lead in enumerate(leads, start=1):
+            self.plant(found, f"{lead}_foot", contact(number), end if number == steps else contact(number + 1) + lift,
+                       release=0.0 if number == steps else release, flat=True)
         return self
 
     def onion(self, time: float, times: Sequence[float]) -> "Location":
@@ -537,10 +595,14 @@ class Location:
         return [clash for limb in body.limbs() for clash in limb_clashes(limb, self._set(), self.contact)]
 
     def gap(self, figure: Union[Node, str], joint: str, way: VecLike, limit: float = GAP) -> float:
-        """How far one limb of a figure moves along `way`, a unit direction, before it meets the set, in metres. Up to `limit`,
-        so `limit` itself means nothing is there."""
+        """How far one limb of a figure moves along `way`, a unit direction, before it meets the set, in metres, or the whole
+        figure for an empty `joint`. Up to `limit`, so `limit` itself means nothing is there."""
         found = self.figure(figure)
-        return gap(Body.of(found, self.contact).part(lambda path: path.rpartition("/")[2] == joint), self._set(), Vec3.of(way), limit)
+        body = Body.of(found, self.contact)
+        limb = body.part(lambda path: path.rpartition("/")[2] == joint) if joint and body else body
+        if limb is None:
+            raise ValueError(f"{found.label} has no {joint or 'body'}")
+        return gap(limb, self._set(), Vec3.of(way), limit)
 
     def _point(self, target: Union[VecLike, str, Node]) -> Vec3:
         """A place to look: a point, the eyes of a figure, or above a mark."""

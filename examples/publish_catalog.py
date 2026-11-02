@@ -38,8 +38,8 @@ def main() -> None:
     catalog.publish_prop("dining-set", Group([
         Table(1.2, 0.8, top="studio.car-paint.midnight"),
         Chair(seat="studio.velvet.plum", at=(0, 0, 0.62)),
-        Chair(seat="studio.velvet.plum", at=(0, 0, -0.62), yaw=180)]), registry,
-        tags=["furniture"], description="Table for two with velvet chairs")
+        Chair(seat="studio.velvet.plum", at=(0, 0, -0.62), yaw=180)]), registry, "1.0.1",
+        tags=["furniture"], description="Table for two with velvet chairs")  # 1.0.0 was published before props kept their seats
     catalog.publish_prop("floor-lamp.warm", FloorLamp(), registry, tags=["lighting"], description="Brass lamp with its own light")
     catalog.publish_prop("bulkhead", registry.create("scifi.bulkhead"), registry, tags=["scifi", "structure"],
                          description="Corridor ring, made by the sci-fi plugin")
@@ -47,7 +47,7 @@ def main() -> None:
     catalog.publish_prop("dining-set", Group([
         Table(1.2, 0.8, top="studio.car-paint.midnight"),
         Chair(seat="studio.velvet.plum", at=(0, 0, 0.62)),
-        Chair(seat="studio.velvet.plum", at=(0, 0, -0.62), yaw=180)]), registry, "1.1.0",
+        Chair(seat="studio.velvet.plum", at=(0, 0, -0.62), yaw=180)]), registry, "1.1.1",
         tags=["furniture"], description="Table for two with velvet chairs",
         slots={"top": "studio.car-paint.midnight", "seat": "studio.velvet.plum"})
     for name in ("chair", "meeting-table", "bookcase"):  # in order: the table nests the chair
