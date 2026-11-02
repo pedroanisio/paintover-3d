@@ -1,0 +1,25 @@
+{
+  "description": "A star chart with a plotted course",
+  "digest": "fa45609713bdecc42955cba6282b9b86420b32b3a9f634d37a6275725a92f53e",
+  "kind": "shader",
+  "name": "screen.chart",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 0.9,
+    "maps": {
+      "emissiveMap": "2886a822abd48ffb14f583146564c8add8f131bb1e5fd5c3c720630bf09636f7.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

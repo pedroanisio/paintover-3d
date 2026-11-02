@@ -1,0 +1,5680 @@
+{
+  "description": "A starship's bridge laid out as a control room: consoles under a band of windows, a mimic board and a chart table",
+  "digest": "d89ecf206070993a86f8f1ad31eef4768de468e92030def8496085b231054e51",
+  "kind": "prop",
+  "name": "starship-bridge",
+  "payload": {
+    "parts": [
+      {
+        "at": [
+          0.0,
+          -0.05,
+          -0.1
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 12.2,
+          "height": 0.1,
+          "width": 14.0
+        },
+        "material": "deck.plate@1.0.0",
+        "slot": "deck",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -2.7,
+          0.006,
+          -0.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 6.5,
+          "height": 0.012,
+          "width": 0.7
+        },
+        "material": "deck.grate@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          2.7,
+          0.006,
+          -0.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 6.5,
+          "height": 0.012,
+          "width": 0.7
+        },
+        "material": "deck.grate@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          0.575,
+          5.2
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.4,
+          "height": 1.15,
+          "width": 14.0
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          1.13,
+          4.95
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.5,
+          "height": 0.04,
+          "width": 14.0
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.6,
+          2.077103,
+          5.403708
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.965926,
+            -0.258819
+          ],
+          [
+            0.0,
+            0.258819,
+            0.965926
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.3,
+          "height": 2.0,
+          "width": 0.24
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -4.4,
+          2.077103,
+          5.403708
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.965926,
+            -0.258819
+          ],
+          [
+            0.0,
+            0.258819,
+            0.965926
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.3,
+          "height": 2.0,
+          "width": 0.24
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -2.2,
+          2.077103,
+          5.403708
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.965926,
+            -0.258819
+          ],
+          [
+            0.0,
+            0.258819,
+            0.965926
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.3,
+          "height": 2.0,
+          "width": 0.24
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          2.077103,
+          5.403708
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.965926,
+            -0.258819
+          ],
+          [
+            0.0,
+            0.258819,
+            0.965926
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.3,
+          "height": 2.0,
+          "width": 0.24
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          2.2,
+          2.077103,
+          5.403708
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.965926,
+            -0.258819
+          ],
+          [
+            0.0,
+            0.258819,
+            0.965926
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.3,
+          "height": 2.0,
+          "width": 0.24
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          4.4,
+          2.077103,
+          5.403708
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.965926,
+            -0.258819
+          ],
+          [
+            0.0,
+            0.258819,
+            0.965926
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.3,
+          "height": 2.0,
+          "width": 0.24
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.6,
+          2.077103,
+          5.403708
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.965926,
+            -0.258819
+          ],
+          [
+            0.0,
+            0.258819,
+            0.965926
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.3,
+          "height": 2.0,
+          "width": 0.24
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          3.174977,
+          5.749646
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.965926,
+            -0.258819
+          ],
+          [
+            0.0,
+            0.258819,
+            0.965926
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.4,
+          "height": 0.3,
+          "width": 14.0
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          3.490926,
+          5.817638
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.4,
+          "height": 0.318148,
+          "width": 14.0
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          3.7,
+          0.4
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 13.2,
+          "height": 0.2,
+          "width": 14.6
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          1.8,
+          -6.35
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.3,
+          "height": 3.6,
+          "width": 14.6
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          1.15,
+          -6.15
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.1,
+          "height": 2.3,
+          "width": 1.4
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -0.78,
+          0.23,
+          -6.08
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.322,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -0.78,
+          0.69,
+          -6.08
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.322,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -0.78,
+          1.15,
+          -6.08
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.322,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -0.78,
+          1.61,
+          -6.08
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.322,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -0.78,
+          2.07,
+          -6.08
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.322,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.78,
+          0.23,
+          -6.08
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.322,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.78,
+          0.69,
+          -6.08
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.322,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.78,
+          1.15,
+          -6.08
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.322,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.78,
+          1.61,
+          -6.08
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.322,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.78,
+          2.07,
+          -6.08
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.322,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -7.15,
+          1.8,
+          0.4
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 13.2,
+          "height": 3.6,
+          "width": 0.3
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.6,
+          1.8,
+          3.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.8,
+          "height": 3.6,
+          "width": 0.9
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.13,
+          0.72,
+          3.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.13,
+          1.26,
+          3.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.13,
+          1.8,
+          3.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.13,
+          2.34,
+          3.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.13,
+          2.88,
+          3.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.6,
+          1.8,
+          -5.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.8,
+          "height": 3.6,
+          "width": 0.9
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.13,
+          0.72,
+          -5.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.13,
+          1.26,
+          -5.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.13,
+          1.8,
+          -5.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.13,
+          2.34,
+          -5.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.13,
+          2.88,
+          -5.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          7.15,
+          1.8,
+          0.4
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 13.2,
+          "height": 3.6,
+          "width": 0.3
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.6,
+          1.8,
+          3.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.8,
+          "height": 3.6,
+          "width": 0.9
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.13,
+          0.72,
+          3.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.13,
+          1.26,
+          3.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.13,
+          1.8,
+          3.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.13,
+          2.34,
+          3.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.13,
+          2.88,
+          3.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.6,
+          1.8,
+          -5.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.8,
+          "height": 3.6,
+          "width": 0.9
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.13,
+          0.72,
+          -5.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.13,
+          1.26,
+          -5.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.13,
+          1.8,
+          -5.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.13,
+          2.34,
+          -5.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.13,
+          2.88,
+          -5.0
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.03,
+          "height": 0.378,
+          "width": 0.1
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.75,
+          0.475,
+          1.4
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 2.2,
+          "height": 0.95,
+          "width": 0.5
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.68,
+          0.96,
+          1.4
+        ],
+        "basis": [
+          [
+            0.978148,
+            0.207912,
+            0.0
+          ],
+          [
+            -0.207912,
+            0.978148,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 2.1,
+          "height": 0.03,
+          "width": 0.42
+        },
+        "material": "keys.panel@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.92,
+          1.75,
+          0.9
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.86,
+          "height": 0.62,
+          "width": 0.16
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.83,
+          1.75,
+          0.9
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.5,
+          "width": 0.76
+        },
+        "material": "screen.tactical@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          6.92,
+          1.75,
+          1.9
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.86,
+          "height": 0.62,
+          "width": 0.16
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.83,
+          1.75,
+          1.9
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.5,
+          "width": 0.76
+        },
+        "material": "screen.scope@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          6.75,
+          0.475,
+          -3.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 2.2,
+          "height": 0.95,
+          "width": 0.5
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.68,
+          0.96,
+          -3.6
+        ],
+        "basis": [
+          [
+            0.978148,
+            0.207912,
+            0.0
+          ],
+          [
+            -0.207912,
+            0.978148,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 2.1,
+          "height": 0.03,
+          "width": 0.42
+        },
+        "material": "keys.panel@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.92,
+          1.75,
+          -4.1
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.86,
+          "height": 0.62,
+          "width": 0.16
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.83,
+          1.75,
+          -4.1
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.5,
+          "width": 0.76
+        },
+        "material": "screen.readouts@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          6.92,
+          1.75,
+          -3.1
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.86,
+          "height": 0.62,
+          "width": 0.16
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.83,
+          1.75,
+          -3.1
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.5,
+          "width": 0.76
+        },
+        "material": "screen.scope@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          -4.6,
+          3.4,
+          -0.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 11.2,
+          "height": 0.4,
+          "width": 0.35
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -3.2,
+          3.4,
+          -0.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 11.2,
+          "height": 0.4,
+          "width": 0.35
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          3.2,
+          3.4,
+          -0.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 11.2,
+          "height": 0.4,
+          "width": 0.35
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          4.6,
+          3.4,
+          -0.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 11.2,
+          "height": 0.4,
+          "width": 0.35
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          3.4,
+          -4.4
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.35,
+          "height": 0.4,
+          "width": 14.0
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          3.4,
+          -1.4
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.35,
+          "height": 0.4,
+          "width": 14.0
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          3.4,
+          1.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.35,
+          "height": 0.4,
+          "width": 14.0
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.0,
+          3.4,
+          4.4
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.35,
+          "height": 0.4,
+          "width": 14.0
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          3.28,
+          -0.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 11.2,
+          "height": 0.24,
+          "width": 0.7
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          3.145,
+          -5.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          3.145,
+          -4.5
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          3.145,
+          -3.4
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          3.145,
+          -2.3
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          3.145,
+          -1.2
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          3.145,
+          -0.1
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          3.145,
+          1.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          3.145,
+          2.1
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          3.145,
+          3.2
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          3.145,
+          4.3
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.9,
+          2.9,
+          -4.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#dfe9ff",
+        "intensity": 6.0,
+        "light": "point",
+        "reach": 8.0,
+        "shadows": false,
+        "softness": 0.0
+      },
+      {
+        "at": [
+          -1.9,
+          2.9,
+          -0.5
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#dfe9ff",
+        "intensity": 6.0,
+        "light": "point",
+        "reach": 8.0,
+        "shadows": false,
+        "softness": 0.0
+      },
+      {
+        "at": [
+          -1.9,
+          2.9,
+          3.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#dfe9ff",
+        "intensity": 6.0,
+        "light": "point",
+        "reach": 8.0,
+        "shadows": false,
+        "softness": 0.0
+      },
+      {
+        "at": [
+          1.9,
+          3.28,
+          -0.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 11.2,
+          "height": 0.24,
+          "width": 0.7
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          3.145,
+          -5.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          3.145,
+          -4.5
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          3.145,
+          -3.4
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          3.145,
+          -2.3
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          3.145,
+          -1.2
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          3.145,
+          -0.1
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          3.145,
+          1.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          3.145,
+          2.1
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          3.145,
+          3.2
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          3.145,
+          4.3
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "depth": 0.85,
+          "height": 0.03,
+          "width": 0.26
+        },
+        "material": "glow.strip@1.0.0",
+        "slot": "light",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.9,
+          2.9,
+          -4.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#dfe9ff",
+        "intensity": 6.0,
+        "light": "point",
+        "reach": 8.0,
+        "shadows": false,
+        "softness": 0.0
+      },
+      {
+        "at": [
+          1.9,
+          2.9,
+          -0.5
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#dfe9ff",
+        "intensity": 6.0,
+        "light": "point",
+        "reach": 8.0,
+        "shadows": false,
+        "softness": 0.0
+      },
+      {
+        "at": [
+          1.9,
+          2.9,
+          3.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#dfe9ff",
+        "intensity": 6.0,
+        "light": "point",
+        "reach": 8.0,
+        "shadows": false,
+        "softness": 0.0
+      },
+      {
+        "at": [
+          -5.9,
+          2.0,
+          3.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#cfe0ff",
+        "intensity": 1.6,
+        "light": "point",
+        "reach": 3.0,
+        "shadows": false,
+        "softness": 0.0
+      },
+      {
+        "at": [
+          -5.9,
+          2.0,
+          -5.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#cfe0ff",
+        "intensity": 1.6,
+        "light": "point",
+        "reach": 3.0,
+        "shadows": false,
+        "softness": 0.0
+      },
+      {
+        "at": [
+          5.9,
+          2.0,
+          3.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#cfe0ff",
+        "intensity": 1.6,
+        "light": "point",
+        "reach": 3.0,
+        "shadows": false,
+        "softness": 0.0
+      },
+      {
+        "at": [
+          5.9,
+          2.0,
+          -5.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#cfe0ff",
+        "intensity": 1.6,
+        "light": "point",
+        "reach": 3.0,
+        "shadows": false,
+        "softness": 0.0
+      },
+      {
+        "at": [
+          -4.05,
+          0.37,
+          4.57
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.62,
+          "height": 0.74,
+          "width": 2.6
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -4.05,
+          0.79,
+          4.51
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.970296,
+            0.241922
+          ],
+          [
+            0.0,
+            -0.241922,
+            0.970296
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.5,
+          "height": 0.03,
+          "width": 2.54
+        },
+        "material": "keys.panel@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -4.05,
+          0.74,
+          4.57
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.66,
+          "height": 0.08,
+          "width": 2.6
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -4.05,
+          1.12,
+          4.83
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.1,
+          "height": 0.5,
+          "width": 2.6
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -4.883333,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.tactical@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          -4.05,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.scope@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          -3.216667,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.readouts@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          -1.35,
+          0.37,
+          4.57
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.62,
+          "height": 0.74,
+          "width": 2.6
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.35,
+          0.79,
+          4.51
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.970296,
+            0.241922
+          ],
+          [
+            0.0,
+            -0.241922,
+            0.970296
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.5,
+          "height": 0.03,
+          "width": 2.54
+        },
+        "material": "keys.panel@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.35,
+          0.74,
+          4.57
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.66,
+          "height": 0.08,
+          "width": 2.6
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.35,
+          1.12,
+          4.83
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.1,
+          "height": 0.5,
+          "width": 2.6
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -2.183333,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.readouts@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          -1.35,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.scope@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          -0.516667,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.readouts@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          1.35,
+          0.37,
+          4.57
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.62,
+          "height": 0.74,
+          "width": 2.6
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.35,
+          0.79,
+          4.51
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.970296,
+            0.241922
+          ],
+          [
+            0.0,
+            -0.241922,
+            0.970296
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.5,
+          "height": 0.03,
+          "width": 2.54
+        },
+        "material": "keys.panel@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.35,
+          0.74,
+          4.57
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.66,
+          "height": 0.08,
+          "width": 2.6
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.35,
+          1.12,
+          4.83
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.1,
+          "height": 0.5,
+          "width": 2.6
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          0.516667,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.scope@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          1.35,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.readouts@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          2.183333,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.scope@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          4.05,
+          0.37,
+          4.57
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.62,
+          "height": 0.74,
+          "width": 2.6
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          4.05,
+          0.79,
+          4.51
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.970296,
+            0.241922
+          ],
+          [
+            0.0,
+            -0.241922,
+            0.970296
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.5,
+          "height": 0.03,
+          "width": 2.54
+        },
+        "material": "keys.panel@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          4.05,
+          0.74,
+          4.57
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.66,
+          "height": 0.08,
+          "width": 2.6
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          4.05,
+          1.12,
+          4.83
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.1,
+          "height": 0.5,
+          "width": 2.6
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          3.216667,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.readouts@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          4.05,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.tactical@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          4.883333,
+          1.12,
+          4.775
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.978148,
+            -0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            0.978148
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "width": 0.753333
+        },
+        "material": "screen.scope@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          -1.35,
+          0.025,
+          3.5
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.05,
+          "radius": 0.3
+        },
+        "material": "hull.dark@1.0.0",
+        "segments": 32,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          -1.35,
+          0.21,
+          3.38
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.32,
+          "radius": 0.06
+        },
+        "material": "rail.steel@1.0.0",
+        "segments": 32,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          -1.35,
+          0.395,
+          3.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "chair.black@1.0.0",
+        "name": "seat",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            24,
+            12
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.26*(sign(cos(v))*pow(abs(cos(v)),0.35))*(sign(cos(u))*pow(abs(cos(u)),0.35))",
+          "y": "0.055*(sign(sin(v))*pow(abs(sin(v)),0.35))",
+          "z": "0.25*(sign(cos(v))*pow(abs(cos(v)),0.35))*(sign(sin(u))*pow(abs(sin(u)),0.35))"
+        }
+      },
+      {
+        "at": [
+          -1.35,
+          0.78,
+          3.32
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.990268,
+            -0.139173
+          ],
+          [
+            0.0,
+            0.139173,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "chair.black@1.0.0",
+        "name": "back",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            24,
+            16
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.25*(sign(cos(v))*pow(abs(cos(v)),0.35))*(sign(cos(u))*pow(abs(cos(u)),0.35))",
+          "y": "0.33*(sign(sin(v))*pow(abs(sin(v)),0.35))",
+          "z": "0.065*(sign(cos(v))*pow(abs(cos(v)),0.35))*(sign(sin(u))*pow(abs(sin(u)),0.35))"
+        }
+      },
+      {
+        "at": [
+          -1.65,
+          0.62,
+          3.56
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.34,
+          "height": 0.04,
+          "width": 0.06
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -1.05,
+          0.62,
+          3.56
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.34,
+          "height": 0.04,
+          "width": 0.06
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.35,
+          0.025,
+          3.5
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.05,
+          "radius": 0.3
+        },
+        "material": "hull.dark@1.0.0",
+        "segments": 32,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          1.35,
+          0.21,
+          3.38
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.32,
+          "radius": 0.06
+        },
+        "material": "rail.steel@1.0.0",
+        "segments": 32,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          1.35,
+          0.395,
+          3.6
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "chair.black@1.0.0",
+        "name": "seat",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            24,
+            12
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.26*(sign(cos(v))*pow(abs(cos(v)),0.35))*(sign(cos(u))*pow(abs(cos(u)),0.35))",
+          "y": "0.055*(sign(sin(v))*pow(abs(sin(v)),0.35))",
+          "z": "0.25*(sign(cos(v))*pow(abs(cos(v)),0.35))*(sign(sin(u))*pow(abs(sin(u)),0.35))"
+        }
+      },
+      {
+        "at": [
+          1.35,
+          0.78,
+          3.32
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.990268,
+            -0.139173
+          ],
+          [
+            0.0,
+            0.139173,
+            0.990268
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "chair.black@1.0.0",
+        "name": "back",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            24,
+            16
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "0.25*(sign(cos(v))*pow(abs(cos(v)),0.35))*(sign(cos(u))*pow(abs(cos(u)),0.35))",
+          "y": "0.33*(sign(sin(v))*pow(abs(sin(v)),0.35))",
+          "z": "0.065*(sign(cos(v))*pow(abs(cos(v)),0.35))*(sign(sin(u))*pow(abs(sin(u)),0.35))"
+        }
+      },
+      {
+        "at": [
+          1.05,
+          0.62,
+          3.56
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.34,
+          "height": 0.04,
+          "width": 0.06
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          1.65,
+          0.62,
+          3.56
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.34,
+          "height": 0.04,
+          "width": 0.06
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -7.0,
+          1.95,
+          -1.4
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.1,
+          "height": 2.5,
+          "width": 6.6
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -6.945,
+          1.95,
+          -1.4
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 1.6,
+          "width": 6.4
+        },
+        "material": "screen.mimic@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          -5.95,
+          0.37,
+          -1.4
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.55,
+          "height": 0.74,
+          "width": 5.4
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -5.91,
+          0.76,
+          -1.4
+        ],
+        "basis": [
+          [
+            0.0,
+            0.173648,
+            -0.984808
+          ],
+          [
+            0.0,
+            0.984808,
+            0.173648
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.46,
+          "height": 0.03,
+          "width": 5.34
+        },
+        "material": "keys.panel@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.5,
+          0.42,
+          -1.1
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.9,
+          "height": 0.84,
+          "width": 1.5
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.5,
+          0.9,
+          -1.1
+        ],
+        "basis": [
+          [
+            0.0,
+            -0.207912,
+            0.978148
+          ],
+          [
+            0.0,
+            0.978148,
+            0.207912
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.96,
+          "height": 0.04,
+          "width": 1.56
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.495634,
+          0.920541,
+          -1.1
+        ],
+        "basis": [
+          [
+            0.0,
+            0.978148,
+            0.207912
+          ],
+          [
+            0.0,
+            0.207912,
+            -0.978148
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.86,
+          "width": 1.44
+        },
+        "material": "screen.chart@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          6.75,
+          2.05,
+          -1.1
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 0.3,
+          "height": 0.08,
+          "width": 1.2
+        },
+        "material": "hull.dark@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          6.65,
+          1.9,
+          -1.1
+        ],
+        "basis": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "color": "#ffe2b8",
+        "intensity": 0.9,
+        "light": "point",
+        "reach": 2.5,
+        "shadows": false,
+        "softness": 0.0
+      },
+      {
+        "at": [
+          -154.548132,
+          20.0,
+          46.411047
+        ],
+        "basis": [
+          [
+            0.258819,
+            0.0,
+            -0.965926
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.965926,
+            0.0,
+            0.258819
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 210,
+          "width": 420
+        },
+        "material": "space.stars@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          0.0,
+          20.0,
+          165.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 210,
+          "width": 420
+        },
+        "material": "space.stars@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          154.548132,
+          20.0,
+          46.411047
+        ],
+        "basis": [
+          [
+            0.258819,
+            0.0,
+            0.965926
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -0.965926,
+            0.0,
+            0.258819
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 210,
+          "width": 420
+        },
+        "material": "space.stars@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          -30.0,
+          10.0,
+          140.0
+        ],
+        "basis": [
+          [
+            0.469472,
+            -0.061591,
+            0.880797
+          ],
+          [
+            0.0,
+            0.997564,
+            0.069756
+          ],
+          [
+            -0.882948,
+            -0.032749,
+            0.468328
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "ship.white@1.0.0",
+        "name": "hull",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            24,
+            16
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "7*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(cos(u))*pow(abs(cos(u)),0.25))*(1-0.3*(sign(sin(v))*pow(abs(sin(v)),0.25)))",
+          "y": "2.5*(sign(sin(v))*pow(abs(sin(v)),0.25))",
+          "z": "45*(sign(cos(v))*pow(abs(cos(v)),0.25))*(sign(sin(u))*pow(abs(sin(u)),0.25))"
+        }
+      },
+      {
+        "at": [
+          -46.051434,
+          11.936588,
+          131.465301
+        ],
+        "basis": [
+          [
+            0.469472,
+            -0.061591,
+            0.880797
+          ],
+          [
+            0.0,
+            0.997564,
+            0.069756
+          ],
+          [
+            -0.882948,
+            -0.032749,
+            0.468328
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 30.0,
+          "height": 3.0,
+          "width": 10.0
+        },
+        "material": "ship.white@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -53.30106,
+          14.670498,
+          127.610607
+        ],
+        "basis": [
+          [
+            0.469472,
+            -0.061591,
+            0.880797
+          ],
+          [
+            0.0,
+            0.997564,
+            0.069756
+          ],
+          [
+            -0.882948,
+            -0.032749,
+            0.468328
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 8.0,
+          "height": 4.0,
+          "width": 5.0
+        },
+        "material": "ship.white@1.0.0",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -37.015579,
+          8.943166,
+          136.269751
+        ],
+        "basis": [
+          [
+            0.469472,
+            -0.061591,
+            0.880797
+          ],
+          [
+            0.0,
+            0.997564,
+            0.069756
+          ],
+          [
+            -0.882948,
+            -0.032749,
+            0.468328
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "depth": 40.0,
+          "height": 1.2,
+          "width": 16.0
+        },
+        "material": "hull.grey@1.0.0",
+        "slot": "plating",
+        "solid": "box"
+      },
+      {
+        "at": [
+          -71.720696,
+          7.345789,
+          122.346993
+        ],
+        "basis": [
+          [
+            0.469472,
+            -0.880797,
+            -0.061591
+          ],
+          [
+            0.0,
+            -0.069756,
+            0.997564
+          ],
+          [
+            -0.882948,
+            -0.468328,
+            -0.032749
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.5,
+          "radius": 1.6
+        },
+        "material": "ship.engine@1.0.0",
+        "segments": 32,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          -69.84281,
+          7.345789,
+          118.815202
+        ],
+        "basis": [
+          [
+            0.469472,
+            -0.880797,
+            -0.061591
+          ],
+          [
+            0.0,
+            -0.069756,
+            0.997564
+          ],
+          [
+            -0.882948,
+            -0.468328,
+            -0.032749
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.5,
+          "radius": 1.6
+        },
+        "material": "ship.engine@1.0.0",
+        "segments": 32,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          -67.964924,
+          7.345789,
+          115.283412
+        ],
+        "basis": [
+          [
+            0.469472,
+            -0.880797,
+            -0.061591
+          ],
+          [
+            0.0,
+            -0.069756,
+            0.997564
+          ],
+          [
+            -0.882948,
+            -0.468328,
+            -0.032749
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.5,
+          "radius": 1.6
+        },
+        "material": "ship.engine@1.0.0",
+        "segments": 32,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          40.0,
+          6.0,
+          120.0
+        ],
+        "basis": [
+          [
+            0.866025,
+            0.0,
+            -0.5
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.5,
+            0.0,
+            0.866025
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "ship.white@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "1.5*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))*(1-0.4*(sign(sin(v))*pow(abs(sin(v)),0.3)))",
+          "y": "0.6*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "5*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          42.55,
+          6.0,
+          115.58327
+        ],
+        "basis": [
+          [
+            0.866025,
+            0.5,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.5,
+            -0.866025,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.3,
+          "radius": 0.6
+        },
+        "material": "ship.engine@1.0.0",
+        "segments": 32,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          55.0,
+          2.0,
+          150.0
+        ],
+        "basis": [
+          [
+            0.939693,
+            0.0,
+            -0.34202
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.34202,
+            0.0,
+            0.939693
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "ship.white@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "1.5*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))*(1-0.4*(sign(sin(v))*pow(abs(sin(v)),0.3)))",
+          "y": "0.6*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "5*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          56.744303,
+          2.0,
+          145.207568
+        ],
+        "basis": [
+          [
+            0.939693,
+            0.34202,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.34202,
+            -0.939693,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.3,
+          "radius": 0.6
+        },
+        "material": "ship.engine@1.0.0",
+        "segments": 32,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          -15.0,
+          12.0,
+          170.0
+        ],
+        "basis": [
+          [
+            0.984808,
+            0.0,
+            0.173648
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            -0.173648,
+            0.0,
+            0.984808
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {},
+        "material": "ship.white@1.0.0",
+        "solid": "parametric",
+        "surface": {
+          "closed": [
+            true,
+            false
+          ],
+          "inward": false,
+          "samples": [
+            16,
+            10
+          ],
+          "u": [
+            0,
+            360
+          ],
+          "v": [
+            -90,
+            90
+          ],
+          "x": "1.5*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(cos(u))*pow(abs(cos(u)),0.3))*(1-0.4*(sign(sin(v))*pow(abs(sin(v)),0.3)))",
+          "y": "0.6*(sign(sin(v))*pow(abs(sin(v)),0.3))",
+          "z": "5*(sign(cos(v))*pow(abs(cos(v)),0.3))*(sign(sin(u))*pow(abs(sin(u)),0.3))"
+        }
+      },
+      {
+        "at": [
+          -15.885606,
+          12.0,
+          164.97748
+        ],
+        "basis": [
+          [
+            0.984808,
+            -0.173648,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            -0.173648,
+            -0.984808,
+            0.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.3,
+          "radius": 0.6
+        },
+        "material": "ship.engine@1.0.0",
+        "segments": 32,
+        "solid": "cylinder"
+      }
+    ],
+    "seats": [
+      {
+        "at": [
+          -1.35,
+          0.0,
+          3.54
+        ],
+        "back": 0.13,
+        "depth": 0.3,
+        "facing": 0.0,
+        "height": 0.455
+      },
+      {
+        "at": [
+          1.35,
+          0.0,
+          3.54
+        ],
+        "back": 0.13,
+        "depth": 0.3,
+        "facing": 0.0,
+        "height": 0.455
+      }
+    ],
+    "slots": {
+      "deck": "deck.plate@1.0.0",
+      "light": "glow.strip@1.0.0",
+      "plating": "hull.grey@1.0.0"
+    }
+  },
+  "schema": 1,
+  "size": [
+    420.0,
+    210.0,
+    405.688847
+  ],
+  "tags": [
+    "interior",
+    "scifi",
+    "vehicle"
+  ],
+  "version": "2.0.0"
+}

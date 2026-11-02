@@ -1,5 +1,6 @@
-"""The published starship bridge from every shot, then with a captain in the command chair and an officer at the holo
-table, then the view from the pit traced. It needs only the catalog. Run: .venv/bin/python examples/starship_bridge.py"""
+"""The published starship bridge from every shot, then with a crew at their stations: two seated at the consoles under
+the windows, one at the mimic board and one at the chart table. Then the wide view traced. It needs only the catalog.
+Run: .venv/bin/python examples/starship_bridge.py"""
 import sys
 from pathlib import Path
 
@@ -17,12 +18,14 @@ def main() -> None:
     print("issues:", bridge.validate() or "none")
     for shot in bridge.shots:
         print(renderer.render(bridge, shot, OUT / f"{shot}.png", Shaded(1200, 990)).name)
-    bridge.stand("captain", pose="sit")
-    bridge.stand("officer", seed=3)
+    bridge.stand("helm", pose="sit")
+    bridge.stand("navigator", pose="sit")
+    bridge.stand("engineer", seed=3)
+    bridge.stand("officer", kind="woman", seed=6)
     print("with the crew:", bridge.validate() or "no issues")
-    for shot in ("from-the-pit", "holo-table"):
+    for shot in ("bridge-wide", "console-line", "mimic-board", "chart-table"):
         print(renderer.render(bridge, shot, OUT / f"{shot}-crew.png", Shaded(1200, 990)).name)
-    print(renderer.render(bridge, "from-the-pit", OUT / "from-the-pit-traced.png", Traced(1200, 990, samples=128)).name)
+    print(renderer.render(bridge, "bridge-wide", OUT / "bridge-wide-traced.png", Traced(1200, 990, samples=128)).name)
 
 
 if __name__ == "__main__":

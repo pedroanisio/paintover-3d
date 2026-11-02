@@ -86,18 +86,18 @@ def main() -> None:
     newsroom = registry.plugins.load_file(ROOT / "examples/plugins/newsroom.py")
     for name, (material, tags, description) in newsroom.shaders.items():
         catalog.publish_shader(name, material, tags=tags, description=description)
-    catalog.publish_prop("news-studio", registry.create("news.studio"), registry, "1.0.0", tags=["interior", "broadcast"],
-                         description="A news studio: a curved desk on a lit riser, a curved video wall, a lighting grid and cameras",
-                         slots=newsroom.slots)
-    catalog.publish_location("news-studio", json.loads((ROOT / "examples/news-studio.location.json").read_text()), "1.0.0",
-                             tags=["interior", "broadcast"], description="A television news studio on air")
+    catalog.publish_prop("news-studio", registry.create("news.studio"), registry, "1.1.0", tags=["interior", "broadcast"],
+                         description="A news studio in plum, tangerine and mint: a curved desk on a lit riser, a curved video wall "
+                                     "with nothing written on it, a lighting grid and cameras", slots=newsroom.slots)
+    catalog.publish_location("news-studio", json.loads((ROOT / "examples/news-studio.location.json").read_text()), "1.1.0",
+                             tags=["interior", "broadcast"], description="A television news studio on air, with portrait shots for two anchors")
     bridge = registry.plugins.load_file(ROOT / "examples/plugins/bridge.py")
     for name, (material, tags, description) in bridge.shaders.items():
         catalog.publish_shader(name, material, tags=tags, description=description)
-    catalog.publish_prop("starship-bridge", registry.create("ship.bridge"), registry, "1.0.0", tags=["interior", "scifi", "vehicle"],
-                         description="A starship's bridge: a holo table in a pit, consoles, a command deck and six windows onto space",
-                         slots=bridge.slots)
-    catalog.publish_location("starship-bridge", json.loads((ROOT / "examples/starship-bridge.location.json").read_text()), "1.0.0",
+    catalog.publish_prop("starship-bridge", registry.create("ship.bridge"), registry, "2.0.0", tags=["interior", "scifi", "vehicle"],
+                         description="A starship's bridge laid out as a control room: consoles under a band of windows, a mimic "
+                                     "board and a chart table", slots=bridge.slots)
+    catalog.publish_location("starship-bridge", json.loads((ROOT / "examples/starship-bridge.location.json").read_text()), "2.0.0",
                              tags=["interior", "scifi", "vehicle"], description="A starship's bridge with a capital ship off to port")
     for entry in catalog.entries():
         print(f"{entry.kind:<9}{entry.ref:<34}{entry.description}")

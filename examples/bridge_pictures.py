@@ -1,5 +1,5 @@
-"""Draws the starship bridge's screens, holo table, deck plates and the stars outside into examples/textures/bridge. They are
-checked in, so this only runs to change them. Run: .venv/bin/python examples/bridge_pictures.py"""
+"""Draws the starship bridge's screens, mimic board, chart, deck plates and the stars outside into examples/textures/bridge.
+They are checked in, so this only runs to change them. Run: .venv/bin/python examples/bridge_pictures.py"""
 import math
 import random
 from pathlib import Path
@@ -31,27 +31,6 @@ def stars() -> None:
             for i in range(3):
                 data[at + i] = min(255, data[at + i] + round(tint[i] * (0.25 + 0.75 * light) * share))
     write(OUT / "stars.png", width, height, bytes(data))
-
-
-def holo() -> None:
-    """The holo table's top: a planet's map in dots inside rings, with a grid and two marked places."""
-    c = Canvas(512, 512, (2, 10, 26))
-    land = pictures_noise(512, 7, 41)
-    for y in range(40, 472, 6):
-        for x in range(40, 472, 6):
-            if math.hypot(x - 256, y - 256) < 210 and land(x, y) > 0.55:
-                c.dot(x, y, 1.9, (110, 210, 255))
-    for radius in (214, 224, 240):
-        c.arc(256, 256, radius, 0, 360, (60, 160, 230), width=2)
-    for turn in range(0, 360, 30):
-        c.arc(256, 256, 232, turn, turn + 18, (120, 210, 255), width=5)
-    for offset in range(-180, 181, 60):
-        c.line(256 + offset, 46, 256 + offset, 466, (20, 70, 120), 1)
-        c.line(46, 256 + offset, 466, 256 + offset, (20, 70, 120), 1)
-    for x, y in ((200, 210), (320, 300)):
-        c.arc(x, y, 12, 0, 360, AMBER, width=2)
-        c.dot(x, y, 3, AMBER)
-    c.save("holo")
 
 
 def scope() -> None:
@@ -115,6 +94,51 @@ def keys() -> None:
     c.save("keys")
 
 
+def mimic() -> None:
+    """A mimic board: the ship's systems drawn as lines between boxes, with lamps on them and meters beside, and no words."""
+    rng = random.Random(81)
+    c = Canvas(1536, 384, (30, 34, 36))
+    for x in range(0, 1536, 192):  # the board's panels
+        c.rect(x, 0, x + 3, 384, (18, 20, 22))
+    rows = (70, 160, 250, 330)
+    for row, y in enumerate(rows):  # the main lines, each a colour of its own
+        tone = (WHITE, GREEN, AMBER, CYAN)[row]
+        c.line(30, y, 1506, y, tone, 4)
+    for x in range(80, 1500, 96):  # feeds between the lines, boxes on them and lamps where they meet
+        top, bottom = sorted(rng.sample(rows, 2))
+        c.line(x, top, x, bottom, (150, 156, 160), 3)
+        middle = (top + bottom) / 2
+        c.rect(x - 18, middle - 14, x + 18, middle + 14, (60, 66, 70))
+        c.rect(x - 14, middle - 10, x + 14, middle + 10, (36, 40, 44))
+        for y in (top, bottom):
+            c.dot(x, y, 7, (20, 22, 24))
+            c.dot(x, y, 5, rng.choice((GREEN, GREEN, GREEN, AMBER, RED)))
+    for x in range(110, 1500, 192):  # small bar meters along the bottom
+        for bar in range(5):
+            high = rng.uniform(8, 30)
+            c.rect(x + bar * 9, 372 - high, x + bar * 9 + 6, 372, GREEN if bar % 4 else AMBER)
+    c.save("mimic")
+
+
+def chart() -> None:
+    """A star chart: a grid, stars, and a course of waypoints across it."""
+    rng = random.Random(91)
+    c = Canvas(512, 320, (6, 14, 24))
+    for x in range(16, 512, 40):
+        c.line(x, 8, x, 312, (22, 54, 80), 1)
+    for y in range(20, 320, 40):
+        c.line(8, y, 504, y, (22, 54, 80), 1)
+    for _ in range(140):
+        c.dot(rng.uniform(10, 502), rng.uniform(10, 310), rng.uniform(0.8, 2.2), (150, 190, 230))
+    course = ((40, 260), (150, 210), (250, 220), (340, 140), (460, 70))
+    for (x0, y0), (x1, y1) in zip(course, course[1:]):
+        c.line(x0, y0, x1, y1, AMBER, 3)
+    for x, y in course:
+        c.dot(x, y, 7, AMBER)
+        c.dot(x, y, 4, (6, 14, 24))
+    c.save("chart")
+
+
 def deck() -> None:
     """Two metres of deck: dark plates a metre square with seams, bolts and wear."""
     size = 256
@@ -133,5 +157,5 @@ def deck() -> None:
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     pictures.OUT = OUT  # Canvas.save writes into the flight deck's folder unless told otherwise
-    for draw in (stars, holo, scope, tactical, readouts, keys, deck):
+    for draw in (stars, scope, tactical, readouts, keys, deck, mimic, chart):
         draw()

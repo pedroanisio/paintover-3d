@@ -1,0 +1,25 @@
+{
+  "description": "Waves of mint dots and rings on plum, with nothing written",
+  "digest": "8b03435ead5283c5dee7855c8b84a3d4b5040b381949b3f54bb8146830089050",
+  "kind": "shader",
+  "name": "screen.wall",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "1ca85e0c024ddb1b466fb48326e2cc5e5365bf9540116f6e0c78742c139e242f.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.6
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

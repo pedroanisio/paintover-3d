@@ -1,0 +1,25 @@
+{
+  "description": "Frosted glass lit plum from behind",
+  "digest": "f0a44810a78914e93c091a904a57a90d43603b29099b8e5ad04eacacaab25a81",
+  "kind": "shader",
+  "name": "desk.frost.plum",
+  "payload": {
+    "color": "#2a1458",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "#2a1458",
+    "glow_strength": 1.2,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.4
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glass",
+    "glow"
+  ],
+  "version": "1.0.0"
+}

@@ -1,0 +1,25 @@
+{
+  "description": "A mimic board of the ship's systems, lines and lamps without words",
+  "digest": "28a56734a29a68bdc2d7708ea0dc6bf721662d9d6a80f33392f9c9b373d41599",
+  "kind": "shader",
+  "name": "screen.mimic",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 0.9,
+    "maps": {
+      "emissiveMap": "3bbfd74ed0038d73a89f7e0cb5ac14bd64333b34c5474b72fdf7c1ab048effe8.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.5
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

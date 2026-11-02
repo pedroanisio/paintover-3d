@@ -1,0 +1,22 @@
+{
+  "description": "A mint light strip",
+  "digest": "13bf0ac3cb5c0f03d35daf0b8db5b3cd14e16c259e3e3ec5ae19736f592e60a7",
+  "kind": "shader",
+  "name": "glow.mint",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#3fe0b5",
+    "glow_strength": 1.6,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

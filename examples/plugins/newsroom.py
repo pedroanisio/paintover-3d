@@ -30,14 +30,14 @@ def screen(name: str, strength: float = 1.0) -> Material:
 SHADERS = {
     "floor.concrete": (Material("#ffffff", 0.32, maps={"baseColorMap": str(PICTURES / "concrete.png")}, extra={"uvScaleX": 12, "uvScaleY": 10}),
                        ["floor", "textured"], "Sealed grey studio concrete"),
-    "desk.glass": (Material("#d6ecff", 0.05, opacity=0.22, extra={"doubleSided": True}), ["glass"], "A clear glass desk top"),
-    "desk.frost": (Material("#4f7fd6", 0.4, glow="#2f6cf0", glow_strength=0.55, extra={"doubleSided": True}), ["glass", "glow"],
-                   "Frosted glass lit blue from behind"),
+    "desk.glass.clear": (Material("#eef0f2", 0.05, opacity=0.22, extra={"doubleSided": True}), ["glass"], "A clear glass desk top, untinted"),
+    "desk.frost.plum": (Material("#2a1458", 0.4, glow="#2a1458", glow_strength=1.2, extra={"doubleSided": True}), ["glass", "glow"],
+                        "Frosted glass lit plum from behind"),
     "desk.back": (Material("#17191e", 0.6, extra={"doubleSided": True}), ["plastic"], "The dark inside of a desk"),
     "wood.desk": (Material("#6e4227", 0.45, extra={"clearcoat": 0.5, "clearcoatRoughness": 0.3, "doubleSided": True}), ["wood"], "Lacquered walnut"),
-    "glow.orange": (Material("#000000", 1.0, glow="#ff7a1e", glow_strength=1.5), ["glow"], "An orange light strip"),
-    "glow.blue": (Material("#000000", 1.0, glow="#2f7dff", glow_strength=1.8), ["glow"], "A blue light strip"),
-    "glow.column": (Material("#0d2a6a", 0.6, glow="#3f86f0", glow_strength=0.45), ["glow"], "A pale blue lit panel"),
+    "glow.tangerine": (Material("#000000", 1.0, glow="#ff8a1f", glow_strength=1.5), ["glow"], "A tangerine light strip"),
+    "glow.mint": (Material("#000000", 1.0, glow="#3fe0b5", glow_strength=1.6), ["glow"], "A mint light strip"),
+    "glow.panel.plum": (Material("#160a30", 0.6, glow="#2a1458", glow_strength=1.4), ["glow"], "A lit plum panel"),
     "glow.lens": (Material("#000000", 1.0, glow="#fff6e8", glow_strength=6.0), ["glow"], "The lens of a lit studio lamp"),
     "riser.grey": (Material("#4a4e57", 0.5, extra={"doubleSided": True}), ["plastic"], "Grey riser deck"),
     "wall.black": (Material("#0b0c10", 0.7, extra={"doubleSided": True}), ["plastic"], "Black studio wall and ceiling"),
@@ -46,10 +46,10 @@ SHADERS = {
     "cable.black": (Material("#09090b", 0.55), ["rubber"], "Camera cable"),
     "paper.white": (Material("#f2f2ee", 0.9), ["paper"], "Script pages"),
     "lens.glass": (Material("#1a2230", 0.05, 0.3), ["glass"], "A camera lens"),
-    "screen.breaking": (screen("breaking"), ["glow", "screen"], "A breaking news graphic on a video wall"),
-    "screen.world": (screen("world"), ["glow", "screen"], "A map of the world with headlines and a ticker"),
+    "screen.pattern": (screen("pattern"), ["glow", "screen"], "Sweeps of tangerine and mint on plum, with nothing written"),
+    "screen.wall": (screen("wall"), ["glow", "screen"], "Waves of mint dots and rings on plum, with nothing written"),
 }
-SLOTS = {"floor": "studio.floor.concrete", "wood": "studio.wood.desk", "frost": "studio.desk.frost", "strip": "studio.glow.orange"}
+SLOTS = {"floor": "studio.floor.concrete", "wood": "studio.wood.desk", "frost": "studio.desk.frost.plum", "strip": "studio.glow.tangerine"}
 
 
 def _around(centre: Sequence[float], radius: str) -> tuple[str, str]:
@@ -97,18 +97,18 @@ def aim(at: Sequence[float], target: Sequence[float]) -> dict:
 
 @dataclass
 class Desk(Prefab):
-    """The anchor desk and its riser: a curve of lit frosted glass between walnut ends, with orange strips along it and a
-    glass top, on a grey deck with a blue edge."""
+    """The anchor desk and its riser: a curve of lit frosted glass between walnut ends, with tangerine strips along it and a
+    glass top, on a grey deck with a mint edge."""
     wood: str = "studio.wood.desk"
-    frost: str = "studio.desk.frost"
-    strip: str = "studio.glow.orange"
+    frost: str = "studio.desk.frost.plum"
+    strip: str = "studio.glow.tangerine"
 
     def build(self) -> Sequence[Node]:
         a0, a1 = ENDS
         deck = (a0 - 10, a1 + 10)
         parts: list[Node] = [*ring(DESK, (1.2, OUTER + 0.45), deck, RISER, "studio.riser.grey", pieces=8, name="riser"),
                              *band(DESK, OUTER + 0.45, deck, (0, RISER), "studio.riser.grey", pieces=8, outward=True, name="riser-edge"),
-                             *band(DESK, OUTER + 0.455, deck, (0.025, 0.05), "studio.glow.blue", pieces=8, outward=True, name="riser-light"),
+                             *band(DESK, OUTER + 0.455, deck, (0.025, 0.05), "studio.glow.mint", pieces=8, outward=True, name="riser-light"),
                              end(DESK, (1.2, OUTER + 0.45), deck[0], (0, RISER), "studio.riser.grey", name="riser-end"),
                              end(DESK, (1.2, OUTER + 0.45), deck[1], (0, RISER), "studio.riser.grey", name="riser-end")]
         low, high = RISER + 0.04, TOP - 0.03
@@ -122,8 +122,8 @@ class Desk(Prefab):
             parts += band(DESK, OUTER + 0.035, (a0, a1), (y, y + 0.03), self.strip, pieces=8, outward=True, name="strip")
         parts += band(DESK, INNER, (a0, a1), (low, high), "studio.desk.back", pieces=8, name="back")
         parts += [end(DESK, (INNER, OUTER + 0.02), turn, (low, high), self.wood, name="end") for turn in (a0, a1)]
-        parts += ring(DESK, (INNER - 0.08, OUTER + 0.12), (a0 - 2, a1 + 2), TOP, "studio.desk.glass", pieces=8, name="top")
-        parts += band(DESK, OUTER + 0.12, (a0 - 2, a1 + 2), (TOP - 0.025, TOP), "studio.glow.column", pieces=8, outward=True, name="top-edge")
+        parts += ring(DESK, (INNER - 0.08, OUTER + 0.12), (a0 - 2, a1 + 2), TOP, "studio.desk.glass.clear", pieces=8, name="top")
+        parts += band(DESK, OUTER + 0.12, (a0 - 2, a1 + 2), (TOP - 0.025, TOP), "studio.glow.mint", pieces=8, outward=True, name="top-edge")
         return parts + self.dressing()
 
     def dressing(self) -> list[Node]:
@@ -173,7 +173,7 @@ class PedestalCamera(Prefab):
                 Cylinder(0.075, 0.34, at=(0, 0.13, 0.36), pitch=90, material=gear, name="lens"),
                 Cylinder(0.068, 0.01, at=(0, 0.13, 0.535), pitch=90, material="studio.lens.glass", name="glass"),
                 Box((0.2, 0.15, 0.04), at=(-0.04, 0.36, -0.2), material=gear, name="viewfinder"),
-                Backdrop(width=0.17, height=0.12, at=(-0.04, 0.36, -0.221), yaw=180, material="studio.screen.breaking", name="viewfinder-screen"),
+                Backdrop(width=0.17, height=0.12, at=(-0.04, 0.36, -0.221), yaw=180, material="studio.screen.pattern", name="viewfinder-screen"),
                 tube(((-0.1, 0.05, -0.25), (-0.25, 0.0, -0.55), (-0.3, -0.05, -0.75)), 0.016, gear, samples=(16, 6), name="pan-bar"),
                 tube(((0.1, 0.05, -0.25), (0.25, 0.0, -0.55), (0.3, -0.05, -0.75)), 0.016, gear, samples=(16, 6), name="pan-bar")]
         if self.prompter:
@@ -196,14 +196,14 @@ class Studio(Prefab):
                 Box((26, 6.2, 0.2), at=(0, 3.1, -9), material="studio.wall.black", name="wall")]
 
     def video_wall(self) -> list[Node]:
-        parts: list[Node] = [picture(WALL, RADIUS, (-40, -5), (0.75, 3.5), "studio.screen.breaking", name="screen-left")]
-        parts += band(WALL, RADIUS, (-4.6, 2.6), (0.75, 3.5), "studio.glow.column", pieces=2, name="column")
-        parts.append(picture(WALL, RADIUS, (3, 46), (0.75, 3.5), "studio.screen.world", name="screen-right"))
+        parts: list[Node] = [picture(WALL, RADIUS, (-40, -5), (0.75, 3.5), "studio.screen.pattern", name="screen-left")]
+        parts += band(WALL, RADIUS, (-4.6, 2.6), (0.75, 3.5), "studio.glow.panel.plum", pieces=2, name="column")
+        parts.append(picture(WALL, RADIUS, (3, 46), (0.75, 3.5), "studio.screen.wall", name="screen-right"))
         parts += band(WALL, RADIUS, (-48, 54), (0, 0.75), "studio.wall.black", pieces=12, name="plinth")
-        parts += band(WALL, RADIUS - 0.05, (-48, 54), (3.7, 3.82), "studio.glow.blue", pieces=12, name="crown-light")
-        parts += band(WALL, RADIUS - 0.05, (-46, -42), (0, 4.4), "studio.glow.orange", name="pillar")
-        parts += band(WALL, RADIUS - 0.1, (-42, -40.4), (0.75, 3.5), "studio.glow.column", name="column")
-        parts += band(WALL, RADIUS, (47, 54), (0.75, 3.5), "studio.glow.column", name="column")
+        parts += band(WALL, RADIUS - 0.05, (-48, 54), (3.7, 3.82), "studio.glow.mint", pieces=12, name="crown-light")
+        parts += band(WALL, RADIUS - 0.05, (-46, -42), (0, 4.4), "studio.glow.tangerine", name="pillar")
+        parts += band(WALL, RADIUS - 0.1, (-42, -40.4), (0.75, 3.5), "studio.glow.panel.plum", name="column")
+        parts += band(WALL, RADIUS, (47, 54), (0.75, 3.5), "studio.glow.panel.plum", name="column")
         return parts
 
     def grid(self) -> list[Node]:
@@ -224,8 +224,8 @@ class Studio(Prefab):
                                at=at, yaw=facing["yaw"], pitch=facing["pitch"], name="lamp"))
             parts.append(Spot(power, color="#fff3e4", at=at, cone=46, reach=14, shadows=index < 4, softness=0.5, name=f"spot-{index}",
                               **facing))
-        parts += [Point(1.6, color="#3d7bff", at=(0, 0.6, -0.9), reach=4.0, name="desk-glow"),
-                  Point(2.5, color="#5a8cff", at=(0, 2.2, 5.0), reach=8.0, name="wall-spill")]
+        parts += [Point(1.6, color="#3fe0b5", at=(0, 0.6, -0.9), reach=4.0, name="desk-glow"),
+                  Point(2.5, color="#ff8a1f", at=(0, 2.2, 5.0), reach=8.0, name="wall-spill")]
         return parts
 
     def floor_gear(self) -> list[Node]:
@@ -236,7 +236,7 @@ class Studio(Prefab):
                  Box((0.5, 0.04, 0.4), at=(0, 0.02, 0), material="studio.metal.gear")]
         for level, y in enumerate((0.95, 1.38)):
             stand += [Box((0.62, 0.38, 0.06), at=(0, y, 0), material="studio.metal.gear"),
-                      Backdrop(width=0.56, height=0.32, at=(0, y, -0.031), material="studio.screen.breaking", name=f"monitor-{level}")]
+                      Backdrop(width=0.56, height=0.32, at=(0, y, -0.031), material="studio.screen.pattern", name=f"monitor-{level}")]
         parts.append(Group(stand, at=(-5.0, 0, -2.0), yaw=-32, name="monitors"))
         for points in (((-2.3, 0.01, -4.4), (-3.6, 0.01, -3.0), (-4.6, 0.01, -1.4), (-6.5, 0.01, 0.5)),
                        ((-2.2, 0.01, -4.3), (-1.2, 0.01, -3.2), (-2.5, 0.01, -1.4), (-4.8, 0.01, -1.9)),
@@ -251,7 +251,7 @@ class Studio(Prefab):
 
 class NewsroomPlugin(Plugin):
     name = "newsroom"
-    version = "1.0.0"
+    version = "1.1.0"
     requires = ("stock",)
     shaders, slots = SHADERS, SLOTS
 

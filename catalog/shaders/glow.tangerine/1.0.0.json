@@ -1,0 +1,22 @@
+{
+  "description": "A tangerine light strip",
+  "digest": "2118a87df3b804eb44c0f5b1b39f2b9fb06534fabc6482ec7db660d73628d681",
+  "kind": "shader",
+  "name": "glow.tangerine",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ff8a1f",
+    "glow_strength": 1.5,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}

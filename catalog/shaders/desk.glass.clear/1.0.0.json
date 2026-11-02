@@ -1,0 +1,24 @@
+{
+  "description": "A clear glass desk top, untinted",
+  "digest": "e4ea814241dde08ab1066c8991530cd6fa90778b34d5cda78e67dd232f8b12b0",
+  "kind": "shader",
+  "name": "desk.glass.clear",
+  "payload": {
+    "color": "#eef0f2",
+    "extra": {
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 0.22,
+    "roughness": 0.05
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glass"
+  ],
+  "version": "1.0.0"
+}

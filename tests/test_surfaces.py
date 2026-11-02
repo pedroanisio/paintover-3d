@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT))
 from srlocations import (Blueprint, Box, CatalogError, Location, Material, Registry, Renderer, SceneCompiler, Shaded,
                          SharedCatalog, Sky, Surface, TemplateError, Traced, TracedCompiler, Transform, Vec3)
 from srlocations.catalog import FrozenProp
+from srlocations.compiler import Projection
 from srlocations.surfaces import MAX_SAMPLES
 from srlocations.templates import engine_expression, evaluate
 
@@ -275,18 +276,48 @@ def test_the_published_news_studio_needs_no_plugin():
     catalog = SharedCatalog.open(ROOT / "catalog")
     location = catalog.location("news-studio")
     assert "newsroom" not in location.registry.plugins.loaded
-    assert location.validate() == [] and set(location.shots) == {"floor-camera", "two-shot", "from-the-desk", "wide"}
-    assert catalog.pins(location)["props"] == {"news-studio": "1.0.0"}
+    assert location.validate() == [] and set(location.shots) == {"floor-camera", "two-shot", "from-the-desk", "wide",
+                                                                  "portrait-two-shot", "portrait-push-in"}
+    assert catalog.pins(location)["props"] == {"news-studio": "1.1.0"}
     assert set(location.marks) == {"anchor-left", "anchor-right"} and len(location.lights()) < 63
+
+
+def test_the_news_studio_keeps_to_its_palette():
+    """News Compiler's approved look: every lit colour is plum, tangerine or mint, or white for lamps and screens, whose
+    pictures carry the palette, and no light is blue."""
+    location = SharedCatalog.open(ROOT / "catalog").location("news-studio")
+    palette = {"#2a1458", "#160a30", "#ff8a1f", "#d9620a", "#3fe0b5", "#1fa98a"}
+    resolved = location.registry.resolved
+    lit = {location.registry.materials.get(resolved.get(leaf.item.material, leaf.item.material)).glow for leaf in location.solids()}
+    assert lit - {None, ""} <= palette | {"#ffffff", "#fff6e8"}
+    assert {light.item.color for light in location.lights()} <= palette | {"#fff3e4", "#ffe9cf"}
+
+
+def test_the_portrait_shots_put_the_desk_above_the_banner():
+    """At 1080x1920 the back of the desk top is at row 1082 and its front at 1134, so a banner from 1146 clears it, in the
+    two-shot and at the end of the push-in alike. The points are the middle of the desk top, from newsroom.py."""
+    location = SharedCatalog.open(ROOT / "catalog").location("news-studio")
+    for name in ("portrait-two-shot", "portrait-push-in"):
+        view = Projection(location.shots[name], 1080, 1920)
+        back, front = (view.pixel(Vec3(0, 0.98, z))[1] for z in (0.33, -0.52))
+        assert abs(back - 1082) < 1 and abs(front - 1134) < 1, name
 
 
 def test_the_published_starship_bridge_needs_no_plugin():
     catalog = SharedCatalog.open(ROOT / "catalog")
     location = catalog.location("starship-bridge")
     assert "bridge" not in location.registry.plugins.loaded
-    assert location.validate() == [] and set(location.shots) == {"from-the-pit", "command-chair", "holo-table", "the-view"}
-    assert catalog.pins(location)["props"] == {"starship-bridge": "1.0.0"}
-    assert len(location.seats()) == 1 and len(location.lights()) < 63
+    assert location.validate() == [] and set(location.shots) == {"bridge-wide", "console-line", "mimic-board", "chart-table", "the-view"}
+    assert catalog.pins(location)["props"] == {"starship-bridge": "2.0.0"}
+    assert len(location.lights()) < 63
+
+
+def test_the_bridge_has_no_centre_seat():
+    """Saga's ruling: no seat in the middle facing the windows. Each seat is at a console, off the centre line."""
+    location = SharedCatalog.open(ROOT / "catalog").location("starship-bridge")
+    seats = location.seats()
+    assert len(seats) == 2 and all(abs(seat.at.x) > 1.0 for seat in seats)
+    assert not any("holo" in leaf.path or "command-chair" in leaf.path for leaf in location.solids())
 
 
 def test_every_part_of_a_published_prop_has_its_own_path():

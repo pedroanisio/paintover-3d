@@ -1,0 +1,25 @@
+{
+  "description": "Sweeps of tangerine and mint on plum, with nothing written",
+  "digest": "22016c116443bde6b8ec4ad5d328ab6310601e577daa8bf6b5e2496a3695a830",
+  "kind": "shader",
+  "name": "screen.pattern",
+  "payload": {
+    "color": "#000000",
+    "extra": {},
+    "glow": "#ffffff",
+    "glow_strength": 1.0,
+    "maps": {
+      "emissiveMap": "ef6b7769dd3dc3f16c02c64d689fe5b9a559ecb24745fb456887b1c950fdfb4e.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.6
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow",
+    "screen"
+  ],
+  "version": "1.0.0"
+}

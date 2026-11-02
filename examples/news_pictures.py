@@ -5,66 +5,54 @@ import random
 from pathlib import Path
 
 import flight_deck_pictures as pictures
-from flight_deck_pictures import Canvas, Color, blend, write
+from flight_deck_pictures import Canvas, blend, write
 
 OUT = Path(__file__).resolve().parent / "textures" / "news"
-WHITE, RED, NAVY, ORANGE, SKY = (245, 246, 250), (206, 34, 38), (12, 34, 92), (255, 118, 26), (70, 160, 255)
-LAND = ((-100, 47, 32, 17), (-82, 28, 12, 9), (-42, 72, 11, 7), (-60, -16, 14, 24), (14, 50, 17, 9), (20, 4, 21, 27),
-        (46, 27, 11, 8), (92, 50, 48, 19), (78, 20, 8, 10), (104, 14, 9, 9), (134, -25, 16, 10), (139, 37, 3, 7), (-155, 63, 12, 6))
+PLUM, DEEP, TANGERINE, EMBER, MINT, JADE = (42, 20, 88), (22, 10, 48), (255, 138, 31), (217, 98, 10), (63, 224, 181), (31, 169, 138)
 
 
 def backdrop(c: Canvas, x0: float, x1: float, swirl: tuple[float, float], seed: int) -> None:
-    """Deep blue, lighter toward the middle, with sweeps of orange and blue about a point, as a news open has."""
+    """Deep plum, lighter toward the middle, with sweeps of tangerine and mint about a point."""
     for y in range(c.height):
-        c.rect(x0, y, x1, y + 1, tuple(round(v) for v in blend(((0, (8, 30, 96)), (0.55, (24, 86, 196)), (1, (10, 36, 110))), y / c.height)))
+        c.rect(x0, y, x1, y + 1, tuple(round(v) for v in blend(((0, DEEP), (0.55, PLUM), (1, DEEP)), y / c.height)))
     rng = random.Random(seed)
     cx, cy = swirl
     for ring in range(9):
         radius = 90 + ring * 38 + rng.uniform(-10, 10)
         start = rng.uniform(-40, 60)
-        color = ORANGE if ring % 3 != 1 else SKY
+        color = TANGERINE if ring % 3 == 0 else (EMBER if ring % 3 == 2 else MINT)
         c.arc(cx, cy, radius, start, start + rng.uniform(90, 170), color, width=rng.uniform(6, 22))
     for ring in range(3):
-        c.arc(cx, cy, 40 + ring * 16, 0, 300, (150, 205, 255), width=3)
+        c.arc(cx, cy, 40 + ring * 16, 0, 300, JADE, width=3)
 
 
-def breaking() -> None:
+def pattern() -> None:
+    """The left of the video wall and the monitors: sweeps in the palette and nothing written."""
     c = Canvas(960, 360)
     backdrop(c, 0, 960, (640, 190), 3)
-    c.rect(90, 148, 650, 222, RED)
-    c.rect(90, 222, 650, 228, WHITE)
-    c.text(118, 164, "BREAKING NEWS", WHITE, 6.4)
-    c.save("breaking")
+    for row in range(4):  # bars that slide in from the left, as an open has, but empty
+        c.rect(90, 120 + row * 34, 90 + (420, 300, 360, 220)[row], 140 + row * 34, (TANGERINE, JADE, EMBER, MINT)[row])
+    c.save("pattern")
 
 
-def world() -> None:
-    """A map of dots between a column of pictures and a column of headlines, over a ticker."""
+def wall() -> None:
+    """The right of the video wall: waves of mint dots across plum, between panels and rings, and nothing written."""
     c = Canvas(1440, 400)
     backdrop(c, 0, 1440, (1250, 140), 5)
-    for row, tone in enumerate(((150, 60, 40), (40, 90, 150), (90, 100, 110))):  # pictures from the field
+    for row in range(3):  # panels down the left, plain
         top = 22 + row * 98
-        c.rect(18, top, 222, top + 86, (230, 236, 244))
-        c.rect(22, top + 4, 218, top + 82, tone)
-        c.dot(80 + row * 30, top + 44, 22, tuple(min(255, v + 80) for v in tone))
-    c.rect(240, 20, 1060, 316, (6, 40, 120))
+        c.rect(18, top, 222, top + 86, JADE)
+        c.rect(22, top + 4, 218, top + 82, DEEP)
+        c.arc(120, top + 43, 26, 0, 270, (TANGERINE, MINT, EMBER)[row], width=6)
+    c.rect(240, 20, 1060, 316, DEEP)
     for y in range(26, 312, 7):
         for x in range(246, 1056, 7):
-            lon, lat = (x - 246) / 810 * 360 - 180, 84 - (y - 26) / 286 * 150
-            if any(((lon - cx) / rx) ** 2 + ((lat - cy) / ry) ** 2 < 1 for cx, cy, rx, ry in LAND):
-                c.dot(x, y, 2.1, (120, 196, 255))
-    c.dot(470, 125, 7, ORANGE)
-    c.dot(820, 140, 7, ORANGE)
-    for top, words, ground in ((40, "BREAKING", RED), (120, "NEWS", NAVY)):
-        c.rect(1080, top, 1420, top + 64, WHITE)
-        c.rect(1084, top + 4, 1416, top + 60, ground)
-        c.text(1100, top + 15, words, WHITE, 5)
-    c.rect(1080, 200, 1420, 316, (40, 110, 210))
-    c.dot(1250, 258, 46, ORANGE)
-    c.rect(0, 330, 1440, 400, WHITE)
-    c.rect(0, 330, 150, 400, RED)
-    c.text(24, 348, "NEWS", WHITE, 5)
-    c.text(176, 352, "MARKETS OPEN HIGHER  /  COUNCIL VOTES TONIGHT  /  RAIN BY EVENING", NAVY, 3.6)
-    c.save("world")
+            wave = 168 + 60 * math.sin((x - 246) / 90) + 30 * math.sin((x - 246) / 37 + 1.3)
+            if abs(y - wave) < 22 + 14 * math.sin(x / 61):
+                c.dot(x, y, 2.1, MINT)
+    for ring, color in enumerate((MINT, TANGERINE, JADE, EMBER)):  # rings to the right, where the swirl is
+        c.arc(1250, 200, 40 + ring * 30, ring * 50, ring * 50 + 230, color, width=10)
+    c.save("wall")
 
 
 def concrete() -> None:
@@ -95,5 +83,5 @@ def pictures_noise(size: int, cells: int, seed: int):
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
     pictures.OUT = OUT  # Canvas.save writes into the flight deck's folder unless told otherwise
-    for draw in (breaking, world, concrete):
+    for draw in (pattern, wall, concrete):
         draw()

@@ -1,0 +1,22 @@
+{
+  "description": "A lit plum panel",
+  "digest": "50e6e7e6baabd1f27292eeff564cec1bb63cfc491c2658b891d621688d188403",
+  "kind": "shader",
+  "name": "glow.panel.plum",
+  "payload": {
+    "color": "#160a30",
+    "extra": {},
+    "glow": "#2a1458",
+    "glow_strength": 1.4,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.6
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "glow"
+  ],
+  "version": "1.0.0"
+}
