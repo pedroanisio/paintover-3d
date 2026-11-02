@@ -118,9 +118,36 @@ location.stand("host", looks=("stock.wireframe", "stock.shaded"))
 renderer.render(location, "wide", "renders/flat-blocking.png", "stock.shaded")
 ```
 
+A figure comes as a `kind` (`man`, `woman`, `teen`, `child` or `toddler`) and a `pose` (`t`, `a`, `stand`, `sit`, `walk`,
+`point` or `drive`). `adjust` turns single controls on top of the pose, in degrees, and `height` overrides the kind. A figure
+in the `sit` pose takes the nearest free seat within 0.8 m of its mark.
+
+```python
+location.mark("guest", (-0.4, 0, 1.2), facing=180)
+location.stand("guest", pose="sit", kind="woman", adjust={"head.turn_left_right": 30})
+print(location.clashes(bodies_only=True) or "nobody passes through anything")
+```
+
+`location.clashes()` lists what passes through what, and a render refuses a figure that still does. `solid=False` on a
+figure lets it through on purpose. These checks find overlap only, so a figure floating 15 cm off a seat back reports nothing.
+`examples/fit_check.py` goes further for the car: each limb against hard parts and cushions separately, how far the back,
+hips and thighs are from the seat, wrist to steering wheel, and joint angles.
+
 `location.cast()` puts a 2D character on a mark, and furniture hides it by default. Characters come from a `Performer`. The
 optional `SrstudioCast` plugin gets them from srstudio, through that project's interpreter in `SRSTUDIO_PYTHON`.
 `examples/casting.py` holds a mannequin and a character on each mark, and picks by look.
+
+## Curved solids
+
+A `Surface` draws any shape you can write as `x(u, v)`, `y(u, v)` and `z(u, v)`. The expressions are in metres, and angles
+are in degrees. The grand tourer's seats and dashboard are built this way.
+
+```python
+from srlocations import Surface
+
+location.add(Surface("0.12 * cos(u) * cos(v)", "0.12 * sin(v)", "0.12 * sin(u) * cos(v)", u=(0, 360), v=(-90, 90),
+                     closed=(True, False), at=(1.6, 0.9, 1.2), material="stock.plaster.cream"))
+```
 
 ## Models
 
@@ -141,6 +168,10 @@ studio.publish_prop("sofa", location.registry.create("stock.sofa"), location.reg
 other = Location("set", Registry.default().use(SharedCatalog.open("shared")))
 other.add("studio.sofa")
 ```
+
+Published versions never change, so a fix is a new version, and old ones stay readable. `catalog/` in this repository is a
+published example: `SharedCatalog.open("catalog").location("grand-tourer")` opens the newest version of a car at a mountain
+overlook.
 
 `SRLOCATIONS_CATALOGS` lists catalogs that `Registry.default()` opens by itself. `studio.browse()` writes a page of what is
 in a catalog, with a thumbnail of each item, into its `browse/` folder.
@@ -216,12 +247,16 @@ srstudio and skip without it.
 GitHub Actions runs the suite on every push and pull request, on Mesa's software Vulkan and the newest published engine.
 
 `examples/` holds runnable scripts, and each writes into `renders/`. A good order is `use_cases.py`, `paintover.py`,
-`texture_looks.py`, `mannequin.py`, `casting.py` and `polish.py`.
+`texture_looks.py`, `mannequin.py`, `casting.py` and `polish.py`. `publish_catalog.py` and `use_catalog.py` publish and read
+the catalog, `grand_tourer_paper.py` renders the car as a paper paint-over, and `fit_check.py` puts mannequins in every set.
 
 ## Limits
 
 - Shots are stills. Motion is not implemented.
 - A mannequin is forward kinematics with rigid segments, and a settled figure does not change its pose to fit.
+- `location.clashes()` reports the deepest overlap for each pair of nodes, so a smaller one can hide behind it, and it cannot
+  see a limb wholly inside a `Surface`. Contact is measured only by `examples/fit_check.py`, and only for the car.
+- The comfort ranges in `examples/fit_check.py` are working values, not taken from a published standard.
 - Depth for paint treats a mark as one distance, to within 15 cm, and paint casts no shadow onto the set.
 - A tiled texture runs backwards on two of a room's four walls, which only lettering would show, and still restarts on each
   round solid. Only walls along x and z meet exactly at a corner. An imported model keeps its own UVs.
