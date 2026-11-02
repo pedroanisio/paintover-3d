@@ -1,0 +1,22 @@
+{
+  "description": "A lit path light's diffuser",
+  "digest": "313d01f2b814217908a9362fea137bec277db5d768cf437091366e70fe69f292",
+  "kind": "shader",
+  "name": "glow.bollard",
+  "payload": {
+    "color": "#fff6e6",
+    "extra": {},
+    "glow": "#ffe4bd",
+    "glow_strength": 4.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.35
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "light"
+  ],
+  "version": "1.0.0"
+}

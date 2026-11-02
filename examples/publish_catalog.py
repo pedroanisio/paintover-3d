@@ -83,6 +83,22 @@ def main() -> None:
                          description="A city park: a brick path, a bench before a hedge, broadleaf trees and towers beyond", slots=park.slots)
     catalog.publish_location("park", json.loads((ROOT / "examples/park.location.json").read_text()), "1.0.0",
                              tags=["exterior", "landscape", "city"], description="A city park on a summer afternoon")
+    catalog.publish_prop("park-night", registry.create("park.park", night=True), registry, "1.0.0",
+                         tags=["exterior", "landscape", "city", "night"],
+                         description="The city park after rain at night: the path and kerbs wet, the leaves and lawn dark, no clouds",
+                         slots={**park.slots, "paving": "studio.paving.wet", "lawn": "studio.grass.night"})
+    for name, prefab, params, description in (
+            ("park-lamp", "park.lamp", {}, "A generic post-top park lantern, lit, with its own light"),
+            ("park-lamp.off", "park.lamp", {"lit": False}, "The park lantern switched off: the same lamp with no light"),
+            ("park-bollard", "park.bollard", {}, "A low path light, lit, with its own light"),
+            ("park-bollard.off", "park.bollard", {"lit": False}, "The low path light switched off"),
+            ("park-mist", "park.mist", {}, "A bank of thin blue night mist: see-through cards with no body, facing back")):
+        catalog.publish_prop(name, registry.create(prefab, **params), registry, "1.0.0", tags=["exterior", "night"],
+                             description=description)
+    catalog.publish_location("park-night", json.loads((ROOT / "examples/park-night.location.json").read_text()), "1.0.0",
+                             tags=["exterior", "landscape", "city", "night"],
+                             description="The park at night after rain: one street lamp, low path lights in rows, a cool "
+                                         "moon behind and mist, with a hip-height shot for a dancer on the path")
     newsroom = registry.plugins.load_file(ROOT / "examples/plugins/newsroom.py")
     for name, (material, tags, description) in newsroom.shaders.items():
         catalog.publish_shader(name, material, tags=tags, description=description)

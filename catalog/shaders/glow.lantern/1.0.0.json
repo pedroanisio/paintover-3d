@@ -1,0 +1,22 @@
+{
+  "description": "A lit lantern's frosted glass",
+  "digest": "c77211e72f1afcb8fd5b4a2a9220352b58eb18bb1e35fdc2036bc8ca882b35e8",
+  "kind": "shader",
+  "name": "glow.lantern",
+  "payload": {
+    "color": "#fff6e6",
+    "extra": {},
+    "glow": "#ffd9a0",
+    "glow_strength": 6.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.35
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "light"
+  ],
+  "version": "1.0.0"
+}

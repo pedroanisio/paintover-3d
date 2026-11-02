@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from grand_tourer import _number, pillow, tube
 
-from srlocations import Box, Group, Material, Node, Plugin, Prefab, Registry, Seat, Surface, Vec3
+from srlocations import Backdrop, Box, Cone, Cylinder, Group, Material, Node, Plugin, Point, Prefab, Registry, Seat, Sphere, Spot, Surface, Vec3
 
 TEXTURES = Path(__file__).resolve().parent.parent / "textures" / "park"
 PATH = ((0.3, -1.5), (-0.5, 9.0), (-3.0, 18.0), (-38.0, 34.0))  # the path's middle, as a Bezier curve over the lawn
@@ -47,6 +47,26 @@ SHADERS = {
     "glass.tower.dark": (Material("#bccbdc", 0.25, 0.35, maps={"baseColorMap": str(TEXTURES / "glass.png")}), ["glass", "textured"],
                          "A darker curtain wall, pale with distance"),
     "cloud": (Material("#f6f8fa", 1.0, extra={"unlit": True}), ["sky"], "A summer cloud"),
+    # The night: the same pavers after rain, under a clear coat of water, and the lamps that light them
+    "paving.wet": (Material("#8a786b", 0.65, maps={"baseColorMap": str(TEXTURES / "pavers.png")},
+                            extra={"uvScaleX": round(LENGTH / TILE, 2), "uvScaleY": round(WIDTH / TILE, 2), "clearcoat": 1.0,
+                                   "clearcoatRoughness": 0.04}),
+                   ["stone", "textured", "wet"], "Brick pavers after rain, dark and glossy"),
+    "kerb.wet": (Material("#8f877e", 0.45, extra={"clearcoat": 1.0, "clearcoatRoughness": 0.05}), ["stone", "wet"],
+                 "Pale stone path edging, wet"),
+    "iron.lamp": (Material("#1c2321", 0.45, 0.75), ["metal"], "Dark green-black painted iron, for lamp posts"),
+    "glow.lantern": (Material("#fff6e6", 0.35, glow="#ffd9a0", glow_strength=6.0), ["light"], "A lit lantern's frosted glass"),
+    "glow.bollard": (Material("#fff6e6", 0.35, glow="#ffe4bd", glow_strength=4.0), ["light"], "A lit path light's diffuser"),
+    "glass.unlit": (Material("#4a4740", 0.3), ["glass"], "Frosted glass with the light inside it off"),
+    "grass.night": (Material("#5d6a66", 0.95, maps={"baseColorMap": str(TEXTURES / "grass.png")},
+                             extra={"uvScaleX": 150, "uvScaleY": 150}), ["plant", "textured"], "Mown lawn at night, its green gone grey"),
+    "leaf.night": (Material("#4f6a55", 0.85, maps={"baseColorMap": str(TEXTURES / "leaves.png")}, extra={"uvScaleX": 6, "uvScaleY": 4}),
+                   ["plant", "textured"], "Broadleaf canopy at night, where a lamp can reach it"),
+    "leaf.night.shade": (Material("#2a3a30", 0.9, maps={"baseColorMap": str(TEXTURES / "leaves.png")},
+                                  extra={"uvScaleX": 6, "uvScaleY": 4}), ["plant", "textured"], "Broadleaf canopy at night, inside"),
+    "mist.night": (Material("#8eaad8", 1.0, opacity=0.24, maps={"baseColorMap": str(TEXTURES / "mist.png")}, extra={"unlit": True}),
+                   ["sky", "haze", "textured"],
+                   "A thin blue night mist, one card of a bank"),
 }
 SLOTS = {"slats": "studio.wood.bench", "iron": "studio.iron.bench", "paving": "studio.paving.brick", "lawn": "studio.grass.lawn"}
 
@@ -133,6 +153,8 @@ class Tree(Prefab):
     lean: float = 0.4
     clumps: int = 30
     seed: int = 0
+    sunlit: str = "studio.leaf.sun"
+    shaded: str = "studio.leaf.shade"
     yields = True
 
     def build(self) -> Sequence[Node]:
@@ -153,29 +175,101 @@ class Tree(Prefab):
                math.cos(math.radians(SUN[0])) * math.cos(math.radians(SUN[1])))
         low = h * 0.3  # where the crown begins
         centre, tall = (middle[0], (low + h) / 2, middle[2]), (h - low) / 2
-        parts.append(pillow((r * 1.3, tall * 1.2, r * 1.3), "studio.leaf.shade", square=0.9, samples=(24, 14), at=centre, casts_shadow=False, name="crown"))
+        parts.append(pillow((r * 1.3, tall * 1.2, r * 1.3), self.shaded, square=0.9, samples=(24, 14), at=centre, casts_shadow=False, name="crown"))
         for clump in range(self.clumps):  # over the surface of the crown, so few are hidden inside it
             around, up = rng.uniform(0, 2 * math.pi), math.asin(rng.uniform(-0.6, 1.0))
             depth = rng.uniform(0.7, 1.0)
             dx, dy, dz = math.cos(up) * math.sin(around) * depth, math.sin(up) * depth, math.cos(up) * math.cos(around) * depth
             size = r * rng.uniform(0.26, 0.42)
             facing = dx * sun[0] + dy * sun[1] + dz * sun[2]
-            parts.append(pillow((size * 1.2, size * rng.uniform(0.6, 0.8), size), "studio.leaf.sun" if facing > -0.1 else "studio.leaf.shade",
+            parts.append(pillow((size * 1.2, size * rng.uniform(0.6, 0.8), size), self.sunlit if facing > -0.1 else self.shaded,
                                 square=0.85, samples=(18, 12), at=(centre[0] + dx * r, centre[1] + dy * tall, centre[2] + dz * r),
                                 yaw=rng.uniform(0, 360), name="crown"))
         return parts
 
 
 @dataclass
+class StreetLamp(Prefab):
+    """A generic post-top park lantern: an iron post, a frosted glass lantern under a cap, and the light inside it. Its optic
+    throws the light forward, as a path lantern's does: a spot centred `throw` metres ahead of the post along +z, `cone`
+    degrees wide, and a dimmer glow all round. `lit=False` is the same lamp switched off, glass and all, so a picture of it
+    on and one of it off differ by its light alone."""
+    height: float = 3.6  # to the top of the cap
+    candela: float = 900.0
+    glow: float = 150.0  # candela of the light all round, on the post, the leaves above and the lawn
+    throw: float = 4.8
+    cone: float = 60.0
+    reach: float = 22.0
+    lit: bool = True
+
+    def build(self) -> Sequence[Node]:
+        h, iron = self.height, "studio.iron.lamp"
+        glass = "studio.glow.lantern" if self.lit else "studio.glass.unlit"
+        middle = h - 0.42  # of the lantern
+        parts: list[Node] = [Cylinder(0.13, 0.36, at=(0, 0.18, 0), material=iron, segments=16, name="base"),
+                             Cylinder(0.055, h - 0.9, at=(0, 0.36 + (h - 0.9) / 2, 0), material=iron, segments=16, casts_shadow=False,
+                                      name="post"),
+                             Cylinder(0.09, 0.08, at=(0, h - 0.68, 0), material=iron, segments=16, casts_shadow=False, name="collar"),
+                             Cylinder(0.15, 0.4, at=(0, middle, 0), material=glass, segments=16, casts_shadow=False, name="lantern"),
+                             Cone(0.24, 0.18, at=(0, h - 0.12, 0), material=iron, casts_shadow=False, name="cap"),
+                             Sphere(0.035, at=(0, h - 0.0, 0), material=iron, casts_shadow=False, name="finial")]
+        if self.lit:
+            down = math.degrees(math.atan2(middle, self.throw))
+            parts += [Spot(self.candela, at=(0, middle, 0), pitch=-down, cone=self.cone, color="#ffd29a", reach=self.reach,
+                           shadows=True, softness=0.4, name="lamp"),
+                      Point(self.glow, at=(0, middle, 0), color="#ffd29a", reach=self.reach, name="glow")]
+        return parts
+
+
+@dataclass
+class Bollard(Prefab):
+    """A low path light: an iron post with a ring of light near its top. `lit=False` is it switched off."""
+    height: float = 0.8
+    candela: float = 4.0
+    reach: float = 5.0
+    lit: bool = True
+
+    def build(self) -> Sequence[Node]:
+        h, iron = self.height, "studio.iron.lamp"
+        parts: list[Node] = [Cylinder(0.075, h - 0.17, at=(0, (h - 0.17) / 2, 0), material=iron, segments=16, name="post"),
+                             Cylinder(0.07, 0.12, at=(0, h - 0.11, 0), material="studio.glow.bollard" if self.lit else "studio.glass.unlit",
+                                      segments=16, casts_shadow=False, name="diffuser"),
+                             Cylinder(0.085, 0.05, at=(0, h - 0.025, 0), material=iron, segments=16, name="cap")]
+        if self.lit:
+            parts.append(Point(self.candela, at=(0, h - 0.11, 0), color="#ffe0b0", reach=self.reach, name="light"))
+        return parts
+
+
+@dataclass
+class Mist(Prefab):
+    """A bank of thin night mist: `cards` see-through sheets facing -z, with no body, the first `near` metres along +z and each `step`
+    further, so what is far off goes lower in contrast and bluer. Stand it where a shot looks from, turned the way it looks."""
+    near: float = 6.0
+    step: float = 2.5
+    cards: int = 12
+    width: float = 160.0
+    height: float = 8.0
+    material: str = "studio.mist.night"
+
+    def build(self) -> Sequence[Node]:
+        return [Backdrop(self.width, self.height, at=(0, self.height / 2 - 0.5, self.near + i * self.step), material=self.material,
+                         name=f"mist-{i}") for i in range(self.cards)]
+
+
+@dataclass
 class Park(Prefab):
-    """The whole park, set around the path."""
+    """The whole park, set around the path. `night` is the same park after rain at night: the path and its kerbs
+    wet, the leaves and lawn in night colours, and no clouds, which are lit by nothing but themselves."""
     seed: int = 3
+    night: bool = False
 
     def ground(self) -> list[Node]:
-        return [Box((320, 0.1, 320), at=(0, -0.05, 60), material="studio.grass.lawn", name="lawn"),
-                ribbon(-WIDTH / 2, WIDTH / 2, 0.012, "studio.paving.brick", name="path"),
-                ribbon(-WIDTH / 2 - KERB, -WIDTH / 2, 0.02, "studio.kerb.stone", name="kerb-left"),
-                ribbon(WIDTH / 2, WIDTH / 2 + KERB, 0.02, "studio.kerb.stone", name="kerb-right")]
+        paving, kerb = ("studio.paving.wet", "studio.kerb.wet") if self.night else ("studio.paving.brick", "studio.kerb.stone")
+        lawn = "studio.grass.night" if self.night else "studio.grass.lawn"
+        return [Box((320, 0.1, 320), at=(0, -0.05, 60), material=lawn, name="lawn"),
+                ribbon(-WIDTH / 2, WIDTH / 2, 0.012, paving, name="path"),
+                ribbon(-WIDTH / 2 - KERB, -WIDTH / 2, 0.02, kerb, name="kerb-left"),
+                ribbon(WIDTH / 2, WIDTH / 2 + KERB, 0.02, kerb, name="kerb-right")]
 
     def hedge(self) -> list[Node]:
         """A clipped bank along the path's right, behind the bench, highest nearest the camera, with a few lumps on top."""
@@ -203,8 +297,9 @@ class Park(Prefab):
                   (5.4, 3.0, 15, 6.0), (10.0, 11.0, 14, 5.2), (5.5, 15.5, 12, 4.4), (3.0, 24.0, 8, 3.0), (-16.0, 14.0, 12, 4.4),
                   (8.0, 26.0, 10, 3.6), (-7.5, 32.0, 8, 3.0), (12.0, 18.0, 13, 4.2), (-20.0, 28.0, 10, 3.6), (-14.0, 40.0, 8, 3.0),
                   (2.0, 38.0, 7, 2.6), (14.0, 34.0, 11, 4.0), (-28.0, 20.0, 13, 4.5), (-24.0, 44.0, 10, 3.6), (20.0, 26.0, 13, 4.4)]
-        return [Tree(height, spread, rng.uniform(0.2, 0.7), 64 if z < 12 else 40, rng.randrange(1000), at=(x, 0, z), name=f"tree-{i}")
-                for i, (x, z, height, spread) in enumerate(places)]
+        leaves = ("studio.leaf.night", "studio.leaf.night.shade") if self.night else ("studio.leaf.sun", "studio.leaf.shade")
+        return [Tree(height, spread, rng.uniform(0.2, 0.7), 64 if z < 12 else 40, rng.randrange(1000), *leaves, at=(x, 0, z),
+                     name=f"tree-{i}") for i, (x, z, height, spread) in enumerate(places)]
 
     def shrubs(self) -> list[Node]:
         """Round clipped bushes out on the lawns, and a second bench far down the path."""
@@ -237,7 +332,7 @@ class Park(Prefab):
                                         (140, 700, 36, 125, "studio.glass.tower")):
             parts.append(Box((wide, tall, wide * 0.9), at=(x, tall / 2, z), yaw=rng.uniform(-10, 10), material=glass,
                              casts_shadow=False, name="tower"))
-        for x, y, z, size in ((-150, 230, 900, 90), (-100, 250, 900, 120), (-40, 235, 900, 100), (-70, 285, 900, 80),
+        for x, y, z, size in () if self.night else ((-150, 230, 900, 90), (-100, 250, 900, 120), (-40, 235, 900, 100), (-70, 285, 900, 80),
                               (10, 215, 900, 70), (-190, 215, 900, 60)):  # one cumulus, in puffs
             parts.append(pillow((size * 1.4, size * 0.75, size * 0.6), "studio.cloud", square=0.95, samples=(24, 12), casts_shadow=False,
                                 at=(x, y, z), name="cloud"))
@@ -259,3 +354,6 @@ class ParkPlugin(Plugin):
         registry.prefabs.add("park.bench", Bench)
         registry.prefabs.add("park.tree", Tree)
         registry.prefabs.add("park.park", Park)
+        registry.prefabs.add("park.lamp", StreetLamp)
+        registry.prefabs.add("park.bollard", Bollard)
+        registry.prefabs.add("park.mist", Mist)

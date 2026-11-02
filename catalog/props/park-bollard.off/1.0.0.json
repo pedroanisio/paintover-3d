@@ -1,0 +1,117 @@
+{
+  "description": "The low path light switched off",
+  "digest": "11503e1c7b6111d5380045adf6f89887fd75e80e0b254d6152a95b19ca2ed848",
+  "kind": "prop",
+  "name": "park-bollard.off",
+  "payload": {
+    "parts": [
+      {
+        "at": [
+          0.0,
+          0.315,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.63,
+          "radius": 0.075
+        },
+        "material": "iron.lamp@1.0.0",
+        "segments": 16,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          0.69,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.12,
+          "radius": 0.07
+        },
+        "material": "glass.unlit@1.0.0",
+        "segments": 16,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          0.775,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.05,
+          "radius": 0.085
+        },
+        "material": "iron.lamp@1.0.0",
+        "segments": 16,
+        "solid": "cylinder"
+      }
+    ]
+  },
+  "schema": 1,
+  "size": [
+    0.17,
+    0.8,
+    0.17
+  ],
+  "tags": [
+    "exterior",
+    "night"
+  ],
+  "version": "1.0.0"
+}

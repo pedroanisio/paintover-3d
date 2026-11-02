@@ -1,0 +1,28 @@
+{
+  "description": "Broadleaf canopy at night, where a lamp can reach it",
+  "digest": "56d875d9b5fdfbad28e7abd63f39dce4125b0264753d9223cfa9de5cb6a2994c",
+  "kind": "shader",
+  "name": "leaf.night",
+  "payload": {
+    "color": "#4f6a55",
+    "extra": {
+      "uvScaleX": 6,
+      "uvScaleY": 4
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "2f7886ac54b59ccd6b91be9b2461dc08a76ac780ee394c28553a65da412b52f9.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.85
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "plant",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

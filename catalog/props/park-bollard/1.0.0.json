@@ -1,0 +1,147 @@
+{
+  "description": "A low path light, lit, with its own light",
+  "digest": "2843e6b8962992972372f6817f087a4d3b9d7ed119539b4bd9be3f91fdb88edc",
+  "kind": "prop",
+  "name": "park-bollard",
+  "payload": {
+    "parts": [
+      {
+        "at": [
+          0.0,
+          0.315,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.63,
+          "radius": 0.075
+        },
+        "material": "iron.lamp@1.0.0",
+        "segments": 16,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          0.69,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.12,
+          "radius": 0.07
+        },
+        "material": "glow.bollard@1.0.0",
+        "segments": 16,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          0.775,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.05,
+          "radius": 0.085
+        },
+        "material": "iron.lamp@1.0.0",
+        "segments": 16,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          0.69,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "color": "#ffe0b0",
+        "intensity": 4.0,
+        "light": "point",
+        "reach": 5.0,
+        "shadows": false,
+        "softness": 0.0
+      }
+    ]
+  },
+  "schema": 1,
+  "size": [
+    0.17,
+    0.8,
+    0.17
+  ],
+  "tags": [
+    "exterior",
+    "night"
+  ],
+  "version": "1.0.0"
+}

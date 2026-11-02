@@ -28,8 +28,9 @@ SRSTUDIO_PYTHON=<srstudio's venv>/bin/python .venv/bin/python -m pytest -q tests
 .venv/bin/python examples/airliner.py         # the published cabin; examples/plugins/airliner.py made it
 .venv/bin/python examples/flight_deck_pictures.py   # redraws the flight deck's screens into examples/textures/flight-deck/
 .venv/bin/python examples/flight_deck.py      # the published flight deck, with and without its crew
-.venv/bin/python examples/park_pictures.py   # redraws the park's pavers, grass, leaves and tower glass into examples/textures/park/
+.venv/bin/python examples/park_pictures.py   # redraws the park's pavers, grass, leaves, tower glass and night mist into examples/textures/park/
 .venv/bin/python examples/park.py            # the published park, empty and with a figure on its bench and one on the path
+.venv/bin/python examples/park_night.py [folder] [width]   # the published night park: a wide dance plate, its base with the lamps off, one added layer per light, and set.json
 .venv/bin/python examples/news_pictures.py    # redraws the news studio's video wall (no lettering, its palette) and concrete into examples/textures/news/
 .venv/bin/python examples/news_studio.py      # the published news studio, empty and with two anchors at the desk, portrait shots at 1080x1920
 .venv/bin/python examples/bridge_pictures.py  # redraws the bridge's screens, mimic board, chart, deck plates and stars into examples/textures/bridge/

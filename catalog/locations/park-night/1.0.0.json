@@ -1,0 +1,168 @@
+{
+  "description": "The park at night after rain: one street lamp, low path lights in rows, a cool moon behind and mist, with a hip-height shot for a dancer on the path",
+  "digest": "3e4bb6e0c4fce1d3d1abff4c9fdccdf3c661af9f8fec9d1cd2ce1a6109310cb1",
+  "kind": "location",
+  "name": "park-night",
+  "payload": {
+    "marks": [
+      {
+        "at": [
+          -1.711,
+          0,
+          7.774
+        ],
+        "facing": 156.105,
+        "name": "dancer"
+      }
+    ],
+    "name": "park-night",
+    "nodes": [
+      {
+        "use": "studio.park-night@1.0.0"
+      },
+      {
+        "at": [
+          -1.778,
+          0,
+          12.561
+        ],
+        "name": "lamp",
+        "use": "studio.park-lamp@1.0.0",
+        "yaw": 179.19
+      },
+      {
+        "at": [
+          -3.189,
+          0,
+          6.524
+        ],
+        "name": "row-1-left",
+        "use": "studio.park-bollard@1.0.0"
+      },
+      {
+        "at": [
+          0.237,
+          0,
+          7.921
+        ],
+        "name": "row-1-right",
+        "use": "studio.park-bollard@1.0.0"
+      },
+      {
+        "at": [
+          -4.31,
+          0,
+          8.809
+        ],
+        "name": "row-2-left",
+        "use": "studio.park-bollard@1.0.0"
+      },
+      {
+        "at": [
+          -1.106,
+          0,
+          10.659
+        ],
+        "name": "row-2-right",
+        "use": "studio.park-bollard@1.0.0"
+      },
+      {
+        "at": [
+          -6.426,
+          0,
+          11.832
+        ],
+        "name": "row-3-left",
+        "use": "studio.park-bollard@1.0.0"
+      },
+      {
+        "at": [
+          -3.571,
+          0,
+          14.185
+        ],
+        "name": "row-3-right",
+        "use": "studio.park-bollard@1.0.0"
+      },
+      {
+        "at": [
+          -9.356,
+          0,
+          14.908
+        ],
+        "name": "row-4-left",
+        "use": "studio.park-bollard@1.0.0"
+      },
+      {
+        "at": [
+          -6.842,
+          0,
+          17.622
+        ],
+        "name": "row-4-right",
+        "use": "studio.park-bollard@1.0.0"
+      },
+      {
+        "at": [
+          0.234,
+          0,
+          3.386
+        ],
+        "name": "mist",
+        "use": "studio.park-mist@1.0.0",
+        "yaw": -23.895
+      }
+    ],
+    "rig": {
+      "azimuth": -30,
+      "brightness": 0.25,
+      "elevation": 9,
+      "falloff": 0.6,
+      "ground": "#05070a",
+      "horizon": "#1d2740",
+      "strength": 0.6,
+      "sun": "#8fb0ff",
+      "use": "stock.open-sky",
+      "zenith": "#02040a"
+    },
+    "shots": [
+      {
+        "eye": [
+          0.234,
+          0.8,
+          3.386
+        ],
+        "lens": 30.0,
+        "look_at": [
+          -3.817,
+          1.123,
+          12.529
+        ],
+        "name": "dance"
+      },
+      {
+        "eye": [
+          1.935,
+          1.6,
+          -0.454
+        ],
+        "lens": 28,
+        "look_at": [
+          -1.778,
+          1.6,
+          12.561
+        ],
+        "name": "along-the-path"
+      }
+    ]
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "exterior",
+    "landscape",
+    "city",
+    "night"
+  ],
+  "version": "1.0.0"
+}

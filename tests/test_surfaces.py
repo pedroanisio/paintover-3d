@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from srlocations import (Blueprint, Box, CatalogError, Location, Material, Registry, Renderer, SceneCompiler, Shaded,
-                         SharedCatalog, Sky, Surface, TemplateError, Traced, TracedCompiler, Transform, Vec3)
+                         SharedCatalog, Sky, Solid, Surface, TemplateError, Traced, TracedCompiler, Transform, Vec3)
 from srlocations.catalog import FrozenProp
 from srlocations.compiler import Projection
 from srlocations.surfaces import MAX_SAMPLES
@@ -288,6 +288,72 @@ def test_the_published_park_needs_no_plugin():
     assert location.validate() == [] and set(location.shots) == {"by-the-bench", "along-the-path", "from-the-bench", "over-the-lawn"}
     assert catalog.pins(location)["props"] == {"park": "1.0.0"}
     assert len(location.seats()) == 6  # three on each bench, kept when the prop was frozen
+
+
+def test_the_published_park_night_needs_no_plugin():
+    catalog = SharedCatalog.open(ROOT / "catalog")
+    location = catalog.location("park-night")
+    assert "park" not in location.registry.plugins.loaded
+    assert location.validate() == [] and set(location.shots) == {"dance", "along-the-path"} and set(location.marks) == {"dancer"}
+    assert catalog.pins(location)["props"] == {"park-night": "1.0.0", "park-lamp": "1.0.0", "park-bollard": "1.0.0",
+                                                "park-mist": "1.0.0"}
+    assert len(location.lights()) < 63
+
+
+def test_the_night_park_leaves_the_summer_park_as_published(tmp_path):
+    """Park(night=False) still freezes to the digest park 1.0.0 was published with, so the summer park renders as before."""
+    registry = Registry.default()
+    catalog = SharedCatalog.create(tmp_path / "catalog", "studio")
+    registry.use(catalog)
+    park = registry.plugins.load_file(ROOT / "examples/plugins/park.py")
+    for name, (material, tags, description) in park.shaders.items():
+        catalog.publish_shader(name, material, tags=tags, description=description)
+    frozen = catalog.publish_prop("park", registry.create("park.park"), registry, "1.0.0", slots=park.slots)
+    assert frozen.digest == SharedCatalog.open(ROOT / "catalog").get("prop", "park", "1.0.0").digest
+
+
+def test_the_night_park_is_wet_and_has_no_clouds():
+    location = SharedCatalog.open(ROOT / "catalog").location("park-night")
+    resolved = location.registry.resolved
+    names = {resolved.get(leaf.item.material, leaf.item.material).split("@")[0] for leaf in location.solids()}
+    assert {"studio.paving.wet", "studio.kerb.wet", "studio.grass.night"} <= names
+    assert not names & {"studio.paving.brick", "studio.kerb.stone", "studio.grass.lawn", "studio.leaf.sun", "studio.cloud"}
+
+
+def test_the_dance_shot_frames_a_dancer_for_a_portrait_plate():
+    """The dance video's plate: at 1080x1920 the floor at the dancer's mark is at row 1440 in the middle of the frame, a
+    1.6 m figure there is 800 px tall, and the lamp is in the frame above the dancer's head."""
+    location = SharedCatalog.open(ROOT / "catalog").location("park-night")
+    view = Projection(location.shots["dance"], 1080, 1920)
+    mark = location.marks["dancer"].at
+    floor, head = view.pixel(mark), view.pixel(mark + Vec3(0, 1.6, 0))
+    assert abs(floor[0] - 540) < 1 and abs(floor[1] - 1440) < 1 and abs(floor[1] - head[1] - 800) < 2
+    assert location.shots["dance"].eye.y == 0.8  # at the hips of a 1.6 m figure
+    lamp = view.pixel(next(leaf.world.position for leaf in location.lights() if leaf.path == "lamp/lamp"))
+    assert 0 < lamp[0] < 1080 and 0 < lamp[1] < head[1]
+
+
+def test_the_lamp_centres_its_pool_on_the_dancer():
+    location = SharedCatalog.open(ROOT / "catalog").location("park-night")
+    beam = next(leaf for leaf in location.lights() if leaf.path == "lamp/lamp")
+    assert beam.item.kind == "spot"
+    origin = beam.world.position
+    direction = beam.world.apply((0, 0, 1)) - origin
+    reach = -origin.y / direction.y
+    ground = Vec3(origin.x + direction.x * reach, 0, origin.z + direction.z * reach)
+    assert (ground - location.marks["dancer"].at).length < 0.1
+
+
+@pytest.mark.parametrize("prop", ["park-lamp", "park-bollard"])
+def test_a_switched_off_light_differs_only_by_its_light(prop):
+    """So the picture of it on less the picture of it off is its light alone, glow and reflections included."""
+    registry = Registry.default().use(SharedCatalog.open(ROOT / "catalog"))
+    on, off = (list(registry.create(f"studio.{name}").walk()) for name in (prop, f"{prop}.off"))
+    assert [leaf.item.kind for leaf in on if not isinstance(leaf.item, Solid)] and all(isinstance(leaf.item, Solid) for leaf in off)
+    lit = [leaf for leaf in on if isinstance(leaf.item, Solid)]
+    assert [(leaf.world, leaf.item.dimensions()) for leaf in lit] == [(leaf.world, leaf.item.dimensions()) for leaf in off]
+    changed = {(a.item.material.split("@")[0], b.item.material.split("@")[0]) for a, b in zip(lit, off) if a.item.material != b.item.material}
+    assert len(changed) == 1 and next(iter(changed))[1] == "studio.glass.unlit"
 
 
 def test_the_published_news_studio_needs_no_plugin():

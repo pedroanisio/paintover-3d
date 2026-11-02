@@ -1,0 +1,31 @@
+{
+  "description": "Brick pavers after rain, dark and glossy",
+  "digest": "66c6e26d2c02f4688f76b84a956416f5c29d61facde565f02c615c60fbd68790",
+  "kind": "shader",
+  "name": "paving.wet",
+  "payload": {
+    "color": "#8a786b",
+    "extra": {
+      "clearcoat": 1.0,
+      "clearcoatRoughness": 0.04,
+      "uvScaleX": 40.0,
+      "uvScaleY": 2.5
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "46d0682c6bf12797b73b2c3046563d55ef29c4fd909344059b25b8c9cf86d682.png"
+    },
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.65
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "stone",
+    "textured",
+    "wet"
+  ],
+  "version": "1.0.0"
+}

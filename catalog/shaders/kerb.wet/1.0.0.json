@@ -1,0 +1,26 @@
+{
+  "description": "Pale stone path edging, wet",
+  "digest": "c5d2fa639c85f2a6a2a1ff8a5ad7ff3cbd9f4f8a353d16fcbeaf47373d345768",
+  "kind": "shader",
+  "name": "kerb.wet",
+  "payload": {
+    "color": "#8f877e",
+    "extra": {
+      "clearcoat": 1.0,
+      "clearcoatRoughness": 0.05
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.45
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "stone",
+    "wet"
+  ],
+  "version": "1.0.0"
+}

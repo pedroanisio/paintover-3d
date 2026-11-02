@@ -1,0 +1,22 @@
+{
+  "description": "Dark green-black painted iron, for lamp posts",
+  "digest": "7361a008f3dae03d0bdc91b225c39dabeada2b4600593ff984375207bc6de6c4",
+  "kind": "shader",
+  "name": "iron.lamp",
+  "payload": {
+    "color": "#1c2321",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.75,
+    "opacity": 1.0,
+    "roughness": 0.45
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

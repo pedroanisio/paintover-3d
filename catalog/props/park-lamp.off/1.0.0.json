@@ -1,0 +1,212 @@
+{
+  "description": "The park lantern switched off: the same lamp with no light",
+  "digest": "11c163ec77d044a152733f5ef7ae80171388eb89e7ed0e6dbaf55d4c98b1ead0",
+  "kind": "prop",
+  "name": "park-lamp.off",
+  "payload": {
+    "parts": [
+      {
+        "at": [
+          0.0,
+          0.18,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": true,
+        "dimensions": {
+          "height": 0.36,
+          "radius": 0.13
+        },
+        "material": "iron.lamp@1.0.0",
+        "segments": 16,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          1.71,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 2.7,
+          "radius": 0.055
+        },
+        "material": "iron.lamp@1.0.0",
+        "segments": 16,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          2.92,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.08,
+          "radius": 0.09
+        },
+        "material": "iron.lamp@1.0.0",
+        "segments": 16,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          3.18,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.4,
+          "radius": 0.15
+        },
+        "material": "glass.unlit@1.0.0",
+        "segments": 16,
+        "solid": "cylinder"
+      },
+      {
+        "at": [
+          0.0,
+          3.48,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 0.18,
+          "radius": 0.24
+        },
+        "material": "iron.lamp@1.0.0",
+        "segments": 32,
+        "solid": "cone"
+      },
+      {
+        "at": [
+          0.0,
+          3.6,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "radius": 0.035
+        },
+        "material": "iron.lamp@1.0.0",
+        "segments": 32,
+        "solid": "sphere"
+      }
+    ]
+  },
+  "schema": 1,
+  "size": [
+    0.48,
+    3.635,
+    0.48
+  ],
+  "tags": [
+    "exterior",
+    "night"
+  ],
+  "version": "1.0.0"
+}

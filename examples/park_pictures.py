@@ -1,7 +1,9 @@
-"""Draws the park's pavers, grass, leaves and tower glass into examples/textures/park. They are checked in, so this only runs
+"""Draws the park's pavers, grass, leaves, tower glass and night mist into examples/textures/park. They are checked in, so this only runs
 to change them. Run: .venv/bin/python examples/park_pictures.py"""
 import math
 import random
+import struct
+import zlib
 from pathlib import Path
 from typing import Callable
 
@@ -109,7 +111,32 @@ def glass() -> None:
     save("glass", width, height, pixel)
 
 
-PICTURES = (pavers, grass, leaves, glass)
+def mist() -> None:
+    """One card of the night mist, white so its material tints it: clear at the ground, thickest a metre or two up and gone
+    by the top, so neither the line where a card meets the lawn nor its top edge shows, with slow drifts across it."""
+    width, height = 256, 256
+    drift = noise(width, 6, 13)
+
+    def smooth(t: float) -> float:
+        t = max(0.0, min(1.0, t))
+        return t * t * (3 - 2 * t)
+
+    rows = []
+    for y in range(height):
+        up = 1 - y / (height - 1)  # 0 at the bottom row, 1 at the top
+        cover = smooth(up / 0.15) * (1 - smooth((up - 0.3) / 0.7))
+        row = bytearray(b"\0")
+        for x in range(width):
+            row.extend((255, 255, 255, round(255 * cover * (0.7 + 0.3 * drift(x, y * 0.2)))))
+        rows.append(bytes(row))
+
+    def chunk(tag: bytes, body: bytes) -> bytes:
+        return struct.pack(">I", len(body)) + tag + body + struct.pack(">I", zlib.crc32(tag + body))
+    (OUT / "mist.png").write_bytes(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0))
+                                   + chunk(b"IDAT", zlib.compress(b"".join(rows), 9)) + chunk(b"IEND", b""))
+
+
+PICTURES = (pavers, grass, leaves, glass, mist)
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
