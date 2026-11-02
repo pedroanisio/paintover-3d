@@ -44,7 +44,7 @@ from srlocations.location import Issue, Location
 from srlocations.looks import Look, Styled, Texture
 from srlocations.materials import Material
 from srlocations.mesh import MODEL, Mesh
-from srlocations.nodes import Backdrop, Box, Cone, Cylinder, Light, Node, Placed, Point, Prefab, Round, Seat, Solid, Sphere, Spot
+from srlocations.nodes import Backdrop, Box, Cone, Cylinder, Node, Placed, Point, Prefab, Seat, Solid, Sphere, Spot
 from srlocations.paint import Decal
 from srlocations.portable import bundle, digest
 from srlocations.registry import CatalogError, Registry
@@ -292,7 +292,10 @@ class SharedCatalog:
             raise CatalogError(f"{name!r} is not a catalog name: use lower-case letters, digits, - and _")
         manifest = Path(root) / "catalog.json"
         if manifest.exists():
-            return cls.open(root)
+            found = cls.open(root)
+            if found.name != name:
+                raise CatalogError(f"{root} already holds the catalog {found.name!r}, not {name!r}")
+            return found
         manifest.parent.mkdir(parents=True, exist_ok=True)
         manifest.write_text(json.dumps({"schema": SCHEMA, "name": name}, indent=2) + "\n")
         return cls(root, name)

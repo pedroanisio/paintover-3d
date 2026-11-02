@@ -11,7 +11,6 @@ from __future__ import annotations
 import hashlib
 import math
 import os
-from pathlib import Path
 
 from srlocations.geometry import Transform, Vec3
 from srlocations.mesh import Mesh

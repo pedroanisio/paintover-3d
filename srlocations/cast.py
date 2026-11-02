@@ -46,9 +46,14 @@ def _unfiltered(data: bytes, width: int, height: int, step: int) -> list[bytearr
     return rows
 
 
-@lru_cache(maxsize=256)
 def _png(path: Union[str, Path]) -> tuple[tuple[int, ...], bytes]:
-    """A PNG's header fields and its compressed picture."""
+    """A PNG's header fields and its compressed picture. A file changed since it was last read is read again."""
+    source = Path(path).resolve()
+    return _read_png(str(source), source.stat().st_mtime_ns)
+
+
+@lru_cache(maxsize=256)
+def _read_png(path: str, stamp: int) -> tuple[tuple[int, ...], bytes]:
     raw = Path(path).read_bytes()
     if raw[:8] != PNG_SIGNATURE:
         raise ValueError(f"{path} is not a PNG")
@@ -73,7 +78,8 @@ def colours(path: Union[str, Path]) -> list[tuple[int, int, int]]:
             for i in range(0, width * step, step)]
 
 
-def _alpha_box(path: str, stamp: int) -> Box:
+def alpha_box(path: Union[str, Path]) -> Box:
+    """The part of a PNG that is not transparent, as left, top, right and bottom pixels."""
     (width, height, depth, color, _, _, interlaced), data = _png(path)
     step = {4: 2, 6: 4}.get(color)
     if step is None or depth != 8 or interlaced:  # no alpha channel, or one this does not read: the whole picture counts
@@ -84,12 +90,6 @@ def _alpha_box(path: str, stamp: int) -> Box:
     if not filled:
         raise ValueError(f"{path} is fully transparent")
     return (min(xs[0] for _, xs in filled), filled[0][0], max(xs[-1] for _, xs in filled) + 1, filled[-1][0] + 1)
-
-
-def alpha_box(path: Union[str, Path]) -> Box:
-    """The part of a PNG that is not transparent, as left, top, right and bottom pixels."""
-    source = Path(path).resolve()
-    return _alpha_box(str(source), source.stat().st_mtime_ns)
 
 
 @dataclass(frozen=True)

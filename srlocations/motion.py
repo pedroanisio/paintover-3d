@@ -16,7 +16,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping, Optional, Sequence
 
-from srlocations.geometry import Transform, Vec3
+from srlocations.geometry import Vec3
 from srlocations.nodes import Light, Placed, Solid
 
 SMOOTH = "smooth"
@@ -177,16 +177,6 @@ def through(keys: Sequence[Key], index: int, u: float) -> Any:
     if isinstance(value, Mapping):
         return curve
     return curve[""]
-
-    def tangents(at: int) -> Sequence[float]:
-        if at in (0, len(keys) - 1):
-            return (0.0,) * len(parts(keys[at]))
-        before, after = keys[at - 1], keys[at + 1]
-        return [(b - a) / (after.time - before.time) * span for a, b in zip(parts(before), parts(after))]
-
-    curve = [_hermite(a, b, out, into, u) for a, b, out, into
-             in zip(parts(keys[index - 1]), parts(keys[index]), tangents(index - 1), tangents(index))]
-    return Vec3(*curve) if isinstance(keys[index].value, Vec3) else curve[0]
 
 
 def written(element: Any, values: Mapping[str, Sequence[float]], fps: float, frames: int) -> None:

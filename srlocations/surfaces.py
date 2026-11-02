@@ -8,7 +8,7 @@ lines and an error at build time rather than at render time. The engine fills in
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 from functools import lru_cache
 from typing import Any, Sequence
 

@@ -257,6 +257,14 @@ def test_a_published_version_is_immutable_and_republishing_is_harmless(tmp_path)
     assert catalog.get("shader", "oak").digest == first.digest
 
 
+def test_creating_a_catalog_where_another_is_refuses_to_rename_it(tmp_path):
+    """create() opens a catalog that is already there, but not one with another name: that would be a silent surprise."""
+    catalog = fresh_catalog(tmp_path)
+    assert SharedCatalog.create(catalog.root, catalog.name).root == catalog.root
+    with pytest.raises(CatalogError, match="already holds"):
+        SharedCatalog.create(catalog.root, "other")
+
+
 def test_the_newest_version_wins_by_number_not_by_text(tmp_path):
     catalog = fresh_catalog(tmp_path)
     catalog.publish_shader("oak", oak("#111111"), "1.9.0")

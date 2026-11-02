@@ -3,6 +3,7 @@ name = "srlocations"
 version = "0.1.0"
 description = "Build 3D locations as objects and compile them to sr_core.scene documents"
 requires-python = ">=3.10"
+license = {file = "LICENSE"}
 dependencies = ["sr-core[validate] @ git+https://github.com/pedroanisio/sr-core@a85ea43b55c57ae6256849128274476b64720181"]
 
 [project.optional-dependencies]

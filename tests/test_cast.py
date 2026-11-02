@@ -79,6 +79,15 @@ def test_alpha_box_finds_the_figure_through_every_png_filter(tmp_path):
     assert alpha_box(path) == (2, 2, 4, 4)
 
 
+def test_a_picture_redrawn_at_the_same_path_is_read_again(tmp_path):
+    """Cut-outs are cached by path, so a character repainted between two renders must not keep its old outline."""
+    path = figure(tmp_path / "a.png", b"\xff\0\0\xff", box=(10, 20, 30, 70))
+    assert alpha_box(path) == (10, 20, 30, 70)
+    figure(path, b"\xff\0\0\xff", box=(2, 4, 6, 8))
+    os.utime(path, ns=(os.stat(path).st_atime_ns, os.stat(path).st_mtime_ns + 1))  # a repaint within the same tick still counts
+    assert alpha_box(path) == (2, 4, 6, 8)
+
+
 def test_a_fully_transparent_picture_is_refused(tmp_path):
     with pytest.raises(ValueError, match="fully transparent"):
         alpha_box(figure(tmp_path / "a.png", b"\xff\0\0\xff", box=(0, 0, 0, 0)))

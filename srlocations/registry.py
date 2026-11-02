@@ -11,7 +11,7 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Generic, Iterable, Iterator, Optional, Sequence, TypeVar
+from typing import Any, Callable, Generic, Iterator, Optional, Sequence, TypeVar
 
 from srlocations.materials import Material
 from srlocations.nodes import Group, Node, Prefab
