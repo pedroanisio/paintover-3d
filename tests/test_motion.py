@@ -496,6 +496,15 @@ def test_a_body_that_walks_into_something_is_refused_with_the_time():
         Renderer().compile(location, "push", SMALL)
 
 
+def test_a_renderer_without_collisions_draws_a_body_inside_something(monkeypatch):
+    location = room()
+    location.add(Box(size=(1, 2, 1), at=(2, 1, 0), name="block"))
+    location.add(Mannequin(at=(-1, 0, 0), name="host"))
+    location.move("host", 2, at=(2, 0, 0), ease="linear")
+    monkeypatch.setattr(Location, "clashes", lambda *_, **__: pytest.fail("looked for a clash"))
+    assert Renderer(collisions=False).compile(location, "push", SMALL)
+
+
 def test_a_body_cannot_pass_through_a_thin_wall_between_keys():
     """Its keys stand either side of the wall, so only looking between them finds it."""
     location = room()
