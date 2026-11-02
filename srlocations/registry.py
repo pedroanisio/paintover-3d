@@ -80,7 +80,7 @@ class Registry:
             registry.use(SharedCatalog.open(path))
         return registry
 
-    def create(self, name: str, **params: Any) -> Node:
+    def create(self, name: str, /, **params: Any) -> Node:
         return self.prefabs.get(name)(**params)
 
     def use(self, library: Any) -> "Registry":

@@ -203,7 +203,7 @@ def test_round_solids_get_a_cap_for_each_flat_end():
 
 
 def surfaces(location: Location, **params) -> list:
-    return Ink(**params).surfaces(type("S", (), {"solids": location.solids()})())
+    return Ink(**params).surfaces(type("S", (), {"solids": location.solids(), "location": location})())
 
 
 def test_sections_of_a_wall_are_one_surface_but_two_objects_are_not():
@@ -621,3 +621,15 @@ def test_the_textured_example_runs_end_to_end(tmp_path):
     for look in styles.values():
         assert not errors(StyledCompiler(look, W, H).compile(room, "wide"))
     assert not errors(SceneCompiler(W, H).compile(room, "wide"))
+
+
+def test_a_shader_that_does_not_compile_stops_the_render(tmp_path, monkeypatch):
+    """The engine would pass the effect through and exit 0, which is a clean picture with no lines in it."""
+    for shader in SHADERS.glob("*.fs"):
+        (tmp_path / shader.name).write_text("this is not glsl\n")
+    monkeypatch.setattr("srlocations.looks.SHADERS", tmp_path)
+    location = flat_set()
+    location.add(Box(size=(2, 2, 2), at=(0, 1, 0), material="t.red"))
+    location.rig("stock.interior")
+    with pytest.raises(RuntimeError, match="GLSL"):
+        Renderer().render(location, "front", tmp_path / "shot.png", Styled(Look([Lit(), Ink()]), W, H, 1))

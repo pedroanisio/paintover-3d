@@ -345,3 +345,65 @@ def test_an_archive_with_a_model_verifies_and_two_copies_of_a_model_give_one_arc
         Renderer().archive(location, "s", tmp_path / f"{name}.vpkg.zip", Shaded(W, H))
     assert vpkg.verify(str(tmp_path / "a.vpkg.zip")).ok
     assert (tmp_path / "a.vpkg.zip").read_bytes() == (tmp_path / "b.vpkg.zip").read_bytes()
+
+
+def facing_away(folder: Path, two_sided: bool) -> Path:
+    """One upright red quad, 2 m wide and 2 m tall, whose front looks along the model's -z: away from a camera on the set's -z
+    side, since a model lands with z negated."""
+    points = [(-1, 0, 0), (1, 0, 0), (1, 2, 0), (-1, 2, 0)]
+    data = b"".join(struct.pack("<3f", *point) for point in points) + struct.pack("<6H", 0, 2, 1, 0, 3, 2)
+    document = {"asset": {"version": "2.0"}, "scene": 0, "scenes": [{"nodes": [0]}], "nodes": [{"mesh": 0}],
+                "meshes": [{"primitives": [{"attributes": {"POSITION": 0}, "indices": 1, "material": 0}]}],
+                "materials": [{"name": "skin", "doubleSided": two_sided,
+                               "pbrMetallicRoughness": {"baseColorFactor": [1, 0, 0, 1]}}],
+                "buffers": [{"uri": "data:application/octet-stream;base64," + base64.b64encode(data).decode(),
+                             "byteLength": len(data)}],
+                "bufferViews": [{"buffer": 0, "byteOffset": 0, "byteLength": 48},
+                                {"buffer": 0, "byteOffset": 48, "byteLength": 12}],
+                "accessors": [{"bufferView": 0, "componentType": 5126, "count": 4, "type": "VEC3",
+                               "min": [-1, 0, 0], "max": [1, 2, 0]},
+                              {"bufferView": 1, "componentType": 5123, "count": 6, "type": "SCALAR"}]}
+    path = folder / f"quad-{two_sided}.gltf"
+    path.write_text(json.dumps(document))
+    return path
+
+
+def behind(folder: Path, two_sided: bool) -> Location:
+    location = flat_set()
+    location.add(Mesh(facing_away(folder, two_sided), at=(0, 0, 0)))
+    location.rig("stock.interior")
+    location.background = "#00ff00"
+    return location
+
+
+SKY = "#00ff00"
+EVERY_PASS = [Look([Lit()], sky=SKY), Look([Flat()], sky=SKY), Look([Cel()], sky=SKY), Look([Lit(), Ink(width=2)], sky=SKY)]
+
+
+@pytest.mark.parametrize("look", EVERY_PASS, ids=["lit", "flat", "cel", "ink"])
+def test_a_face_that_shows_from_behind_shows_in_every_pass(tmp_path, look):
+    rows = stage(Styled(look, W, H, 1), behind(tmp_path, True), "front", tmp_path)
+    assert not near(pixel(rows, W / 2, H / 2), SKY)
+
+
+@pytest.mark.parametrize("look", EVERY_PASS, ids=["lit", "flat", "cel", "ink"])
+def test_a_face_that_does_not_stays_away_in_every_pass(tmp_path, look):
+    rows = stage(Styled(look, W, H, 1), behind(tmp_path, False), "front", tmp_path)
+    assert near(pixel(rows, W / 2, H / 2), SKY)
+
+
+def test_ink_draws_round_a_face_seen_from_behind(tmp_path):
+    rows = stage(Styled(Look([Lit(), Ink(width=3)], sky=SKY), W, H, 1), behind(tmp_path, True), "front", tmp_path)
+    assert sum(sum(value) < 90 for row in rows for value in zip(*[iter(row)] * 3)) > 100
+
+
+def test_paint_is_held_out_by_a_face_seen_from_behind(tmp_path):
+    location = behind(tmp_path, True)
+    location.paint("spot", depth=True).disc((0, 1, 2), 0.5, color=BLUE)
+    rows = stage(Shaded(W, H, 1), location, "front", tmp_path)
+    assert not near(pixel(rows, W / 2, H / 2), BLUE)
+
+
+def test_a_model_says_which_of_its_materials_show_from_behind(tmp_path):
+    assert Mesh(facing_away(tmp_path, True)).two_sided(Registry.default().materials)
+    assert not Mesh(facing_away(tmp_path, False)).two_sided(Registry.default().materials)

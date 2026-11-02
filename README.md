@@ -137,6 +137,42 @@ hips and thighs are from the seat, wrist to steering wheel, and joint angles.
 optional `SrstudioCast` plugin gets them from srstudio, through that project's interpreter in `SRSTUDIO_PYTHON`.
 `examples/casting.py` holds a mannequin and a character on each mark, and picks by look.
 
+## Motion
+
+`location.move()` adds a key: the thing named reaches these values at this many seconds. It can name a shot (`eye`, `look_at`,
+`lens`), a mark (`at`, `facing`) or a node (`at`, `yaw`, a figure's `pose`, and any other field that keeps its parts). What
+stands on a mark goes with it, and that includes a figure, a character and paint given `mark=`. `location.follow()` keeps a
+mark or node in the middle of a shot, and a shot from `location.pov()` goes with its figure.
+
+```python
+from srlocations import Location, Shaded
+
+walk = Location("walk")
+walk.add("stock.table", at=(0, 0, 1), name="table")
+walk.rig("stock.interior")
+walk.mark("host", (-2, 0, -1), facing=90)
+figure = walk.stand("host", pose="stand")[0]
+walk.shot("follow", (0, 1.5, -4), (-2, 1, -1), lens=28)
+walk.follow("follow", "host", (0, 1, 0))
+
+walk.move("host", 2, at=(2, 0, -1), ease="linear")
+walk.move(figure, 1, pose="walk", ease="linear")
+walk.move(figure, 2, pose="stand", ease="linear")
+walk.move("table", 2, yaw=30)
+walk.move("follow", 2, lens=35)
+
+renderer.clip(walk, "follow", "renders/walk.mp4", Shaded(640, 360, 1, fps=12))
+renderer.frame(walk, "follow", "renders/walk-1s.png", 1.0, "stock.shaded")
+```
+
+`ease` says how a move reaches its key: `linear`, `ease-in`, `ease-out`, `ease-in-out` (the default), `hold`, or `smooth`, which
+carries on through a key without stopping. Each field keeps its own keys. `move()` with no values waits, and on a shot where
+nothing else moves it gives a still a length. `location.at(time)` is the location at that moment, as an ordinary location.
+
+Every look, the wireframe and paint work in motion. A frame of a clip is the same picture as a still of that moment: the tests
+compare them byte for byte, on both engines. `validate()` and `clashes()` look along the shot and say when a fault starts, and
+a blueprint can hold the same keys under `"moves"`. `examples/motion.py` makes one film in four looks.
+
 ## Curved solids
 
 A `Surface` draws any shape you can write as `x(u, v)`, `y(u, v)` and `z(u, v)`. The expressions are in metres, and angles
@@ -244,15 +280,25 @@ acme = "acme.plugin:Acme"
 
 The tests need ffmpeg, because many render small frames and read their pixels, and ssh-keygen for seals. Two tests need
 srstudio and skip without it.
-GitHub Actions runs the suite on every push and pull request, on Mesa's software Vulkan and the newest published engine.
+`.github/workflows/tests.yml` runs the suite on every push and pull request, on Mesa's software Vulkan and the newest published
+engine.
 
 `examples/` holds runnable scripts, and each writes into `renders/`. A good order is `use_cases.py`, `paintover.py`,
-`texture_looks.py`, `mannequin.py`, `casting.py` and `polish.py`. `publish_catalog.py` and `use_catalog.py` publish and read
+`texture_looks.py`, `mannequin.py`, `casting.py`, `polish.py` and `motion.py`. `publish_catalog.py` and `use_catalog.py` publish and read
 the catalog, `grand_tourer_paper.py` renders the car as a paper paint-over, and `fit_check.py` puts mannequins in every set.
 
 ## Limits
 
-- Shots are stills. Motion is not implemented.
+- Only a node's place, turn and pose can move. A prefab that changes size or number of parts over a shot is refused, and so is
+  a part of a prefab on its own.
+- A figure's walk is poses blended in time: nothing keeps its feet on the floor, so they slide unless the keys are placed with
+  care. A character is one picture, so it goes with its mark and does not animate.
+- Time is checked at keys and four times a second, so a body that passes through something thinner than that can be missed.
+- There is no motion blur. The engine's made no difference on 3D objects when tried in stills, and it has not been tried in a
+  film, so films are sharp frames.
+- `Cel(cut="auto")` measures one cut, at the middle of a shot. Ink chooses its surfaces once, where the solids stand at the start.
+- Paint and the wireframe are redrawn for each frame, so their part of a document grows with its length.
+- H.264 needs an even width and height, which the engine reports when a mode has neither.
 - A mannequin is forward kinematics with rigid segments, and a settled figure does not change its pose to fit.
 - `location.clashes()` reports the deepest overlap for each pair of nodes, so a smaller one can hide behind it, and it cannot
   see a limb wholly inside a `Surface`. Contact is measured only by `examples/fit_check.py`, and only for the car.

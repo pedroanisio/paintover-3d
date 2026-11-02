@@ -12,9 +12,9 @@ from __future__ import annotations
 import math
 import struct
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Optional, Protocol, Sequence, Union
+from typing import Any, Callable, Iterable, Mapping, Optional, Protocol, Sequence, Union
 
 from srlocations.collision import Hull
 from srlocations.geometry import Transform, Vec3, VecLike
@@ -27,7 +27,7 @@ BODY = 0.15  # a card stands this far toward the camera from its mark: the front
 ROOMY = 1.5  # how much bigger than its mark a card is; only the mark's own pixels are drawn, so more is harmless
 FLAT = 0.02  # marks whose points span less height than this lie on a surface
 THIN = 0.002
-BLACK, WHITE = "paint-hold-black", "paint-hold-white"
+BLACK, BLACK_BOTH, WHITE = "paint-hold-black", "paint-hold-black-both", "paint-hold-white"
 
 
 class View(Protocol):
@@ -102,11 +102,22 @@ class PaintItem(ABC):
         """Where it is in the set. None of them leaves it on top of everything, even in a layer with depth."""
         return ()
 
+    def carried(self, offset: Callable[[str], Vec3]) -> "PaintItem":
+        """This mark where the marks of the location have taken it. `offset` says how far a mark has gone by its name."""
+        return self
+
 
 @dataclass
 class Anchored(PaintItem):
     color: str = field(default="#000000", kw_only=True)
     frame: bool = field(default=False, kw_only=True)
+    mark: str = field(default="", kw_only=True)  # a mark of the location that this goes with when it moves
+
+    def carried(self, offset: Callable[[str], Vec3]) -> "Anchored":
+        return self.shifted(offset(self.mark)) if self.mark else self
+
+    def shifted(self, by: Vec3) -> "Anchored":
+        return self
 
     def anchor(self, view: View, point: VecLike) -> Optional[Pixel]:
         x, y, *_ = (*point, 0.0)
@@ -136,6 +147,9 @@ class Stroke(Anchored):
     closed: bool = False
     smooth: bool = True
 
+    def shifted(self, by: Vec3) -> "Stroke":
+        return replace(self, points=[Vec3.of(point) + by for point in self.points])
+
     def reach(self) -> Sequence[VecLike]:
         return self.points
 
@@ -155,6 +169,9 @@ class Fill(Anchored):
     points: Sequence[VecLike] = ()
     smooth: bool = False
 
+    def shifted(self, by: Vec3) -> "Fill":
+        return replace(self, points=[Vec3.of(point) + by for point in self.points])
+
     def reach(self) -> Sequence[VecLike]:
         return self.points
 
@@ -169,6 +186,9 @@ class Disc(Anchored):
     """A circle that always faces the camera. `radius` is in metres, or fractions of the frame's height."""
     center: VecLike = (0, 0, 0)
     radius: float = 0.1
+
+    def shifted(self, by: Vec3) -> "Disc":
+        return replace(self, center=Vec3.of(self.center) + by)
 
     def reach(self) -> Sequence[VecLike]:
         x, y, *rest = (*self.center, 0.0)
@@ -231,6 +251,9 @@ class Standee(Anchored):
     at: VecLike = (0, 0, 0)
     marks: Sequence[Anchored] = ()
 
+    def shifted(self, by: Vec3) -> "Standee":
+        return replace(self, at=Vec3.of(self.at) + by)
+
     def cards(self, view: View) -> Sequence[Card]:
         spans = [tuple(Vec3.of(point)) for mark in self.marks for point in mark.reach()]
         if self.frame or not spans:
@@ -254,6 +277,9 @@ class Sticker(Anchored):
     height: float = 1.0
     box: Optional[Box] = None
     flip: bool = False
+
+    def shifted(self, by: Vec3) -> "Sticker":
+        return replace(self, at=Vec3.of(self.at) + by)
 
     def cards(self, view: View) -> Sequence[Card]:
         if self.frame:
@@ -290,7 +316,7 @@ def mark_from_spec(item: dict, base: Path, spots: Mapping[str, Any]) -> Anchored
     if isinstance(values.get("at"), str):
         if values["at"] not in spots:
             raise ValueError(f"a {name} stands on mark {values['at']!r}, and there is no such mark")
-        values["at"] = spots[values["at"]].at
+        values["mark"], values["at"] = values["at"], spots[values["at"]].at
     if name == "standee":
         values["marks"] = [mark_from_spec(mark, base, spots) for mark in values.get("marks", ())]
     return MARKS[name](**values)
@@ -359,8 +385,9 @@ class Reach:
 class Holdout:
     """Makes the masks of one document: its solids, ready to be drawn black behind a card."""
 
-    def __init__(self, compiler: Any, scene: Any, solids: Iterable[Placed], view: Any, effects: str = "") -> None:
-        self.compiler, self.scene, self.view, self.effects = compiler, scene, view, effects
+    def __init__(self, compiler: Any, scene: Any, solids: Iterable[Placed], view: Any, effects: str = "",
+                 materials: Any = None) -> None:
+        self.compiler, self.scene, self.view, self.effects, self.materials = compiler, scene, view, effects, materials
         self.solids = [(leaf, self.reach(leaf)) for leaf in solids]
         self.ready = False
 
@@ -391,11 +418,13 @@ class Holdout:
             self.ready = True
             library = (self.scene.find_all("materials") or [self.scene.add_materials()])[0]
             library.add_material(id=BLACK, baseColor="#000000", unlit=True)
+            library.add_material(id=BLACK_BOTH, baseColor="#000000", unlit=True, doubleSided=True)
             library.add_material(id=WHITE, baseColor="#ffffff", unlit=True)
         matte_id = f"{node_id}-matte"
         group = parent.add_group(id=matte_id, **({"effects": self.effects} if self.effects else {}))
         for index, leaf in enumerate(ahead):
-            self.compiler.draw(group, leaf, index, f"{node_id}-", BLACK, shadow=False)
+            both = self.materials is not None and leaf.item.two_sided(self.materials)
+            self.compiler.draw(group, leaf, index, f"{node_id}-", BLACK_BOTH if both else BLACK, shadow=False)
         for index, leaf in enumerate(placed):
             self.compiler.draw(group, leaf, index, f"{node_id}-", WHITE, shadow=False)
         return matte_id
@@ -422,22 +451,25 @@ class Canvas:
                              width=self.view.width, height=self.view.height, **paint)
 
     def image(self, asset_id: str, path: Path, width: int, height: int) -> str:
+        """An asset for a picture. A picture on every frame of a shot is one asset."""
         if not self.scene.find_all("assets"):
             self.scene.add_assets()
-        self.scene.find_all("assets")[0].add_image(id=asset_id, src=str(path), width=width, height=height)
-        return asset_id
+        assets = self.scene.find_all("assets")[0]
+        same = next((image for image in assets.find_all("image") if image.src == str(path)), None)
+        return same.id if same else assets.add_image(id=asset_id, src=str(path), width=width, height=height).id
 
 
 def paint_over(scene: Any, composition: Any, layers: Sequence[PaintLayer], shot: str, view: View, look: str,
-               holdout: Optional[Holdout] = None) -> None:
+               holdout: Optional[Holdout] = None, window: Optional[Mapping[str, float]] = None, suffix: str = "") -> None:
     """Adds the location's paint for this shot and look on top of everything before it in the composition. A compiler with
-    no surfaces, as a wireframe has, gives no `holdout`, and a layer with depth then lies on top."""
+    no surfaces, as a wireframe has, gives no `holdout`, and a layer with depth then lies on top. In a shot that moves, this
+    runs once a frame, with the `window` that frame lives in and a `suffix` for its ids."""
     for index, layer in enumerate(layers):
         if layer.items and (not layer.shots or shot in layer.shots) and (not layer.looks or look in layer.looks):
-            group = composition.add_group(id=f"paint-{index}", blend=layer.blend, opacity=layer.opacity)
+            group = composition.add_group(id=f"paint-{index}{suffix}", blend=layer.blend, opacity=layer.opacity, **(window or {}))
             canvas = Canvas(scene, group, view, holdout if layer.depth else None)
             for number, item in enumerate(layer.items):
-                canvas.place(item, f"paint-{index}-{number}")
+                canvas.place(item, f"paint-{index}{suffix}-{number}")
 
 
 @dataclass

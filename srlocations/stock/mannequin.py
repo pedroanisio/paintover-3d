@@ -28,7 +28,7 @@ from __future__ import annotations
 import difflib
 import random
 from dataclasses import dataclass, field, replace
-from typing import Iterator, Mapping, Optional, Sequence, Union
+from typing import Any, Iterator, Mapping, Optional, Sequence, Union
 
 from srlocations.collision import Egg, Hull
 from srlocations.geometry import Transform, Vec3, rotation
@@ -423,6 +423,17 @@ class Mannequin(Prefab):
             centre[0], wide = centre[0] * body.shoulders, body.shoulders
         radii[0] *= wide
         return tuple(centre), tuple(radii)
+
+    def keyed(self, values: Mapping[str, Any]) -> dict[str, Any]:
+        """A key holds a pose as its controls, so two poses blend joint by joint."""
+        kept = super().keyed({key: value for key, value in values.items() if key not in ("pose", "adjust")})
+        if "pose" in values or "adjust" in values:
+            pose = values.get("pose", self.pose)
+            kept["pose"] = {**(replace(self, pose=pose, adjust={}).values()), **values.get("adjust", self.adjust)}
+        return kept
+
+    def posed(self, values: Mapping[str, Any]) -> "Mannequin":
+        return replace(self, **values, adjust={}) if "pose" in values else replace(self, **values)
 
     def values(self) -> dict[str, float]:
         """Every parameter this pose sets, by its full name, checked."""

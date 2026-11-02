@@ -19,7 +19,7 @@ import struct
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Mapping, Optional, Sequence, Union
+from typing import Any, Iterable, Mapping, Optional, Sequence, Union
 from urllib.parse import unquote
 
 from srlocations.collision import Cloud, Hull
@@ -63,6 +63,7 @@ class Model:
     tones: Mapping[str, str]  # the name of each material it uses, and its colour
     low: Vec3
     high: Vec3
+    two_sided: frozenset[str] = frozenset()  # the materials whose faces show from behind, "" for one with no name
 
     def lines(self) -> list[Polyline]:
         """Open edges, creases and outlines, the longest first if there are too many. An outline is where a surface turns
@@ -96,12 +97,12 @@ def _normal(a: Sequence[float], b: Sequence[float], c: Sequence[float]) -> Vec3:
 
 
 def _finished(path: Path, points: list[tuple[float, float, float]], triangles: list[tuple[int, int, int]],
-              tones: dict[str, str]) -> Model:
+              tones: dict[str, str], two_sided: Iterable[str] = ()) -> Model:
     if not triangles:
         raise MeshError(f"{path} has no triangles to draw")
     turned = tuple((x, y, -z) for x, y, z in points)
     seen = [turned[index] for index in {index for triangle in triangles for index in triangle}]
-    return Model(turned, tuple(triangles), tones, Vec3(*map(min, zip(*seen))), Vec3(*map(max, zip(*seen))))
+    return Model(turned, tuple(triangles), tones, Vec3(*map(min, zip(*seen))), Vec3(*map(max, zip(*seen))), frozenset(two_sided))
 
 
 def _mtl(path: Path) -> dict[str, str]:
@@ -222,6 +223,8 @@ class Gltf:
             material = self.document["materials"][primitive["material"]]
             factor = material.get("pbrMetallicRoughness", {}).get("baseColorFactor", (1, 1, 1, 1))
             model["tones"][material.get("name", "")] = tone(*factor[:3])
+            if material.get("doubleSided"):
+                model["two_sided"].add(material.get("name", ""))
 
     def _walk(self, index: int, parent: Matrix4, model: dict, own: bool = True) -> None:
         node = self.document["nodes"][index]
@@ -233,7 +236,7 @@ class Gltf:
             self._walk(child, world, model)
 
     def model(self, node: str) -> Model:
-        found: dict = {"points": [], "triangles": [], "tones": {}}
+        found: dict = {"points": [], "triangles": [], "tones": {}, "two_sided": set()}
         nodes = self.document.get("nodes", ())
         if node:
             named = [index for index, item in enumerate(nodes) if item.get("name") == node]
@@ -246,7 +249,7 @@ class Gltf:
             for index in scene.get("nodes", ()):
                 self._walk(index, IDENTITY, found)
         found["tones"].pop("", None)
-        return _finished(self.path, found["points"], found["triangles"], found["tones"])
+        return _finished(self.path, found["points"], found["triangles"], found["tones"], found["two_sided"])
 
 
 @lru_cache(maxsize=256)
@@ -324,10 +327,13 @@ class Mesh(Solid):
             return [Skin(self.material)]
         model = self.model()
         tones = {name: color for name, color in (model.tones if model else {}).items() if SLOT.fullmatch(name)}
+        two_sided = model.two_sided if model else frozenset()
+        sided = {"doubleSided": True}
         if not tones:
-            return [Skin(MODEL, own=Material("#c8c8c8"))]
+            return [Skin(MODEL, own=Material("#c8c8c8", extra=sided if two_sided else {}))]
         return [Skin(self.materials[slot], slot) if slot in self.materials
-                else Skin(f"{self.path.stem}.{slot}", slot, Material(color)) for slot, color in tones.items()]
+                else Skin(f"{self.path.stem}.{slot}", slot, Material(color, extra=sided if slot in two_sided else {}))
+                for slot, color in tones.items()]
 
     def extent(self) -> tuple[Vec3, Vec3]:
         """The model's box in the local frame, scaled."""

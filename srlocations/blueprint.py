@@ -37,6 +37,8 @@ class Blueprint:
             location.mark(**mark)
         for shot in self.data.get("shots", ()):
             location.shot(**shot)
+        for spec in self.data.get("moves", ()):  # {"what": a shot, a mark or a node's name, "time": seconds, and as move()}
+            location.move(**spec)
         location.paintings.extend(PaintLayer.from_spec(spec, self.base, location.marks) for spec in self.data.get("paint", ()))
         for spec in self.data.get("cast", ()):  # {"character": a registry.cast name or {"image": a file}, "mark": ..., ...}
             spec = dict(spec)

@@ -37,6 +37,7 @@ from sr_core.scene import Scene
 from srlocations.cast import colours
 from srlocations.compiler import Compiler, RenderMode, Renderer, SceneCompiler, safe_id
 from srlocations.geometry import Vec3
+from srlocations.motion import Clip
 from srlocations.location import Location
 from srlocations.materials import Material
 from srlocations.nodes import Ambient, Light, Placed, Point, Skin
@@ -46,7 +47,7 @@ from srlocations.sheets import sheet
 SHADERS = Path(__file__).resolve().parent / "shaders"
 UNLIT_WHITE, LIT_WHITE = "look-unlit-white", "look-lit-white"
 OVERLAP = 0.002
-KEPT = ("opacity", "alphaMode", "uvScaleX", "uvScaleY")  # what a flat surface takes from its material, beside the map
+KEPT = ("opacity", "alphaMode", "uvScaleX", "uvScaleY", "doubleSided")  # what a flat surface takes from its material, beside the map
 FITTING = 0.45  # a solid this close to a lamp's light is the lamp: its shade must not shadow its own bulb
 ROLE, PATH = "role:", "path:"
 AUTO = "auto"
@@ -116,10 +117,11 @@ Paint = Callable[[Skin, Placed], Optional[tuple[str, dict[str, Any], Optional[Te
 class Stage:
     """What the passes of one document share."""
 
-    def __init__(self, scene: Scene, root: Any, compiler: "StyledCompiler", location: Location, shot: str = "") -> None:
+    def __init__(self, scene: Scene, root: Any, compiler: "StyledCompiler", location: Location, shot: str = "",
+                 clip: Optional[Clip] = None) -> None:
         self.scene, self.root, self.compiler, self.location, self.shot = scene, root, compiler, location, shot
         self.look = compiler.look
-        self.solids = [leaf for leaf in location.solids() if leaf.item.drawn_in(self.look.name)]
+        self.solids = [leaf for leaf in (clip or location).solids() if leaf.item.drawn_in(self.look.name)]
         self._library: Any = None  # the schema refuses an empty <materials> or <effects>
         self._effects: Any = None
         self._materials: set[str] = set()
@@ -164,6 +166,10 @@ class Stage:
             chosen = own or name
         return self.location.registry.materials.get(chosen) if isinstance(chosen, str) else chosen
 
+    def sided(self, skin: Skin, leaf: Placed) -> dict[str, Any]:
+        """What a pass's own material keeps of the one it replaces, or a face that shows from behind goes from that pass."""
+        return {"doubleSided": True} if self.material_of(skin.name, skin.own, leaf).extra.get("doubleSided") else {}
+
     def texture_of(self, name: str, own: Optional[Material] = None, leaf: Optional[Placed] = None) -> Optional[Texture]:
         """The look's texture for a material, else the picture the material already has."""
         chosen = lookup(self.look.textures, name, leaf)
@@ -185,16 +191,14 @@ class Stage:
                                                    "uvScaleX": 1, "uvScaleY": 1})
             model = sheet(leaf.item, leaf.world, texture.tile, OVERLAP)
             model.declare(self.scene)
-            self.compiler.draw(group, Placed(model, leaf.world, leaf.path), index, prefix, chosen, shadow=shadow)
+            self.compiler.draw(group, replace(leaf, item=model), index, prefix, chosen, shadow=shadow)
             return
         for number, (part, across, up) in enumerate(leaf.item.spans()):
             scale = {"uvScaleX": max(round(across / texture.tile, 2), 0.01),
                      "uvScaleY": max(round(up / texture.tile, 2), 0.01)}
             chosen = self.material(f"{material_id}-{scale['uvScaleX']}x{scale['uvScaleY']}".replace(".", "_"),
                                    **{**attributes, "baseColorMap": str(Path(texture.path).resolve()), **scale})
-            world = leaf.world if part is leaf.item else leaf.world.then(part.transform)
-            self.compiler.draw(group, Placed(part, world, leaf.path), index, f"{prefix}{number}-", chosen, shadow=shadow,
-                               grow=OVERLAP)
+            self.compiler.draw(group, leaf.within(part), index, f"{prefix}{number}-", chosen, shadow=shadow, grow=OVERLAP)
 
     def coat(self, group: Any, leaf: Placed, index: int, prefix: str, paint: Paint, shadow: bool) -> None:
         """A solid in what `paint` makes of each of its skins. Paint that returns None leaves that skin as the file has it.
@@ -323,14 +327,19 @@ class Cel(Pass):
 
     def tones(self, stage: Stage, group: Any) -> None:
         """The set in white under this pass's light, before it is stepped."""
-        lit = stage.material(LIT_WHITE, baseColor="#ffffff", roughness=1, metallic=0)
-        unlit = stage.material(UNLIT_WHITE, baseColor="#ffffff", unlit=True)
+        whites = {LIT_WHITE: {"baseColor": "#ffffff", "roughness": 1, "metallic": 0},
+                  UNLIT_WHITE: {"baseColor": "#ffffff", "unlit": True}}
+        for white, attributes in whites.items():
+            stage.material(white, **attributes)
         lamps = [leaf.world.position for leaf in stage.location.lights() if isinstance(leaf.item, Point)]
         for index, leaf in enumerate(stage.solids):
             material = stage.material_of(leaf.item.material, leaf=leaf)
             bright = material.glow or material.opacity < 1 or material.extra.get("unlit")  # lights, glass and views take no shade
             shadow = leaf.item.casts_shadow and not any(touches(leaf, lamp) for lamp in lamps)
-            stage.compiler.draw(group, leaf, index, "cel-", unlit if bright else lit, shadow=shadow, grow=OVERLAP)
+            chosen = UNLIT_WHITE if bright else LIT_WHITE
+            if any(stage.sided(skin, leaf) for skin in leaf.item.skins()):
+                chosen = stage.material(f"{chosen}-both", **whites[chosen], doubleSided=True)
+            stage.compiler.draw(group, leaf, index, "cel-", chosen, shadow=shadow, grow=OVERLAP)
 
 
 @dataclass
@@ -346,7 +355,8 @@ def measured_cut(cel: Cel, stage: Stage) -> float:
     in view says what lit means here, so a dim room and a bright street both get shade that means something. It comes from
     a render, so a look that must not change between engines keeps a number."""
     look = Look([Tones(cut=0.5, shade=cel.shade, fill=cel.fill)], sky=PROBE_SKY, name=stage.look.name)
-    scene = MeasuringCompiler(look, *PROBE, supersample=1).compile(stage.location, stage.shot)
+    middle = stage.location.at(stage.location.duration(stage.shot) / 2)  # one cut serves a whole shot
+    scene = MeasuringCompiler(look, *PROBE, supersample=1).compile(middle, stage.shot)
     with tempfile.TemporaryDirectory() as folder:
         try:
             picture = Renderer().still(scene, Path(folder) / "probe.png")
@@ -391,24 +401,27 @@ class Ink(Pass):
 
     def surfaces(self, stage: Stage) -> list[tuple[Placed, str]]:
         """Each surface and its key. Pieces of one object in one plane share a key, so a wall built in sections is one
-        surface with no lines across it, while two objects never share one."""
+        surface with no lines across it, while two objects never share one. A key is taken where the solid stood when the
+        shot began, so what moves keeps its colours here and its lines do not flicker."""
         drawn = []
-        for leaf in stage.solids:
+        origin = stage.location.origin
+        starts = origin.solids() if origin else stage.solids
+        for leaf, start in zip(stage.solids, starts if len(starts) == len(stage.solids) else stage.solids):
             owner = leaf.path.rpartition("/")[0] or leaf.path
             for facet, normal in leaf.item.facets() if self.creases else [(leaf.item, Vec3(0, 0, 0))]:
-                world = leaf.world if facet is leaf.item else leaf.world.then(facet.transform)
+                placed = leaf.within(facet)
                 if normal == Vec3(0, 0, 0):
                     key = leaf.path
                     bands = facet.bands(self.rings) if self.rings and self.creases else []
                     if bands:
-                        drawn += [(Placed(band, world, leaf.path), f"{key}|{number}") for number, band in enumerate(bands)]
+                        drawn += [(replace(placed, item=band), f"{key}|{number}") for number, band in enumerate(bands)]
                         continue
                 else:
-                    turned = leaf.world.apply(normal) - leaf.world.position
+                    turned = start.world.apply(normal) - start.world.position
                     reach = sum(abs(a * b) for a, b in zip(leaf.item.half_extents(), normal))
-                    plane = sum(a * b for a, b in zip(turned, leaf.world.position)) + reach  # of the real surface
+                    plane = sum(a * b for a, b in zip(turned, start.world.position)) + reach  # of the real surface
                     key = f"{owner}|{leaf.item.material}|{[round(v, 3) + 0.0 for v in turned]}|{plane:.3f}"
-                drawn.append((Placed(facet, world, leaf.path), key))
+                drawn.append((placed, key))
         return drawn
 
     def add(self, stage: Stage) -> None:
@@ -420,12 +433,12 @@ class Ink(Pass):
         clean = stage.shader("ink-clean", "clean", pixelsX=width, pixelsY=height)
         group = stage.group("ink", [clean, lines])
         for index, (leaf, key) in enumerate(self.surfaces(stage)):
-            def keyed(key: str) -> str:
-                digest = hashlib.sha256(key.encode()).hexdigest()
-                return stage.material(f"ink-{digest[:12]}", baseColor=f"#{digest[:6]}", unlit=True)
+            def keyed(key: str, skin: Skin) -> str:
+                digest, sided = hashlib.sha256(key.encode()).hexdigest(), stage.sided(skin, leaf)
+                return stage.material(f"ink-{digest[:12]}{'-both' if sided else ''}", baseColor=f"#{digest[:6]}", unlit=True, **sided)
 
-            slots = [skin.slot for skin in leaf.item.skins() if skin.slot]  # a model's parts differ, so a line divides them
-            chosen = {slot: keyed(f"{key}|{slot}") for slot in slots} if slots else keyed(key)
+            skins = leaf.item.skins()  # a model's parts differ, so a line divides them
+            chosen = {skin.slot: keyed(f"{key}|{skin.slot}", skin) for skin in skins if skin.slot} or keyed(key, skins[0])
             stage.compiler.draw(group, leaf, index, "ink-", chosen, shadow=False)
 
 
@@ -515,17 +528,18 @@ class StyledCompiler(SceneCompiler):
         light = leaf.item
         for step in self.look.passes:
             light = step.relight(light)
-        return Placed(light, leaf.world, leaf.path)
+        return replace(leaf, item=light)
 
     def compile(self, location: Location, shot: str) -> Scene:
-        take = location.shots[shot]
+        self.clip = Clip(location, shot, self.fps)
+        take = self.clip.takes[0]
         scene = Scene(version="auto")
-        scene.add_project(width=self.width, height=self.height, fps=str(self.fps), duration=self.duration,
+        scene.add_project(width=self.width, height=self.height, fps=str(self.fps), duration=self.length,
                           background=self.look.sky or location.background, supersample=self.supersample)
-        self._lights(scene, [self._relit(leaf) for leaf in location.lights()])
+        self._lights(scene, [self._relit(leaf) for leaf in self.clip.lights()])
         composition = scene.add_composition()
         self._camera(composition, take)
-        stage = Stage(scene, composition, self, location, shot)
+        stage = Stage(scene, composition, self, location, shot, self.clip)
         self._declare(scene, stage.solids)
         for key in stage.unused():  # one look serves many locations, so a key they lack is not an error
             warnings.warn(f"look {self.look.name!r}: {key!r} finds nothing in {location.name!r}", stacklevel=2)
@@ -554,6 +568,7 @@ class Styled(RenderMode):
     width: int = 1280
     height: int = 720
     supersample: int = 2
+    fps: int = 30
 
     def compiler(self) -> Compiler[Scene]:
-        return StyledCompiler(self.look, self.width, self.height, supersample=self.supersample)
+        return StyledCompiler(self.look, self.width, self.height, self.fps, supersample=self.supersample)

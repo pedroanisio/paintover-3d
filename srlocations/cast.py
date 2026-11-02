@@ -8,10 +8,10 @@ from __future__ import annotations
 import struct
 import zlib
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from functools import lru_cache
 from pathlib import Path
-from typing import Mapping, Optional, Sequence, Union
+from typing import Callable, Mapping, Optional, Sequence, Union
 
 from srlocations.geometry import Vec3, VecLike
 from srlocations.paint import Box, Canvas, Fill, PaintItem, Sticker, png_size
@@ -132,6 +132,7 @@ class Actor:
     pose: Mapping[str, str] = field(default_factory=dict)
     flip: bool = False
     shadow: float = 0.3  # how dark the pool of shadow under its feet is, 0 for none
+    mark: str = ""  # the mark it stands on, which it goes with
 
     def sticker(self) -> Sticker:
         cutout = self.performer.cutout(self.pose)
@@ -149,6 +150,9 @@ class Actor:
 class Ensemble(PaintItem):
     """Actors sharing a layer. Whoever is nearer the camera in a shot is drawn later, so it differs from shot to shot."""
     actors: list[Actor] = field(default_factory=list)
+
+    def carried(self, offset: Callable[[str], Vec3]) -> "Ensemble":
+        return replace(self, actors=[replace(actor, at=Vec3.of(actor.at) + offset(actor.mark)) for actor in self.actors])
 
     def draw(self, canvas: Canvas, node_id: str) -> None:
         ordered: Sequence[Actor] = sorted(self.actors, key=lambda actor: canvas.view.pixels_per_metre(Vec3.of(actor.at)))

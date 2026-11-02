@@ -9,6 +9,7 @@ from srlocations.geometry import Transform, Vec3, aim, rotation
 from srlocations.location import Archetype, Check, Issue, LightRig, Location, Mark, Shot
 from srlocations.materials import Material
 from srlocations.mesh import Mesh, MeshError, read_model
+from srlocations.motion import Clip, Key, MotionError, Track
 from srlocations.nodes import (Ambient, Backdrop, Box, Cone, Cylinder, Group, Light, Node, Placed, Point, Prefab, Seat, Sky,
                                Solid, Sphere, Spot, Sun)
 from srlocations.looks import Cel, Flat, Ink, Lit, Look, Pass, Stage, Styled, StyledCompiler, Texture

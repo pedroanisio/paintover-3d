@@ -146,9 +146,10 @@ class Clash:
     depth: float
     way: Vec3
     moving: bool = False  # a moving body is in it, so it is a fault and not a question
+    time: float = 0.0  # in a location that moves, when it first happens
 
     def __str__(self) -> str:
-        return f"{self.first} is {self.depth * 100:.1f} cm inside {self.second}"
+        return f"{self.first} is {self.depth * 100:.1f} cm inside {self.second}" + (f" at {self.time:g} s" if self.time else "")
 
 
 @dataclass

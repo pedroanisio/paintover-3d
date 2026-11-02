@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, replace
-from typing import Any, Iterator, Optional, Sequence, Union
+from typing import Any, Iterator, Mapping, Optional, Sequence, Union
 
 from srlocations.collision import Block, Cloud, Drum, Egg, Hull
 from srlocations.geometry import Matrix, Transform, Vec3, VecLike, corners
@@ -29,6 +29,14 @@ class Placed:
     world: Transform
     path: str
     roles: frozenset[str] = frozenset()
+    track: tuple[Transform, ...] = ()  # its world at each frame of a clip, when it moves
+
+    def within(self, part: "Solid") -> "Placed":
+        """A part of this solid, which moves with it. A part that `is` the solid must not apply its transform again."""
+        if part is self.item:
+            return self
+        return replace(self, item=part, world=self.world.then(part.transform),
+                       track=tuple(world.then(part.transform) for world in self.track))
 
 
 @dataclass(frozen=True)
@@ -54,6 +62,14 @@ class Node(ABC):
     collides = True
     yields = False  # True for what gives way to other set pieces, as leaves do; a figure still cannot walk through it
     sits = False  # True for what takes a seat when one is near
+
+    def keyed(self, values: Mapping[str, Any]) -> dict[str, Any]:
+        """What a key on this node holds: these values in a form that can be blended."""
+        return {key: Vec3.of(value) if key == "at" else value for key, value in values.items()}
+
+    def posed(self, values: Mapping[str, Any]) -> "Node":
+        """This node with keyed values, at one moment."""
+        return replace(self, **values)
 
     def seats(self) -> Sequence[Seat]:
         """The places it offers to sit, in its local frame."""
@@ -130,6 +146,10 @@ class Solid(Node):
     def skins(self) -> list[Skin]:
         """The materials it is drawn in."""
         return [Skin(self.material)]
+
+    def two_sided(self, materials: Any) -> bool:
+        """Whether its faces show from behind, so that anything drawn in its place must keep them."""
+        return any((skin.own or materials.get(skin.name)).extra.get("doubleSided") for skin in self.skins())
 
     def facets(self) -> list[tuple["Solid", Vec3]]:
         """The surfaces ink can tell apart, each as a solid and its outward normal; a zero normal means a curved one."""

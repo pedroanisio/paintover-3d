@@ -185,7 +185,7 @@ def test_a_front_keeps_no_lines_across_its_pieces():
     location.shot("s", (0, 2, -20), (0, 2, 0))
     scene = Renderer().compile(location, "s", Styled(Look([Ink()], name="i"), W, H, 1))
     assert errors(scene) == []
-    keys = {key for _, key in Ink().surfaces(SimpleNamespace(solids=location.solids()))
+    keys = {key for _, key in Ink().surfaces(SimpleNamespace(solids=location.solids(), location=location))
             if "stock.brick.red" in key and "[0.0, 0.0, -1.0]" in key and key.endswith("|5.000")}
     assert len(keys) == 1
 

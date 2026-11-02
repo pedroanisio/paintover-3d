@@ -1,17 +1,22 @@
 """A Location: the graph plus what a production needs from it, marks to stand on and shots to take."""
 from __future__ import annotations
 
+import copy
+import difflib
 import math
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import Any, Iterable, Mapping, Optional, Sequence, Union
+from dataclasses import dataclass, fields, replace
+from typing import Any, Callable, Iterable, Mapping, Optional, Sequence, Union
 
 from srlocations.cast import Actor, Ensemble, Performer
 from srlocations.collision import REACH, Clash, CollisionError, clashes, clear
 from srlocations.geometry import Transform, Vec3, VecLike
+from srlocations.motion import EASES, Key, MotionError, Track, value_at
 from srlocations.nodes import Light, Node, Placed, Seat, Solid
 from srlocations.paint import PaintLayer
 from srlocations.registry import CatalogError, Registry
+
+VECTORS = ("eye", "look_at", "at")
 
 
 @dataclass(frozen=True)
@@ -64,6 +69,8 @@ class Archetype(ABC):
 
 
 class Location:
+    SHOT_KEYS, MARK_KEYS = ("eye", "look_at", "lens"), ("at", "facing")
+
     def __init__(self, name: str, registry: Optional[Registry] = None) -> None:
         self.name = name
         self.registry = registry or Registry.default()
@@ -72,6 +79,10 @@ class Location:
         self.shots: dict[str, Shot] = {}
         self.paintings: list[PaintLayer] = []
         self.background = "#000000"
+        self.motion: dict[Any, Track] = {}  # by a shot's or mark's name in a pair, or a node's id
+        self.followed: dict[str, tuple[Union[Node, str], Vec3]] = {}  # shots that keep something in the middle of the frame
+        self.sights: dict[str, Node] = {}  # shots from a figure's eyes
+        self.origin: Optional["Location"] = None  # the location a moment was taken from
 
     def add(self, node: Union[Node, str], **params: Any) -> Node:
         """A node, or the name of a registered prefab and its parameters."""
@@ -92,6 +103,109 @@ class Location:
         self.shots[name] = Shot(name, Vec3.of(eye), Vec3.of(look_at), lens)
         return self
 
+    def move(self, what: Union[Node, str], time: float, ease: str = "ease-in-out", **values: Any) -> "Location":
+        """A key: `what` reaches these values at `time`, in seconds, having left its last key as `ease` says. `what` is a
+        shot, a mark, or a node of this location or its name. A shot takes `eye`, `look_at` and `lens`, a mark `at` and
+        `facing`, and a node any of its fields that keep its parts, such as `at`, `yaw`, or a figure's `pose`. With no values
+        it stays as it is until `time`. What stands on a mark goes with the mark. "hold" jumps at the key, and "smooth" goes
+        through a key without stopping."""
+        if time <= 0:
+            raise MotionError(f"a key comes after the start, and {time} does not")
+        if ease not in EASES:
+            near = difflib.get_close_matches(ease, EASES, n=1)
+            raise MotionError(f"no ease {ease!r}" + (f"; did you mean {near[0]}?" if near else f"; there are {', '.join(EASES)}"))
+        key, start, allowed = self._target(what)
+        track = self.motion.setdefault(key, Track())
+        if not values:
+            values = {name: value_at(keys, time) for name, keys in track.fields.items()} or {allowed[0]: start(allowed[0])}
+            ease = "linear"
+        for name in values:
+            if name not in allowed:
+                near = difflib.get_close_matches(name, allowed, n=1)
+                raise MotionError(f"cannot move {name!r}" + (f"; did you mean {near[0]}?" if near else f"; try {', '.join(allowed)}"))
+        node = what if isinstance(what, Node) else None
+        node = node or next((n for n in self.nodes if id(n) == key), None)
+        for name, value in (node.keyed(values) if node else {k: Vec3.of(v) if k in VECTORS else v for k, v in values.items()}).items():
+            track.key(name, start(name), Key(float(time), value, ease))
+        return self
+
+    def _target(self, what: Union[Node, str]) -> tuple[Any, Callable[[str], Any], Sequence[str]]:
+        """How a thing that moves is filed, its value of a field now, and the fields it has."""
+        if isinstance(what, str):
+            found = [kind for kind, names in (("shot", self.shots), ("mark", self.marks)) if what in names]
+            if len(found) > 1:
+                raise MotionError(f"{what!r} is a shot and a mark, so pass one a new name")
+            if found:
+                source, keys = (self.shots, self.SHOT_KEYS) if found[0] == "shot" else (self.marks, self.MARK_KEYS)
+                return (found[0], what), lambda name: getattr(source[what], name), keys
+            what = next((node for node in self.nodes if node.name == what), what)
+            if isinstance(what, str):
+                raise MotionError(f"nothing here is called {what!r}: no shot, no mark and no node at the top of this location")
+        if not any(node is what for node in self.nodes):
+            raise MotionError(f"{what.label} is not at the top of this location, so it cannot move alone; add it directly")
+        names = tuple(f.name for f in fields(what) if f.init)
+        return id(what), lambda name: what.keyed({name: getattr(what, name)})[name], ("at", *(n for n in names if n != "at"))
+
+    def follow(self, shot: str, what: Union[Node, str], offset: VecLike = (0, 0, 0)) -> "Location":
+        """Keeps a shot's camera on a node or a mark, at `offset` from it, wherever it goes."""
+        self.followed[shot] = what, Vec3.of(offset)
+        self.shots[shot] = self._followed(self.shots[shot], self)
+        return self
+
+    def _followed(self, shot: Shot, moment: "Location") -> Shot:
+        what, offset = self.followed[shot.name]
+        if isinstance(what, str) and what in moment.marks:
+            return replace(shot, look_at=moment.marks[what].at + offset)
+        found = next((new for old, new in zip(self.nodes, moment.nodes) if old is what or old.name == what), None)
+        if found is None:
+            raise MotionError(f"shot {shot.name!r} follows {what!r}, and nothing here is called that")
+        return replace(shot, look_at=Vec3.of(found.at) + offset)
+
+    def duration(self, shot: Optional[str] = None) -> float:
+        """How long a shot lasts, in seconds: until the last thing in it stops. No moves, no time."""
+        return max((track.end for key, track in self.motion.items()
+                    if not (isinstance(key, tuple) and key[0] == "shot" and shot not in (None, key[1]))), default=0.0)
+
+    def instants(self) -> list[float]:
+        """When something reaches a key, and four times a second while a body moves: when to check a location that moves."""
+        times = {0.0, *(time for track in self.motion.values() for time in track.times)}
+        if any(isinstance(key, int) or key[0] == "mark" for key in self.motion):
+            end = self.duration()
+            times |= {step / 4 for step in range(int(end * 4) + 1)}
+        return sorted(times)
+
+    def at(self, time: float) -> "Location":
+        """This location as it is at `time`, with nothing moving."""
+        if not self.motion:
+            return self
+        moment = copy.copy(self)
+        moment.motion, moment.followed, moment.sights, moment.origin = {}, {}, {}, self
+        marks = {name: replace(mark, **self.motion[("mark", name)].at(time)) if ("mark", name) in self.motion else mark
+                 for name, mark in self.marks.items()}
+        offset = lambda name: marks[name].at - self.marks[name].at if name in marks else Vec3()
+        moment.marks = marks
+        moment.nodes = [self._node_at(node, time, marks) for node in self.nodes]
+        moment.paintings = [replace(layer, items=[item.carried(offset) for item in layer.items]) for layer in self.paintings]
+        moment.shots = {name: self._shot_at(shot, time, moment) for name, shot in self.shots.items()}
+        return moment
+
+    def _node_at(self, node: Node, time: float, marks: Mapping[str, Mark]) -> Node:
+        moved = node.posed(self.motion[id(node)].at(time)) if id(node) in self.motion else node
+        if node.name in marks and marks[node.name] is not self.marks[node.name]:  # stand() names a figure after its mark
+            before = self.marks[node.name]
+            return replace(moved, at=Vec3.of(moved.at) + marks[node.name].at - before.at,
+                           yaw=moved.yaw + marks[node.name].facing - before.facing)
+        return moved
+
+    def _shot_at(self, shot: Shot, time: float, moment: "Location") -> Shot:
+        keyed = self.motion.get(("shot", shot.name))
+        shot = replace(shot, **keyed.at(time)) if keyed else shot
+        if shot.name in self.sights:
+            figure = next(new for old, new in zip(self.nodes, moment.nodes) if old is self.sights[shot.name])
+            eye, look_at = figure.sight()
+            return replace(shot, eye=eye, look_at=look_at)
+        return self._followed(shot, moment) if shot.name in self.followed else shot
+
     def paint(self, name: str, blend: str = "normal", opacity: float = 1.0, shots: Sequence[str] = (),
               looks: Sequence[str] = (), depth: bool = False) -> PaintLayer:
         """A new layer over the picture, on top of those before it. With `depth` the set hides it."""
@@ -107,7 +221,7 @@ class Location:
         if mark not in self.marks:
             raise CatalogError(f"no mark {mark!r}; this location has {', '.join(sorted(self.marks)) or 'none'}")
         performer = self.registry.cast.get(character) if isinstance(character, str) else character
-        actor = Actor(performer, self.marks[mark].at, height, pose or {}, flip, shadow)
+        actor = Actor(performer, self.marks[mark].at, height, pose or {}, flip, shadow, mark)
         for layer in self.paintings:
             if layer.name == "cast" and (*layer.looks,) == (*looks,) and (*layer.shots,) == (*shots,) and layer.depth == depth:
                 break
@@ -163,16 +277,22 @@ class Location:
         return node
 
     def clashes(self, bodies_only: bool = False) -> list[Clash]:
-        """What is passing through what, by the rules in collision.py."""
-        return list(clashes(self.nodes, bodies_only))
+        """What is passing through what, by the rules in collision.py, the first time it happens if this location moves."""
+        for time in self.instants():
+            found = list(clashes(self.at(time).nodes, bodies_only))
+            if found:
+                return [replace(clash, time=time) for clash in found]
+        return []
 
     def pov(self, figure: Union[Node, str], name: Optional[str] = None, lens: float = 24.0) -> Shot:
         """A shot from a figure's eyes, as it stands now, looking where its head and eyes turn. `figure` is a node or a name."""
         found = figure if isinstance(figure, Node) else next((node for node in self.nodes if node.name == figure), None)
         if found is None or not hasattr(found, "sight"):
             raise CatalogError(f"no figure {figure!r}; this location has {', '.join(sorted(n.name for n in self.nodes if hasattr(n, 'sight') and n.name)) or 'none'}")
-        self.shot(name or f"{found.label}-pov", *found.sight(), lens)
-        return self.shots[name or f"{found.label}-pov"]
+        title = name or f"{found.label}-pov"
+        self.shot(title, *found.sight(), lens)
+        self.sights[title] = found
+        return self.shots[title]
 
     def placed(self) -> list[Placed]:
         return [leaf for node in self.nodes for leaf in node.walk()]
@@ -184,4 +304,10 @@ class Location:
         return [leaf for leaf in self.placed() if isinstance(leaf.item, Light)]
 
     def validate(self) -> list[Issue]:
-        return [issue for check in self.registry.checks for issue in check.run(self)]
+        """What is wrong here, at each moment something reaches a key. A fault is told once, at the first moment it appears."""
+        issues: dict[Issue, Issue] = {}
+        for time in self.instants():
+            moment = self.at(time)
+            for issue in (issue for check in self.registry.checks for issue in check.run(moment)):
+                issues.setdefault(issue, replace(issue, message=f"{issue.message}, at {time:g} s") if time else issue)
+        return list(issues.values())

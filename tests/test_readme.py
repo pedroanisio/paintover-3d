@@ -16,5 +16,5 @@ def test_the_readme_runs(tmp_path, monkeypatch):
     exec(compile("\n".join(blocks), "README.md", "exec"), scope)
     del sys.modules["readme"]
     assert sorted(path.name for path in (tmp_path / "renders").iterdir()) == [
-        "flat-blocking.png", "flat-engraved.png", "flat-loft.png", "flat-notes.png", "flat-shaded.png", "flat-toon.png", "flat-wireframe.png"]
+        "flat-blocking.png", "flat-engraved.png", "flat-loft.png", "flat-notes.png", "flat-shaded.png", "flat-toon.png", "flat-wireframe.png", "walk-1s.png", "walk.mp4"]
     assert "acme.crate" in scope["registry"].prefabs and "studio.sofa" in scope["other"].registry.prefabs
