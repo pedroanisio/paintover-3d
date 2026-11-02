@@ -1,10 +1,10 @@
 {
   "description": "A thin blue night mist, one card of a bank",
-  "digest": "8a645c7f08528329df1349f8b418eece43418ed98683d676d6f0c6b4eaba75a4",
+  "digest": "1e4213f81150e7ed7a4417753e9a46c10392588dc0d20ecddd566553df483a76",
   "kind": "shader",
   "name": "mist.night",
   "payload": {
-    "color": "#8eaad8",
+    "color": "#4a6090",
     "extra": {
       "unlit": true
     },
@@ -14,7 +14,7 @@
       "baseColorMap": "f60dfa90e8fc5ac5f2e85e6c5782db6c53bc2fef533281e056ac26f19316cf66.png"
     },
     "metallic": 0.0,
-    "opacity": 0.24,
+    "opacity": 0.2,
     "roughness": 1.0
   },
   "schema": 1,

@@ -92,7 +92,8 @@ def main() -> None:
             ("park-lamp.off", "park.lamp", {"lit": False}, "The park lantern switched off: the same lamp with no light"),
             ("park-bollard", "park.bollard", {}, "A low path light, lit, with its own light"),
             ("park-bollard.off", "park.bollard", {"lit": False}, "The low path light switched off"),
-            ("park-mist", "park.mist", {}, "A bank of thin blue night mist: see-through cards with no body, facing back")):
+            ("park-mist", "park.mist", {}, "A bank of thin blue night mist: see-through cards with no body, facing back"),
+            ("park-haze", "park.haze", {}, "A street lamp's warm light caught in the mist: see-through cards with no body")):
         catalog.publish_prop(name, registry.create(prefab, **params), registry, "1.0.0", tags=["exterior", "night"],
                              description=description)
     catalog.publish_location("park-night", json.loads((ROOT / "examples/park-night.location.json").read_text()), "1.0.0",

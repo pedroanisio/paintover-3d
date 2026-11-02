@@ -1,5 +1,7 @@
 """Curved solids, the sky, path tracing and locations in a catalog."""
+import importlib.util
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -12,6 +14,7 @@ from srlocations import (Blueprint, Box, CatalogError, Location, Material, Regis
                          SharedCatalog, Sky, Solid, Surface, TemplateError, Traced, TracedCompiler, Transform, Vec3)
 from srlocations.catalog import FrozenProp
 from srlocations.compiler import Projection
+from srlocations.geometry import aim
 from srlocations.surfaces import MAX_SAMPLES
 from srlocations.templates import engine_expression, evaluate
 
@@ -296,7 +299,7 @@ def test_the_published_park_night_needs_no_plugin():
     assert "park" not in location.registry.plugins.loaded
     assert location.validate() == [] and set(location.shots) == {"dance", "along-the-path"} and set(location.marks) == {"dancer"}
     assert catalog.pins(location)["props"] == {"park-night": "1.0.0", "park-lamp": "1.0.0", "park-bollard": "1.0.0",
-                                                "park-mist": "1.0.0"}
+                                                "park-mist": "1.0.0", "park-haze": "1.0.0"}
     assert len(location.lights()) < 63
 
 
@@ -320,6 +323,51 @@ def test_the_night_park_is_wet_and_has_no_clouds():
     assert not names & {"studio.paving.brick", "studio.kerb.stone", "studio.grass.lawn", "studio.leaf.sun", "studio.cloud"}
 
 
+def test_the_night_mist_stands_on_the_ground():
+    """Each mist card's bottom edge is on the lawn, where its picture is clear, so no card draws a line across the
+    ground where it meets it: a card reaching below the ground showed a hard step in the plate behind the dancer."""
+    location = SharedCatalog.open(ROOT / "catalog").location("park-night")
+    cards = [leaf for leaf in location.solids() if leaf.path.startswith("mist/")]
+    assert len(cards) == 12
+    assert all(abs(leaf.world.position.y - leaf.item.height / 2) < 1e-6 for leaf in cards)
+
+
+def test_the_lamp_haze_stands_on_the_ground_facing_the_dance_shot():
+    """The lamp's light in the mist is drawn on upright cards turned to the dance shot's heading, meeting the ground where
+    they are clear, behind the dancer and in front of the lamp."""
+    location = SharedCatalog.open(ROOT / "catalog").location("park-night")
+    shot = location.shots["dance"]
+    view = Projection(shot, 1080, 1920)
+    heading, _ = aim(shot.eye, shot.look_at)
+    cards = [leaf for leaf in location.solids() if leaf.path.startswith("lamp-haze/")]
+    lamp = next(leaf.world.position for leaf in location.lights() if leaf.path.startswith("lamp/") and leaf.item.kind == "spot")
+    dancer = view.to_camera(location.marks["dancer"].at).z
+    assert len(cards) == 2
+    for card in cards:
+        assert abs(card.world.position.y - card.item.height / 2) < 1e-6
+        facing = card.world.apply((0, 0, 1)) - card.world.position  # a card faces -z, so its +z points away from the camera
+        assert abs(facing.y) < 1e-9 and abs(math.degrees(math.atan2(facing.x, facing.z)) - heading) < 0.01
+        assert dancer < view.to_camera(card.world.position).z < view.to_camera(lamp).z
+
+
+def _park_night_script():
+    spec = importlib.util.spec_from_file_location("park_night", ROOT / "examples/park_night.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.mark.parametrize("lit, lights, haze", [(set(), 0, False), ({"lamp"}, 2, True), ({"row-1-left", "row-1-right"}, 2, False)])
+def test_switching_lights_off_takes_their_light_and_the_lamp_its_haze(lit, lights, haze):
+    """The plate script's states: every lamp not lit is its switched-off prop, and the lamp's haze goes with the lamp."""
+    catalog = SharedCatalog.open(ROOT / "catalog")
+    payload = _park_night_script().switched(catalog.get("location", "park-night").payload, lit)
+    location = Blueprint(payload).build(Registry.default().use(catalog))
+    assert len([leaf for leaf in location.lights() if leaf.path.startswith(("lamp/", "row-"))]) == lights
+    assert any(leaf.path.startswith("lamp-haze/") for leaf in location.solids()) is haze
+    assert location.validate() == []
+
+
 def test_the_dance_shot_frames_a_dancer_for_a_portrait_plate():
     """The dance video's plate: at 1080x1920 the floor at the dancer's mark is at row 1440 in the middle of the frame, a
     1.6 m figure there is 800 px tall, and the lamp is in the frame above the dancer's head."""
@@ -329,13 +377,13 @@ def test_the_dance_shot_frames_a_dancer_for_a_portrait_plate():
     floor, head = view.pixel(mark), view.pixel(mark + Vec3(0, 1.6, 0))
     assert abs(floor[0] - 540) < 1 and abs(floor[1] - 1440) < 1 and abs(floor[1] - head[1] - 800) < 2
     assert location.shots["dance"].eye.y == 0.8  # at the hips of a 1.6 m figure
-    lamp = view.pixel(next(leaf.world.position for leaf in location.lights() if leaf.path == "lamp/lamp"))
+    lamp = view.pixel(next(leaf.world.position for leaf in location.lights() if leaf.path.startswith("lamp/") and leaf.item.kind == "spot"))
     assert 0 < lamp[0] < 1080 and 0 < lamp[1] < head[1]
 
 
 def test_the_lamp_centres_its_pool_on_the_dancer():
     location = SharedCatalog.open(ROOT / "catalog").location("park-night")
-    beam = next(leaf for leaf in location.lights() if leaf.path == "lamp/lamp")
+    beam = next(leaf for leaf in location.lights() if leaf.path.startswith("lamp/") and leaf.item.kind == "spot")
     assert beam.item.kind == "spot"
     origin = beam.world.position
     direction = beam.world.apply((0, 0, 1)) - origin

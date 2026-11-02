@@ -48,7 +48,7 @@ SHADERS = {
                          "A darker curtain wall, pale with distance"),
     "cloud": (Material("#f6f8fa", 1.0, extra={"unlit": True}), ["sky"], "A summer cloud"),
     # The night: the same pavers after rain, under a clear coat of water, and the lamps that light them
-    "paving.wet": (Material("#8a786b", 0.65, maps={"baseColorMap": str(TEXTURES / "pavers.png")},
+    "paving.wet": (Material("#8a786b", 0.85, maps={"baseColorMap": str(TEXTURES / "pavers.png")},
                             extra={"uvScaleX": round(LENGTH / TILE, 2), "uvScaleY": round(WIDTH / TILE, 2), "clearcoat": 1.0,
                                    "clearcoatRoughness": 0.04}),
                    ["stone", "textured", "wet"], "Brick pavers after rain, dark and glossy"),
@@ -57,6 +57,7 @@ SHADERS = {
     "iron.lamp": (Material("#1c2321", 0.45, 0.75), ["metal"], "Dark green-black painted iron, for lamp posts"),
     "glow.lantern": (Material("#fff6e6", 0.35, glow="#ffd9a0", glow_strength=6.0), ["light"], "A lit lantern's frosted glass"),
     "glow.bollard": (Material("#fff6e6", 0.35, glow="#ffe4bd", glow_strength=4.0), ["light"], "A lit path light's diffuser"),
+    "steel.bollard": (Material("#7d8588", 0.45, 0.6), ["metal"], "Brushed steel, for low path lights"),
     "glass.unlit": (Material("#4a4740", 0.3), ["glass"], "Frosted glass with the light inside it off"),
     "grass.night": (Material("#5d6a66", 0.95, maps={"baseColorMap": str(TEXTURES / "grass.png")},
                              extra={"uvScaleX": 150, "uvScaleY": 150}), ["plant", "textured"], "Mown lawn at night, its green gone grey"),
@@ -64,9 +65,11 @@ SHADERS = {
                    ["plant", "textured"], "Broadleaf canopy at night, where a lamp can reach it"),
     "leaf.night.shade": (Material("#2a3a30", 0.9, maps={"baseColorMap": str(TEXTURES / "leaves.png")},
                                   extra={"uvScaleX": 6, "uvScaleY": 4}), ["plant", "textured"], "Broadleaf canopy at night, inside"),
-    "mist.night": (Material("#8eaad8", 1.0, opacity=0.24, maps={"baseColorMap": str(TEXTURES / "mist.png")}, extra={"unlit": True}),
+    "mist.night": (Material("#4a6090", 1.0, opacity=0.2, maps={"baseColorMap": str(TEXTURES / "mist.png")}, extra={"unlit": True}),
                    ["sky", "haze", "textured"],
                    "A thin blue night mist, one card of a bank"),
+    "haze.lamp": (Material("#ffc98f", 1.0, opacity=0.55, maps={"baseColorMap": str(TEXTURES / "haze.png")}, extra={"unlit": True}),
+                  ["light", "haze", "textured"], "A street lamp's warm light caught in the mist around its pool"),
 }
 SLOTS = {"slats": "studio.wood.bench", "iron": "studio.iron.bench", "paving": "studio.paving.brick", "lawn": "studio.grass.lawn"}
 
@@ -195,10 +198,11 @@ class StreetLamp(Prefab):
     degrees wide, and a dimmer glow all round. `lit=False` is the same lamp switched off, glass and all, so a picture of it
     on and one of it off differ by its light alone."""
     height: float = 3.6  # to the top of the cap
-    candela: float = 900.0
-    glow: float = 150.0  # candela of the light all round, on the post, the leaves above and the lawn
-    throw: float = 4.8
+    candela: float = 1100.0
+    glow: float = 120.0  # candela of the light all round, on the post, the leaves above and the ground at its foot
+    throw: float = 5.5
     cone: float = 60.0
+    softness: float = 1.0  # of the beam's edge, 0 hard to 1 fading from its middle, so the pool has no rim
     reach: float = 22.0
     lit: bool = True
 
@@ -216,21 +220,21 @@ class StreetLamp(Prefab):
         if self.lit:
             down = math.degrees(math.atan2(middle, self.throw))
             parts += [Spot(self.candela, at=(0, middle, 0), pitch=-down, cone=self.cone, color="#ffd29a", reach=self.reach,
-                           shadows=True, softness=0.4, name="lamp"),
+                           shadows=True, softness=self.softness, name="lamp"),
                       Point(self.glow, at=(0, middle, 0), color="#ffd29a", reach=self.reach, name="glow")]
         return parts
 
 
 @dataclass
 class Bollard(Prefab):
-    """A low path light: an iron post with a ring of light near its top. `lit=False` is it switched off."""
+    """A low path light: a steel post with a ring of light near its top. `lit=False` is it switched off."""
     height: float = 0.8
     candela: float = 4.0
     reach: float = 5.0
     lit: bool = True
 
     def build(self) -> Sequence[Node]:
-        h, iron = self.height, "studio.iron.lamp"
+        h, iron = self.height, "studio.steel.bollard"
         parts: list[Node] = [Cylinder(0.075, h - 0.17, at=(0, (h - 0.17) / 2, 0), material=iron, segments=16, name="post"),
                              Cylinder(0.07, 0.12, at=(0, h - 0.11, 0), material="studio.glow.bollard" if self.lit else "studio.glass.unlit",
                                       segments=16, casts_shadow=False, name="diffuser"),
@@ -248,12 +252,28 @@ class Mist(Prefab):
     step: float = 2.5
     cards: int = 12
     width: float = 160.0
-    height: float = 8.0
+    height: float = 5.0
     material: str = "studio.mist.night"
 
     def build(self) -> Sequence[Node]:
-        return [Backdrop(self.width, self.height, at=(0, self.height / 2 - 0.5, self.near + i * self.step), material=self.material,
+        return [Backdrop(self.width, self.height, at=(0, self.height / 2, self.near + i * self.step), material=self.material,
                          name=f"mist-{i}") for i in range(self.cards)]
+
+
+@dataclass
+class Haze(Prefab):
+    """The street lamp's light caught in the mist around its pool: `cards` see-through warm sheets facing -z, with no body,
+    standing on the ground `step` metres apart, clear at their edges and at the ground. It is part of the lamp's light, so a
+    picture with the lamp switched off leaves it out. Stand it behind the pool, turned the way the shot looks."""
+    width: float = 9.0
+    height: float = 4.5
+    cards: int = 2
+    step: float = 1.5
+    material: str = "studio.haze.lamp"
+
+    def build(self) -> Sequence[Node]:
+        return [Backdrop(self.width, self.height, at=(0, self.height / 2, i * self.step), material=self.material,
+                         name=f"haze-{i}") for i in range(self.cards)]
 
 
 @dataclass
@@ -357,3 +377,4 @@ class ParkPlugin(Plugin):
         registry.prefabs.add("park.lamp", StreetLamp)
         registry.prefabs.add("park.bollard", Bollard)
         registry.prefabs.add("park.mist", Mist)
+        registry.prefabs.add("park.haze", Haze)

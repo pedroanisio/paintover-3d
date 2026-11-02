@@ -18,18 +18,38 @@ from srlocations.geometry import aim
 SHOT, MARK, HEIGHT, CROP = "dance", "dancer", 1920, 1080  # the plate's height and the width of the frame panned over it
 FIGURE = 1.6  # metres, the dancer's standing height
 REACH = 400  # px either side of the dance spot where the figure's limbs go
+DERIVATION = {
+    "camera": "The published dance shot (eye, look_at, lens) through srlocations.Projection, the SDK's model of the engine's "
+              "pinhole camera. The focal length in px is lens_mm x plate height / 24 when the plate is narrower than 3:2, "
+              "so 30 mm on a 1920 px tall plate is 2400 px whatever the width.",
+    "dance_spot": "The 'dancer' mark projected to the plate; floor_y is its row. head_y is the point 1.6 m above the mark, "
+                  "px_per_metre_vertical is (floor_y - head_y) / 1.6, px_per_metre_horizontal is the distance in px from the "
+                  "mark to the point 1 m from it along the camera's x axis.",
+    "horizon_y": "The row of a point 1e6 m ahead along the shot's heading at eye height. The camera pitches up, so it sits "
+                 "below the plate's middle.",
+    "pan": "A 1080 px frame panned across the plate: the frame's centre from 540 to width - 540, and the dance spot's offset "
+           "from the frame centre at each end, in px and in metres at the spot.",
+    "key_light": "The lamp's light position (the middle of its lantern) projected to the plate, with its world height.",
+    "rim": "The open-sky rig's directional moon, its azimuth and elevation in world degrees and the direction its light "
+           "travels; the travel vector is (sin(az+180) cos(el), -sin(el), cos(az+180) cos(el)).",
+    "lamp_pool": "Measured on the rendered lamp layer, not projected.",
+    "behind_the_figure": "Measured on the rendered pictures: WCAG 2 relative luminance of every pixel from head_y to floor_y "
+                         "within 400 px either side of the dance spot; a pure black limb's contrast is (L + 0.05) / 0.05.",
+}
 F_STOP = 0.6  # wide open, so what is behind the dancer goes soft
 
 
 def switched(payload: dict, lit: set[str]) -> dict:
-    """The blueprint with every lamp not named in `lit` swapped for its switched-off prop."""
+    """The blueprint with every lamp not named in `lit` swapped for its switched-off prop, and the lamp's haze, which is
+    its light caught in the mist, left out with it."""
     def node(spec: dict) -> dict:
         name, use = spec.get("name", ""), spec["use"]
         if (name == "lamp" or name.startswith("row-")) and name not in lit:
             prop, version = use.split("@")
             return {**spec, "use": f"{prop}.off@{version}"}
         return spec
-    return {**payload, "nodes": [node(spec) for spec in payload["nodes"]]}
+    return {**payload, "nodes": [node(spec) for spec in payload["nodes"]
+                                 if not (spec.get("name", "").startswith("lamp-") and "lamp" not in lit)]}
 
 
 def rgb(path: Path, width: int) -> bytes:
@@ -68,6 +88,29 @@ def luminance(path: Path, width: int, spot: tuple[float, float], top: float) -> 
     return {"region": {"x": [left, right], "y": [round(top), round(spot[1])]}, "min": round(low, 4), "p10": round(tenth, 4),
             "median": round(middle, 4), "black_contrast_at_min": round((low + 0.05) / 0.05, 2),
             "black_contrast_at_p10": round((tenth + 0.05) / 0.05, 2), "meets_4_5_at_p10": (tenth + 0.05) / 0.05 >= 4.5}
+
+
+def pool(lamp: Path, width: int, horizon: float, frame: tuple[float, float]) -> dict:
+    """Where the lamp's light lands on the ground in the lamp layer, below the horizon: the centre of its luminance in the
+    whole plate and in the centred frame, and the brightest 60 px square there."""
+    data = rgb(lamp, width)
+    linear = [c / 255 / 12.92 if c / 255 <= 0.04045 else ((c / 255 + 0.055) / 1.055) ** 2.4 for c in range(256)]
+    top = math.ceil(horizon)
+
+    def centre(left: int, right: int) -> list[float]:
+        total = sx = sy = 0.0
+        for y in range(top, HEIGHT, 2):
+            for x in range(left, right, 2):
+                i = (y * width + x) * 3
+                value = 0.2126 * linear[data[i]] + 0.7152 * linear[data[i + 1]] + 0.0722 * linear[data[i + 2]]
+                total, sx, sy = total + value, sx + value * x, sy + value * y
+        return [round(sx / total, 1), round(sy / total, 1)]
+
+    left, right = round(frame[0]), round(frame[1])
+    best = max((sum(data[((y + dy) * width + x + dx) * 3 + 1] for dy in range(0, 60, 6) for dx in range(0, 60, 6)), x + 30, y + 30)
+               for y in range(top, HEIGHT - 60, 20) for x in range(left, right - 60, 20))
+    return {"centre_px": centre(0, width), "centre_in_centred_frame_px": centre(left, right), "brightest_60px_px": list(best[1:]),
+            "measured_on": "lamp.png, rows from the horizon down, luminance-weighted; the brightest square by its green channel"}
 
 
 def numbers(location, rig: dict, width: int, layers: dict[str, list[str]]) -> dict:
@@ -161,6 +204,9 @@ def main() -> None:
         exact[after] = added_back(folder / "base.png", [folder / f"{name}.png" for name in layers], folder / f"{after}.png", width)
         print(f"base + layers to {light} against {after}.png:", exact[after])
     found = numbers(location, payload["rig"], width, layers)
+    found["dance_spot"]["lamp_pool"] = pool(folder / "lamp.png", width, found["horizon_y"],
+                                            (found["pan"]["centred_frame_left_x"], found["pan"]["centred_frame_left_x"] + CROP))
+    found["derivation"] = DERIVATION
     found["source"] = source()
     found["states"] = {name: {"file": f"{name}.png", "lit": sorted(lit), "base_plus_layers": exact.get(name)} for name, lit in states}
     spot, head = found["dance_spot"]["px"], found["dance_spot"]["head_y"]

@@ -1,0 +1,28 @@
+{
+  "description": "A street lamp's warm light caught in the mist around its pool",
+  "digest": "147fb10ca65fa9032179ddd308d4219588968aa7d1a7784a4d862cfa458d24c3",
+  "kind": "shader",
+  "name": "haze.lamp",
+  "payload": {
+    "color": "#ffc98f",
+    "extra": {
+      "unlit": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {
+      "baseColorMap": "8b33c817e3c02f5a3bdbd60c03c47693dc0f5e9a329206e81d3ff3e7523232cd.png"
+    },
+    "metallic": 0.0,
+    "opacity": 0.55,
+    "roughness": 1.0
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "light",
+    "haze",
+    "textured"
+  ],
+  "version": "1.0.0"
+}

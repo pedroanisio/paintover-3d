@@ -1,6 +1,6 @@
 {
   "description": "A low path light, lit, with its own light",
-  "digest": "2843e6b8962992972372f6817f087a4d3b9d7ed119539b4bd9be3f91fdb88edc",
+  "digest": "0b607cfb8a273572752130f75682e88c0127f614e75f5f3696d30744c6a862ad",
   "kind": "prop",
   "name": "park-bollard",
   "payload": {
@@ -33,7 +33,7 @@
           "height": 0.63,
           "radius": 0.075
         },
-        "material": "iron.lamp@1.0.0",
+        "material": "steel.bollard@1.0.0",
         "segments": 16,
         "solid": "cylinder"
       },
@@ -97,7 +97,7 @@
           "height": 0.05,
           "radius": 0.085
         },
-        "material": "iron.lamp@1.0.0",
+        "material": "steel.bollard@1.0.0",
         "segments": 16,
         "solid": "cylinder"
       },

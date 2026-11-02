@@ -1,6 +1,6 @@
 {
   "description": "A bank of thin blue night mist: see-through cards with no body, facing back",
-  "digest": "2d7cfa3ed07b86c695cb7455bdecfb919ab0c25aa1f6416a0fbb612408c601cd",
+  "digest": "55033ec91f9732f6d809374ebdb4a933e3db55dc6f704f0c8b9e1ced0381abce",
   "kind": "prop",
   "name": "park-mist",
   "payload": {
@@ -8,7 +8,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           6.0
         ],
         "basis": [
@@ -30,7 +30,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -39,7 +39,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           8.5
         ],
         "basis": [
@@ -61,7 +61,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -70,7 +70,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           11.0
         ],
         "basis": [
@@ -92,7 +92,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -101,7 +101,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           13.5
         ],
         "basis": [
@@ -123,7 +123,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -132,7 +132,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           16.0
         ],
         "basis": [
@@ -154,7 +154,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -163,7 +163,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           18.5
         ],
         "basis": [
@@ -185,7 +185,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -194,7 +194,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           21.0
         ],
         "basis": [
@@ -216,7 +216,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -225,7 +225,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           23.5
         ],
         "basis": [
@@ -247,7 +247,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -256,7 +256,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           26.0
         ],
         "basis": [
@@ -278,7 +278,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -287,7 +287,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           28.5
         ],
         "basis": [
@@ -309,7 +309,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -318,7 +318,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           31.0
         ],
         "basis": [
@@ -340,7 +340,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -349,7 +349,7 @@
       {
         "at": [
           0.0,
-          3.5,
+          2.5,
           33.5
         ],
         "basis": [
@@ -371,7 +371,7 @@
         ],
         "casts_shadow": false,
         "dimensions": {
-          "height": 8.0,
+          "height": 5.0,
           "width": 160.0
         },
         "material": "mist.night@1.0.0",
@@ -382,7 +382,7 @@
   "schema": 1,
   "size": [
     160.0,
-    8.0,
+    5.0,
     27.5
   ],
   "tags": [

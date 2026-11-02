@@ -1,6 +1,6 @@
 {
   "description": "The park at night after rain: one street lamp, low path lights in rows, a cool moon behind and mist, with a hip-height shot for a dancer on the path",
-  "digest": "3e4bb6e0c4fce1d3d1abff4c9fdccdf3c661af9f8fec9d1cd2ce1a6109310cb1",
+  "digest": "62d50092afad8d29fc0a8fd67e21915d0a875475922870e132c5dca03fff2152",
   "kind": "location",
   "name": "park-night",
   "payload": {
@@ -22,82 +22,92 @@
       },
       {
         "at": [
-          -1.778,
+          -2.737,
           0,
-          12.561
+          13.207
         ],
         "name": "lamp",
         "use": "studio.park-lamp@1.0.0",
-        "yaw": 179.19
+        "yaw": 169.31
       },
       {
         "at": [
-          -3.189,
+          -2.378,
           0,
-          6.524
+          10.76
+        ],
+        "name": "lamp-haze",
+        "use": "studio.park-haze@1.0.0",
+        "yaw": -23.895
+      },
+      {
+        "at": [
+          -4.787,
+          0,
+          9.591
         ],
         "name": "row-1-left",
         "use": "studio.park-bollard@1.0.0"
       },
       {
         "at": [
-          0.237,
+          -1.67,
           0,
-          7.921
+          11.586
         ],
         "name": "row-1-right",
         "use": "studio.park-bollard@1.0.0"
       },
       {
         "at": [
-          -4.31,
+          -6.666,
           0,
-          8.809
+          12.118
         ],
         "name": "row-2-left",
         "use": "studio.park-bollard@1.0.0"
       },
       {
         "at": [
-          -1.106,
+          -3.845,
           0,
-          10.659
+          14.512
         ],
         "name": "row-2-right",
         "use": "studio.park-bollard@1.0.0"
       },
       {
         "at": [
-          -6.426,
+          -9.008,
           0,
-          11.832
+          14.581
         ],
         "name": "row-3-left",
         "use": "studio.park-bollard@1.0.0"
       },
       {
         "at": [
-          -3.571,
+          -6.46,
           0,
-          14.185
+          17.264
         ],
         "name": "row-3-right",
         "use": "studio.park-bollard@1.0.0"
       },
       {
         "at": [
-          -9.356,
+          -12.061,
           0,
-          14.908
+          17.214
         ],
         "name": "row-4-left",
         "use": "studio.park-bollard@1.0.0"
       },
       {
         "at": [
-          -6.842,
+          -9.766,
           0,
-          17.622
+          20.116
         ],
         "name": "row-4-right",
         "use": "studio.park-bollard@1.0.0"
@@ -115,7 +125,7 @@
     ],
     "rig": {
       "azimuth": -30,
-      "brightness": 0.25,
+      "brightness": 0.08,
       "elevation": 9,
       "falloff": 0.6,
       "ground": "#05070a",
@@ -148,9 +158,9 @@
         ],
         "lens": 28,
         "look_at": [
-          -1.778,
+          -2.737,
           1.6,
-          12.561
+          13.207
         ],
         "name": "along-the-path"
       }

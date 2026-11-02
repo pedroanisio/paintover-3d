@@ -1,0 +1,22 @@
+{
+  "description": "Brushed steel, for low path lights",
+  "digest": "7b21bcb5d33e15441e2cc8e64c974a0e3039dce1989f3ef3789a24eec2e214bf",
+  "kind": "shader",
+  "name": "steel.bollard",
+  "payload": {
+    "color": "#7d8588",
+    "extra": {},
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.6,
+    "opacity": 1.0,
+    "roughness": 0.45
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "metal"
+  ],
+  "version": "1.0.0"
+}

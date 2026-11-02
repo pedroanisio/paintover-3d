@@ -136,7 +136,34 @@ def mist() -> None:
                                    + chunk(b"IDAT", zlib.compress(b"".join(rows), 9)) + chunk(b"IEND", b""))
 
 
-PICTURES = (pavers, grass, leaves, glass, mist)
+def haze() -> None:
+    """One card of the lamp's haze, white so its material tints it: an oval glow brightest a third of the way up and off
+    centre to the right, where the lamp stands, clear at the ground and at every edge."""
+    width, height = 256, 256
+    drift = noise(width, 5, 29)
+
+    def smooth(t: float) -> float:
+        t = max(0.0, min(1.0, t))
+        return t * t * (3 - 2 * t)
+
+    rows = []
+    for y in range(height):
+        up = 1 - y / (height - 1)
+        row = bytearray(b"\0")
+        for x in range(width):
+            across = x / (width - 1)
+            glow = math.exp(-(((across - 0.56) / 0.3) ** 2 + ((up - 0.32) / 0.34) ** 2))
+            edges = smooth(up / 0.12) * smooth((1 - up) / 0.2) * smooth(across / 0.15) * smooth((1 - across) / 0.15)
+            row.extend((255, 255, 255, round(255 * glow * edges * (0.85 + 0.15 * drift(x, y)))))
+        rows.append(bytes(row))
+
+    def chunk(tag: bytes, body: bytes) -> bytes:
+        return struct.pack(">I", len(body)) + tag + body + struct.pack(">I", zlib.crc32(tag + body))
+    (OUT / "haze.png").write_bytes(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0))
+                                   + chunk(b"IDAT", zlib.compress(b"".join(rows), 9)) + chunk(b"IEND", b""))
+
+
+PICTURES = (pavers, grass, leaves, glass, mist, haze)
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)

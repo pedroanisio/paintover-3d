@@ -1,6 +1,6 @@
 {
   "description": "Brick pavers after rain, dark and glossy",
-  "digest": "66c6e26d2c02f4688f76b84a956416f5c29d61facde565f02c615c60fbd68790",
+  "digest": "1f69398aee4d292b12fdb143ef0ba6375588e2bfefbd29e9a9af5ca74986fc3c",
   "kind": "shader",
   "name": "paving.wet",
   "payload": {
@@ -18,7 +18,7 @@
     },
     "metallic": 0.0,
     "opacity": 1.0,
-    "roughness": 0.65
+    "roughness": 0.85
   },
   "schema": 1,
   "size": null,

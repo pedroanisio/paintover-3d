@@ -1,0 +1,83 @@
+{
+  "description": "A street lamp's warm light caught in the mist: see-through cards with no body",
+  "digest": "3e00324dc628baa808506eb55b00a7efb22fa337d3916567c37f44f0895c0319",
+  "kind": "prop",
+  "name": "park-haze",
+  "payload": {
+    "parts": [
+      {
+        "at": [
+          0.0,
+          2.25,
+          0.0
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 4.5,
+          "width": 9.0
+        },
+        "material": "haze.lamp@1.0.0",
+        "solid": "plane"
+      },
+      {
+        "at": [
+          0.0,
+          2.25,
+          1.5
+        ],
+        "basis": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "casts_shadow": false,
+        "dimensions": {
+          "height": 4.5,
+          "width": 9.0
+        },
+        "material": "haze.lamp@1.0.0",
+        "solid": "plane"
+      }
+    ]
+  },
+  "schema": 1,
+  "size": [
+    9.0,
+    4.5,
+    1.5
+  ],
+  "tags": [
+    "exterior",
+    "night"
+  ],
+  "version": "1.0.0"
+}

@@ -1,6 +1,6 @@
 {
   "description": "The low path light switched off",
-  "digest": "11503e1c7b6111d5380045adf6f89887fd75e80e0b254d6152a95b19ca2ed848",
+  "digest": "6a9d81de32967a839ec35a2bfa87dab5ffddc23b75412526bbc68fd2955074bf",
   "kind": "prop",
   "name": "park-bollard.off",
   "payload": {
@@ -33,7 +33,7 @@
           "height": 0.63,
           "radius": 0.075
         },
-        "material": "iron.lamp@1.0.0",
+        "material": "steel.bollard@1.0.0",
         "segments": 16,
         "solid": "cylinder"
       },
@@ -97,7 +97,7 @@
           "height": 0.05,
           "radius": 0.085
         },
-        "material": "iron.lamp@1.0.0",
+        "material": "steel.bollard@1.0.0",
         "segments": 16,
         "solid": "cylinder"
       }

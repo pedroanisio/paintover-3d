@@ -1,6 +1,6 @@
 {
   "description": "A generic post-top park lantern, lit, with its own light",
-  "digest": "68d1b4538f6be0312d5115b7bdc30c598404dc1ff0432d3c90f13a64c481f9ac",
+  "digest": "c0136483b1bc3efbff435d099079c2b28e33417d1c73fa5bdcfe7b1805ee514c",
   "kind": "prop",
   "name": "park-lamp",
   "payload": {
@@ -210,22 +210,22 @@
           ],
           [
             0.0,
-            0.83365,
-            -0.552293
+            0.865714,
+            -0.50054
           ],
           [
             0.0,
-            0.552293,
-            0.83365
+            0.50054,
+            0.865714
           ]
         ],
         "color": "#ffd29a",
         "cone": 60.0,
-        "intensity": 900.0,
+        "intensity": 1100.0,
         "light": "spot",
         "reach": 22.0,
         "shadows": true,
-        "softness": 0.4
+        "softness": 1.0
       },
       {
         "at": [
@@ -251,7 +251,7 @@
           ]
         ],
         "color": "#ffd29a",
-        "intensity": 150.0,
+        "intensity": 120.0,
         "light": "point",
         "reach": 22.0,
         "shadows": false,
