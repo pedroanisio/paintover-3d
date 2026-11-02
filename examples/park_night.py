@@ -118,6 +118,15 @@ def numbers(location, rig: dict, width: int, layers: dict[str, list[str]]) -> di
     }
 
 
+def source() -> dict:
+    """The branch and commit of this checkout, and whether it has changes not committed, for set.json."""
+    def git(*args: str) -> str:
+        done = subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True, text=True)
+        return done.stdout.strip() if done.returncode == 0 else ""
+    return {"repository": "srlocations", "branch": git("rev-parse", "--abbrev-ref", "HEAD"), "commit": git("rev-parse", "HEAD"),
+            "uncommitted_changes": bool(git("status", "--porcelain", "--untracked-files=no"))}
+
+
 def main() -> None:
     folder = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "renders/park-night"
     width = int(sys.argv[2]) if len(sys.argv) > 2 else 2400
@@ -152,6 +161,7 @@ def main() -> None:
         exact[after] = added_back(folder / "base.png", [folder / f"{name}.png" for name in layers], folder / f"{after}.png", width)
         print(f"base + layers to {light} against {after}.png:", exact[after])
     found = numbers(location, payload["rig"], width, layers)
+    found["source"] = source()
     found["states"] = {name: {"file": f"{name}.png", "lit": sorted(lit), "base_plus_layers": exact.get(name)} for name, lit in states}
     spot, head = found["dance_spot"]["px"], found["dance_spot"]["head_y"]
     found["behind_the_figure"] = {name: luminance(folder / f"{name}.png", width, spot, head)
