@@ -11,3 +11,5 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+shot014_0_beside.mp4
+_tmp/
