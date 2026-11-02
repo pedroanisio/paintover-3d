@@ -40,15 +40,20 @@ VecLike = Union[Vec3, Sequence[float]]
 
 
 def _multiply(a: Matrix, b: Matrix) -> Matrix:
-    return tuple(tuple(sum(a[r][k] * b[k][c] for k in range(3)) for c in range(3)) for r in range(3))
+    # Written out because solving a figure is mostly this. It stays sum(): since Python 3.12 that compensates, so plain + would
+    # change last bits, and published digests with them.
+    (b00, b01, b02), (b10, b11, b12), (b20, b21, b22) = b
+    return tuple((sum((x * b00, y * b10, z * b20)), sum((x * b01, y * b11, z * b21)), sum((x * b02, y * b12, z * b22)))
+                 for x, y, z in a)
 
 
 def rotation(yaw: float = 0.0, pitch: float = 0.0, roll: float = 0.0) -> Matrix:
     """Yaw turns +z toward +x, pitch turns +z toward +y (looks up), roll turns +x toward +y."""
-    y, p, r = (math.radians(v) for v in (yaw, pitch, roll))
-    yawed = ((math.cos(y), 0.0, math.sin(y)), (0.0, 1.0, 0.0), (-math.sin(y), 0.0, math.cos(y)))
-    pitched = ((1.0, 0.0, 0.0), (0.0, math.cos(p), math.sin(p)), (0.0, -math.sin(p), math.cos(p)))
-    rolled = ((math.cos(r), -math.sin(r), 0.0), (math.sin(r), math.cos(r), 0.0), (0.0, 0.0, 1.0))
+    y, p, r = math.radians(yaw), math.radians(pitch), math.radians(roll)
+    cy, sy, cp, sp, cr, sr = math.cos(y), math.sin(y), math.cos(p), math.sin(p), math.cos(r), math.sin(r)
+    yawed = ((cy, 0.0, sy), (0.0, 1.0, 0.0), (-sy, 0.0, cy))
+    pitched = ((1.0, 0.0, 0.0), (0.0, cp, sp), (0.0, -sp, cp))
+    rolled = ((cr, -sr, 0.0), (sr, cr, 0.0), (0.0, 0.0, 1.0))
     return _multiply(yawed, _multiply(pitched, rolled))
 
 
@@ -62,8 +67,8 @@ class Transform:
         return cls(Vec3.of(position), rotation(yaw, pitch, roll))
 
     def apply(self, point: VecLike) -> Vec3:
-        p = Vec3.of(point)
-        moved = [sum(row[c] * v for c, v in enumerate(p)) for row in self.basis]
+        x, y, z = Vec3.of(point)
+        moved = [sum((a * x, b * y, c * z)) for a, b, c in self.basis]
         return Vec3(*moved) + self.position
 
     def undo(self, point: VecLike) -> Vec3:

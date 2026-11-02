@@ -101,6 +101,10 @@ class Figure(Prefab):
         """Where in the location `arm_reach` is measured from."""
         return ()
 
+    def balance(self) -> Optional[float]:
+        """How far inside what carries it its centre of mass is, in metres, below 0 when outside; None when unknown."""
+        return None
+
     def stature(self) -> float:
         """How tall it stands, in metres: here the top of its solids above its feet."""
         tops = [leaf.item.bounds(leaf.world)[1].y for leaf in self.walk() if hasattr(leaf.item, "bounds")]

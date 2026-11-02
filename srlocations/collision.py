@@ -87,12 +87,24 @@ class Hull(ABC):
                 Vec3(self.reach(x), self.reach(y), self.reach(z)))
 
 
+def _boxed(centre: Vec3, spread: Sequence[float]) -> tuple[Vec3, Vec3]:
+    """The box of a shape that reaches `spread` beyond its centre both ways along x, y and z, to the bit as Hull.box() finds
+    it from reach(): every part of a moving figure is boxed at every instant, and reach() is slow to ask six times. Along an
+    axis _dot() picks out one number, adding zeros that change no sum, and a spread of zero or more leaves no sign to lose."""
+    x, y, z = centre
+    return Vec3(-(-x + spread[0]), -(-y + spread[1]), -(-z + spread[2])), Vec3(x + spread[0], y + spread[1], z + spread[2])
+
+
 class Block(Hull):
     def __init__(self, world: Transform, half: Vec3) -> None:
         self.centre, self.axes, self.half = world.position, _columns(world), tuple(half)
 
     def reach(self, d: Vec3) -> float:
         return _dot(self.centre, d) + sum(abs(_dot(axis, d)) * half for axis, half in zip(self.axes, self.half))
+
+    def box(self) -> tuple[Vec3, Vec3]:
+        rows = [tuple(axis) for axis in self.axes]
+        return _boxed(self.centre, [sum([abs(row[k]) * half for row, half in zip(rows, self.half)]) for k in range(3)])
 
 
 class Egg(Hull):
@@ -101,6 +113,10 @@ class Egg(Hull):
 
     def reach(self, d: Vec3) -> float:
         return _dot(self.centre, d) + math.sqrt(sum((_dot(axis, d) * r) ** 2 for axis, r in zip(self.axes, self.radii)))
+
+    def box(self) -> tuple[Vec3, Vec3]:
+        rows = [tuple(axis) for axis in self.axes]
+        return _boxed(self.centre, [math.sqrt(sum([(row[k] * r) ** 2 for row, r in zip(rows, self.radii)])) for k in range(3)])
 
 
 class Drum(Hull):
@@ -113,6 +129,12 @@ class Drum(Hull):
     def reach(self, d: Vec3) -> float:
         along = _dot(self.axis, d)
         return _dot(self.centre, d) + abs(along) * self.half + math.sqrt(max(0.0, 1 - along * along)) * self.radius
+
+    def box(self) -> tuple[Vec3, Vec3]:
+        # as _boxed(), but reach() adds the length and the round side one at a time, and so must this
+        sides = [(abs(along) * self.half, math.sqrt(max(0.0, 1 - along * along)) * self.radius) for along in self.axis]
+        (x, y, z), ((ax, rx), (ay, ry), (az, rz)) = self.centre, sides
+        return Vec3(-(-x + ax + rx), -(-y + ay + ry), -(-z + az + rz)), Vec3(x + ax + rx, y + ay + ry, z + az + rz)
 
 
 class Cloud(Hull):

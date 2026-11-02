@@ -331,8 +331,9 @@ def test_a_walk_ends_where_it_was_sent_facing_that_way():
         assert location.duration() == pytest.approx(math.hypot(to[0], to[2]) / 1.2, rel=0.25)  # at about walking pace
 
 
-def test_a_walk_keeps_each_foot_still_while_it_stands_on_it():
-    location, _ = strolling()
+@pytest.mark.parametrize("to", [(0, 0, 2.6), [(0, 0, 1.8), (1.8, 0, 1.8)]])
+def test_a_walk_keeps_each_foot_still_while_it_stands_on_it(to):
+    location, _ = strolling(to)
     stances = {"left": [[]], "right": [[]]}
     for frame in range(round(location.duration() * 60) + 1):
         moment = location.at(frame / 60).nodes[1]
@@ -357,6 +358,39 @@ def test_a_walk_lifts_its_feet_and_never_sinks_them():
         lows.append(min(part.bounds(figure.transform.then(part.transform))[0].y for part in feet))
         lifted = max(lifted, max(part.bounds(figure.transform.then(part.transform))[0].y for part in feet))
     assert min(lows) > -0.01 and lifted > 0.03
+
+
+def test_a_walk_goes_through_each_point_in_turn_rounding_each_corner():
+    corner, goal = (0, 0, 1.8), (1.8, 0, 1.8)
+    location, figure = strolling([corner, goal])
+    assert location.duration() == pytest.approx(3.6 / 1.2, rel=0.25)
+    at = lambda time: location.at(time).nodes[1]
+    passing = location.duration() / 2  # the corner is halfway along
+    assert (at(passing).at - Vec3(*corner)).length < figure.stride() / 2
+    assert at(passing * 0.3).yaw % 360 == pytest.approx(0, abs=1e-6)
+    assert at(passing * 1.7).yaw % 360 == pytest.approx(90, abs=1e-6)
+    end = at(location.duration())
+    assert (end.at.x, end.at.z) == pytest.approx((goal[0], goal[2]), abs=1e-6) and end.yaw % 360 == pytest.approx(90, abs=1e-6)
+    last = None
+    for step in range(61):
+        moment = at(location.duration() * step / 60)
+        assert min(abs(moment.at.x), abs(moment.at.z - 1.8)) < 1e-6 or (moment.at - Vec3(*corner)).length < figure.stride()
+        if last is not None:  # it faces the way it goes, give or take the start
+            way = math.degrees(math.atan2(moment.at.x - last.at.x, moment.at.z - last.at.z))
+            assert abs((moment.yaw - way + 180) % 360 - 180) < 20 or step < 10
+        last = moment
+
+
+def test_a_walk_takes_marks_on_its_way_and_skips_a_point_it_is_at():
+    location = Location("stroll", Registry.default())
+    location.add("stock.box", size=(12, 0.1, 12), at=(0, -0.05, 0), material="stock.concrete")
+    location.mark("door", (2, 0, 0))
+    figure = location.add(Mannequin(name="walker", pose="stand"))
+    location.walk(figure, [(0, 0, 0), (0, 0, 1.5), "door"])
+    end = location.at(location.duration()).nodes[1]
+    assert (end.at.x, end.at.z) == pytest.approx((2, 0), abs=1e-6)
+    with pytest.raises(MotionError):
+        strolling(to=[(0, 0, 0), (0, 0, 0)])
 
 
 def test_a_walk_starts_when_told_and_refuses_going_nowhere():

@@ -35,6 +35,7 @@ class FigureReport:
     faults: list[str]  # every limb that passes through the set
     tangled: list[str]  # its limbs that pass through each other
     boxed: list[str] = field(default_factory=list)  # models near it, judged by their pieces' hulls and so by more than their shape
+    balance: Optional[float] = None  # metres its centre of mass is inside what carries it, below 0 outside, None when unknown
 
     def lines(self) -> list[str]:
         out = [f"{self.name} ({self.height:.2f} m)"]
@@ -45,6 +46,8 @@ class FigureReport:
         out.extend(f"  sees {name:<12} {'clear' if blocker is None else 'blocked by ' + blocker}" for name, blocker in self.sight_lines.items())
         out.extend(f"  {name:<16} {value * 100:.1f} cm" for name, value in self.resting.items())
         out.extend(f"  {name:<16} {value:.0f} degrees" for name, value in self.posture.items())
+        if self.balance is not None:
+            out.append(f"  balance          {abs(self.balance) * 100:.1f} cm {'inside' if self.balance >= 0 else 'outside'} its support")
         out.extend(f"  FAULT {fault}" for fault in (*self.faults, *self.tangled))
         out.extend(f"  judged by its hulls: {name}" for name in self.boxed)
         return out
@@ -100,4 +103,4 @@ def report(location: "Location") -> Report:
                      location.gap(figure, _head(figure), (0, 1, 0), HEADROOM), figure.arm_reach(), _within_reach(location, figure),
                      {name: location.sees(figure, name) for name in sorted(others - {figure.label})}, _resting(location, figure),
                      figure.posture(), [str(clash) for clash in location.faults(figure)],
-                     list(figure.tangled()), _boxed(location, figure)) for figure in figures])
+                     list(figure.tangled()), _boxed(location, figure), figure.balance()) for figure in figures])

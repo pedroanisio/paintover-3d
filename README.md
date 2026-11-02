@@ -133,6 +133,16 @@ location.stand("guest", pose="sit", kind="woman", adjust={"head.turn_left_right"
 print(location.clashes(bodies_only=True) or "nobody passes through anything")
 ```
 
+`balanced=True` moves a standing figure's hips across the floor, its feet staying where the pose put them, until its centre
+of mass is 2 cm inside what carries it. `centre_of_mass()` and `support()` give both, from each segment's share of the body's
+mass (Winter, after Dempster), and `location.report()` gives each standing figure's margin.
+
+```python
+location.mark("dancer", (1.0, 0, -1.0))
+location.stand("dancer", adjust={"right_upper_leg.front_back": -80}, balanced=True)
+print(f"{location.figure('dancer').balance() * 100:.0f} cm inside its feet")
+```
+
 `location.clashes()` lists what passes through what, and a render refuses a figure that still does. `solid=False` on a
 figure lets it through on purpose. `location.contact` sets how far things may meet: a body may sink 3 cm into anything with the
 `soft` role or a material in `cushions`. `location.faults()` names each limb at fault, including one wholly inside a closed
@@ -206,7 +216,8 @@ and says when each fault starts, and so does `validate()`. A blueprint can hold 
 `location.plant()` keeps a figure's foot or hand where it is at one time until another, and the knee or elbow bends to keep it
 there while the hips move. The hips come down a little when a held foot is out of reach, a foot they leave behind rises onto
 its toes, `release=` lets go over that many seconds, and `flat=True` sets a foot down level on the floor. `location.walk()`
-walks a figure to a point or a mark, a step at a time, with each foot planted while it stands on it. `follow()` can trail its target by `lag` seconds, ignore moves inside `dead` metres and look `ahead`,
+walks a figure to a point or a mark, or through several in turn, a step at a time, with each foot planted while it stands on
+it. It rounds each corner and faces the way it goes, and a foot left behind in a turn pivots on its ball. `follow()` can trail its target by `lag` seconds, ignore moves inside `dead` metres and look `ahead`,
 as an operator would. `location.shake()` shakes a shot's camera by hand, or as a blow that dies away with `decay`, the same way
 for the same `seed`. `location.onion()` is one still with see-through ghosts of each moving figure at other times, to review a
 move in one picture, and `Pose.push()` and `Pose.relax()` move an in-between away from or toward the plain blend of its keys.
@@ -215,8 +226,8 @@ move in one picture, and `Pose.push()` and `Pose.relax()` move an in-between awa
 stroll = Location("stroll")
 stroll.mark("guest", (0, 0, 0))
 stroll.stand("guest")
-stroll.walk("guest", (0, 0, 3), start=0.5)
-print(f"{stroll.duration():.1f} s to walk 3 m")
+stroll.walk("guest", [(0, 0, 3), (2, 0, 3)], start=0.5)
+print(f"{stroll.duration():.1f} s to walk round the corner")
 walk.follow("follow", "host", (0, 1, 0), lag=0.4, dead=0.1)
 walk.shake("follow", amount=0.4, seed=2)
 review = walk.onion(1.0, (0.0, 2.0))
@@ -228,10 +239,13 @@ renderer.render(review, "follow", "renders/walk-onion.png", "stock.shaded")
 `srlocations.interchange` writes a mannequin's skeleton and motion for animation packages. `save_bvh()` writes BVH: the 55
 bones, the hips with positions and turns and every other bone with turns, standing in the T-stance when every channel is 0, and
 a frame `fps` times a second over a location, or a figure alone in its pose. `names="mixamo"`, `"unity"`, `"humanik"` or
-`"ue5"` uses that package's bone names. `save_glb()` writes a skinned GLB: each limb a mesh bound to its bone where the figure
-stands at the start, in the figure's materials, with an animation of every joint. Both files are right-handed and y-up, and a
-model file's z is the SDK's reversed, so a figure that faces +z here faces -z in the file, and a `Mesh` of the GLB stands
-where the figure stood.
+`"ue5"` uses that package's bone names. `save_glb()` writes a GLB with the same bones and an animation of every joint, in the
+figure's materials: by default each limb a mesh bound to its bone where the figure stands at the start, so a `Mesh` of it
+stands where the figure stood. `skinned=True` writes one body skinned to the 55 bones instead, bound at the T-stance as
+packages expect a character to be, each vertex weighted to its own bone and to a neighbour nearly as near, at most four, so
+an elbow, a knee or the neck bends rather than parting. Its pose is in its animation, even for a figure on its own, so a
+`Mesh` of it stands in the T-stance unless the engine plays its clip. Both files are right-handed and y-up, and a model
+file's z is the SDK's reversed, so a figure that faces +z here faces -z in the file.
 
 `load_bvh()` reads a BVH as a `Take`: a `Pose` to a frame, in the body of the figure it is given, and the fps. It knows a bone
 by this SDK's name or by a package's in `Joint.known_as`, and lists the others in `take.unknown`. A file whose rest pose is
@@ -239,13 +253,19 @@ not a T-stance, arms down for example, is retargeted bone by bone from the way e
 range is held there and listed in `take.clamped`, unless the figure has `limits=False`. The file's root goes into the hips'
 controls, so `Mannequin(pose=take.poses[0], grounded=False)` stands where the file's figure stood.
 
+`load_gltf()` reads a glTF or GLB's animation the same way, by default its first, or one named with `animation=`: the
+bones are its skin's joints, the rest is where its nodes stand without the animation, and frames come as often as its keys
+do unless `fps=` says otherwise. Mixamo's names are known with or without `mixamorig:`, as exporters write them.
+
 ```python
-from srlocations.interchange import load_bvh, save_bvh, save_glb
+from srlocations.interchange import load_bvh, load_gltf, save_bvh, save_glb
 
 save_bvh("renders/walk.bvh", figure, walk, fps=12)
 save_glb("renders/walk.glb", figure, walk, fps=12)
+save_glb("renders/walk-skinned.glb", figure, walk, fps=12, skinned=True, names="mixamo")
 take = load_bvh("renders/walk.bvh")
 print(len(take.poses), take.fps, take.unknown or "every bone known")
+print(len(load_gltf("renders/walk-skinned.glb").poses))
 ```
 
 ## Curved solids
@@ -377,14 +397,17 @@ its bench, `news_studio.py` renders the published news studio with two anchors a
   way, so hips that go further drag it. A held foot keeps its turn as far as its ranges let, and one the hips leave behind
   rises onto its toes, by up to 50°. A character changes pose only at a key, a whole picture at a time.
 - Between keys, nothing moving goes more than 3 cm unchecked, so a finger can pass through a thinner panel unseen. On a big
-  set, a figure crossing 10 m in 3 s takes about 9 s to check.
+  set, a figure gliding 10 m in 3 s takes about 3 s to check, and one walking it with its feet planted about 18 s.
 - Motion blur leaves ink sharp, because blurred ink came out striped, and so the ink of something moving fast sits on a smear.
 - Ink line widths waver from frame to frame, by about 0.4 px at the default `supersample=2` and 0.3 px at 4, because the
   pass ink reads is not antialiased. A higher supersample makes the steps smaller, not rarer.
 - `Cel(cut="auto")` measures one cut, at the middle of a shot. Ink chooses its surfaces once, where the solids stand at the start,
   and a part that was not there then is keyed as a part of its node.
 - Paint and the wireframe are redrawn for each frame in which they change. With a moving camera, that is every frame.
-- A mannequin has rigid segments and no skinning. `reach()` solves one arm or leg for a hand, foot or finger at a point,
+- Balance moves the hips across the floor and down, never turns them, and keeps only the feet where they were: a knee or a
+  hand on the floor moves with the hips. The segment masses are an adult's, so a child's head is too light, and a standing
+  man's centre of mass comes out at 0.58 of his height against the 0.55 to 0.57 measured.
+- A mannequin has rigid segments, and only the GLB it writes with `skinned=True` is skinned. `reach()` solves one arm or leg for a hand, foot or finger at a point,
   `keep=` holds a hand only within its narrow side-to-side range, a settled figure does not change its pose to fit, and
   `repose()` stops where something is in the way, without looking for a way round it.
 - `location.clashes()` reports the deepest overlap for each pair of nodes, so a smaller one can hide behind it, and
@@ -393,10 +416,19 @@ its bench, `news_studio.py` renders the published news studio with two anchors a
 - The survey kinds match ANSUR II one dimension at a time. Nobody is the 95th percentile in everything, so they mark the edges
   of a fit and are not people, and nothing between those seven dimensions was measured.
 - Props carry no grip points yet.
-- `load_bvh()` reads BVH, not glTF or FBX. It retargets by the way each bone points, so a joint with fewer controls than the
-  file's bone, such as an elbow, drops the turn it cannot make and the bone below turns to make up for it. The bone names in
-  `Joint.known_as` have not been checked against files from those packages.
-- A GLB is bound where the figure stands at its first frame, not at the T-stance, and its limbs are rigid, as the mannequin's are.
+- `load_bvh()` and `load_gltf()` read BVH and glTF, not FBX. They retarget by the way each bone points, so a joint with fewer
+  controls than the file's bone, such as an elbow, drops the turn it cannot make and the bone below turns to make up for it,
+  and a twist about a bone that its rest does not show is lost. The Mixamo names in `Joint.known_as` were checked against a
+  published Mixamo character (three.js r160's `Xbot.glb`); the Unity, HumanIK and Unreal names have not been checked
+  against files. Mixamo's walks and runs come in with the shoulders up to about 20° lower than their range and the thumbs
+  and finger spreads up to about 20° past theirs, so those are held and listed in `take.clamped`. The hips' height is scaled
+  by the whole skeleton's length against this body's, so with `grounded=False` a figure from a rig of other proportions can
+  float or sink a little.
+- `load_gltf()` takes the rest from where the nodes stand, not from the skin's inverse bind matrices, so a file whose nodes
+  hold a pose rather than its bind retargets from that pose. A parent's scale should be the same on every axis.
+- A rigid GLB is bound where the figure stands at its first frame. A skinned one is bound at the T-stance and blends the
+  mannequin's eggs by distance, linearly, so a sharply bent joint pinches a little. This SDK reads a skinned model's vertices
+  at the bind, so a `Mesh` of one has the T-stance's bounds, and draws it so too, since it never sets the clip to play.
 - The comfort ranges in `examples/fit_check.py` are working values, not taken from a published standard.
 - Depth for paint treats a mark as one distance, to within 15 cm, and paint casts no shadow onto the set.
 - A tiled texture runs backwards on two of a room's four walls, which only lettering would show, and still restarts on each

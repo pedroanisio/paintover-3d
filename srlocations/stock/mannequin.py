@@ -1,9 +1,9 @@
 """A jointed mannequin, to review a set with a body in it: sight lines, sitting height, reach, how big a room reads.
 
 The skeleton is the humanoid one animation packages share: the 55 bones of Unity's Humanoid. `Joint.known_as` gives each
-one's name in Unity and its nearest bone in Mixamo, Maya HumanIK and Unreal's mannequin, whose bodies have no eyes or jaw.
-Its controls are Unity's 95 muscles, each with `Dof.muscle` its name there, plus the six channels of the root, on the
-hips, and a roll at each foot: 103 parameters, all in `PARAMETERS`.
+one's name in Unity and its nearest bone in Mixamo, Maya HumanIK and Unreal's mannequin. Those bodies have no jaw, and
+only Mixamo's has eyes. Its controls are Unity's 95 muscles, each with `Dof.muscle` its name there, plus the six channels
+of the root, on the hips, and a roll at each foot: 103 parameters, all in `PARAMETERS`.
 
 A parameter is written "joint.control", in degrees, or metres for the hips' `right`, `up` and `forward`:
 
@@ -63,6 +63,14 @@ FINGER_ROUNDS = 24  # times a finger reach moves the wrist again, after the hand
 LOWEST = 0.1  # the most the hips come down for a held foot, as a share of the leg's length
 TIPPED = 50  # degrees: the most a held foot rises onto its toes when the hips leave it behind
 BEHIND = 0.1  # a held foot this share of the leg behind the hips rises onto its toes before they come down
+FOOTED = 0.01  # metres above the floor that a part still carries the figure
+STEADY = 0.02  # metres a balanced figure keeps its centre of mass inside the edge of its support: a working value
+BALANCE_ROUNDS = 8  # times a balanced figure moves its hips again, its legs having moved its weight
+# Each segment's share of the body's mass, from Winter, Biomechanics and Motor Control of Human Movement, 4th ed. (2009),
+# Table 4.1, after Dempster (1955). They are an adult's, so a child's head is lighter here than it is. The trunk runs from the
+# hips to the shoulders, and a share is split among the segment's solids by volume.
+MASS = {"head": 0.081, "trunk": 0.497, "upper_arm": 0.028, "lower_arm": 0.016, "hand": 0.006, "upper_leg": 0.100,
+        "lower_leg": 0.0465, "foot": 0.0145}
 STRAIGHTENED = 170  # degrees at an elbow or knee past which a limb is too straight to say which way it bends
 Triple = tuple[float, float, float]
 
@@ -73,6 +81,79 @@ class PoseError(ValueError):
 
 def _times(a: Matrix, b: Matrix) -> Matrix:
     return tuple(tuple(sum(a[r][k] * b[k][c] for k in range(3)) for c in range(3)) for r in range(3))
+
+
+RESTS: dict[str, Matrix] = {}
+
+
+def _rest(joint: Joint) -> Matrix:
+    """How a joint is turned on its parent before its controls turn it, which never changes, so it is worked out once."""
+    if joint.name not in RESTS:
+        yaw, pitch, roll = joint.rest
+        RESTS[joint.name] = rotation(joint.turned("yaw", yaw), pitch, joint.turned("roll", roll))
+    return RESTS[joint.name]
+
+
+def _segment(joint: Joint) -> tuple[str, int]:
+    """The segment of MASS a joint's solid belongs to, and its side, 0 for the head and trunk."""
+    if joint.region == "head" or joint.name == "neck":
+        return "head", 0
+    if joint.region == "torso" or joint.name.endswith("_shoulder"):
+        return "trunk", 0
+    bone = joint.name.partition("_")[2]
+    return ("hand" if bone.split("_")[0] in FINGERS else "foot" if bone == "toes" else bone), joint.side
+
+
+def _outline(points: Sequence[tuple[float, float]]) -> list[tuple[float, float]]:
+    """The convex hull of points on the floor, as (x, z), counter-clockwise looking down."""
+    points = sorted(set(points))
+    if len(points) < 3:
+        return points
+    turn = lambda o, a, b: (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    halves = []
+    for run in (points, points[::-1]):
+        half: list[tuple[float, float]] = []
+        for point in run:
+            while len(half) >= 2 and turn(half[-2], half[-1], point) <= 0:
+                half.pop()
+            half.append(point)
+        halves.extend(half[:-1])
+    return halves
+
+
+def _centroid(outline: Sequence[tuple[float, float]]) -> tuple[float, float]:
+    """The middle of the area of a convex outline, or of its points when it has none."""
+    edges = list(zip(outline, [*outline[1:], *outline[:1]]))
+    area = sum(a[0] * b[1] - b[0] * a[1] for a, b in edges) / 2
+    if abs(area) < 1e-12:
+        return sum(p[0] for p in outline) / len(outline), sum(p[1] for p in outline) / len(outline)
+    return (sum((a[0] + b[0]) * (a[0] * b[1] - b[0] * a[1]) for a, b in edges) / (6 * area),
+            sum((a[1] + b[1]) * (a[0] * b[1] - b[0] * a[1]) for a, b in edges) / (6 * area))
+
+
+def _steadied(point: tuple[float, float], outline: Sequence[tuple[float, float]]) -> tuple[float, float]:
+    """`point` if it is `STEADY` inside a convex outline, or the first point that is on the way to its middle, or its middle."""
+    middle = _centroid(outline)
+    if _margin(point, outline) >= STEADY or _margin(middle, outline) < STEADY:
+        return point if _margin(point, outline) >= STEADY else middle
+    along = lambda t: (point[0] + (middle[0] - point[0]) * t, point[1] + (middle[1] - point[1]) * t)
+    low, high = 0.0, 1.0
+    for _ in range(30):
+        low, high = (low, (low + high) / 2) if _margin(along((low + high) / 2), outline) >= STEADY else ((low + high) / 2, high)
+    return along(high)
+
+
+def _margin(point: tuple[float, float], outline: Sequence[tuple[float, float]]) -> float:
+    """How far a point is inside a convex outline from its nearest edge, below 0 by its distance when outside."""
+    def apart(a: tuple[float, float], b: tuple[float, float]) -> float:
+        dx, dz = b[0] - a[0], b[1] - a[1]
+        t = max(0.0, min(1.0, ((point[0] - a[0]) * dx + (point[1] - a[1]) * dz) / (dx * dx + dz * dz or 1)))
+        return math.hypot(point[0] - a[0] - t * dx, point[1] - a[1] - t * dz)
+    edges = list(zip(outline, [*outline[1:], *outline[:1]]))
+    within = len(outline) >= 3 and all((b[0] - a[0]) * (point[1] - a[1]) - (b[1] - a[1]) * (point[0] - a[0]) >= 0 for a, b in edges)
+    nearest_edge = min(apart(a, b) for a, b in edges)
+    return nearest_edge if within else -nearest_edge
+
 
 
 @dataclass(frozen=True)
@@ -289,7 +370,8 @@ def _finger(name: str) -> Iterator[tuple]:
 
 
 def _known_as(bare: str, side: int) -> dict[str, str]:
-    """What the packages call a bone. Mixamo and HumanIK differ only by a prefix. Eyes and the jaw are not in their bodies."""
+    """What the packages call a bone. Mixamo and HumanIK differ only by a prefix. The jaw is in none of their bodies, and
+    eyes only in Mixamo's, as in three.js r160's examples/models/gltf/Xbot.glb, a Mixamo character."""
     upper = SIDES[side][1] if side else ""
     tail, end = ("l" if side < 0 else "r"), bare.partition("_")
     named = {"unity": "".join(word.title() for word in f"{upper} {bare}".replace("_", " ").split())}
@@ -306,6 +388,8 @@ def _known_as(bare: str, side: int) -> dict[str, str]:
         number = PHALANGES.index(end[2]) + 1
         human = f"{upper}Hand{'Pinky' if end[0] == 'little' else end[0].title()}{number}"
         unreal = f"{'pinky' if end[0] == 'little' else end[0]}_0{number}_{tail}"
+    elif bare in ("left_eye", "right_eye"):
+        return {**named, "mixamo": f"mixamorig:{named['unity']}"}
     else:
         return named
     return {**named, "mixamo": f"mixamorig:{human}", "humanik": human, "ue5": unreal}
@@ -325,6 +409,7 @@ def _sided(specs: Sequence[tuple], side: int, region: str) -> list[Joint]:
 
 
 HAND = tuple(spec for name in FINGERS for spec in _finger(name))
+JOINTS_VERSION = "1.0.0"  # of the names of JOINTS and their controls, which other projects read: renaming or removing one is 2.0.0
 JOINTS: tuple[Joint, ...] = (
     *(Joint(j.name, j.parent, j.offset, j.dofs, j.bulk, j.ball, j.side, known_as=_known_as(j.name, 0),
             region="head" if j.name in ("head", "left_eye", "right_eye", "jaw") else "torso") for j in MIDDLE),
@@ -449,7 +534,7 @@ POSES: dict[str, Pose] = {name: Pose(controls, sits=name in ("sit", "drive", "ty
     "arms-crossed": {**RELAXED, **curled(0.4), "right_upper_arm.down_up": -93.1, "right_upper_arm.front_back": -54.9,
                      "right_upper_arm.twist_in_out": -90, "right_lower_arm.stretch": -105, "left_upper_arm.down_up": -91,
                      "left_upper_arm.front_back": -40.3, "left_upper_arm.twist_in_out": -90, "left_lower_arm.stretch": -105},
-    "hands-on-hips": {**RELAXED, **both({"upper_arm.down_up": -48.8, "upper_arm.front_back": 19.8, "upper_arm.twist_in_out": -73.1,
+    "hands-on-hips": {**RELAXED, **both({"upper_arm.down_up": -44.8, "upper_arm.front_back": 19.8, "upper_arm.twist_in_out": -73.1,
                                          "lower_arm.stretch": -83.8})},
     "phone": {**RELAXED, "right_upper_arm.down_up": -65.5, "right_upper_arm.front_back": -128.6, "right_upper_arm.twist_in_out": -5.3,
               "right_lower_arm.stretch": -146},
@@ -514,7 +599,9 @@ class Mannequin(Figure):
     `kind` is a body from KINDS and `seed` varies it, or picks one too; `height` overrides what they give. `holds` keeps
     hands and feet at points in the location, solved after the pose and after it is set on the floor. With `lower`, the
     whole figure comes down as far as a held foot needs to stay in reach, up to a tenth of the leg, and a free foot that
-    would go below the floor bends up onto it. `let_go` says how far each held joint has gone back to where the pose puts it, from 0 to 1."""
+    would go below the floor bends up onto it. `let_go` says how far each held joint has gone back to where the pose puts it, from 0 to 1.
+    With `balanced` a figure on its feet moves its hips across the floor, keeping its feet where the pose put them, until its
+    centre of mass is over the middle of what carries it."""
     pose: Union[str, Mapping[str, float]] = "stand"
     adjust: Mapping[str, float] = field(default_factory=dict)
     height: Optional[float] = None
@@ -526,6 +613,7 @@ class Mannequin(Figure):
     holds: Sequence[Hold] = ()
     let_go: Mapping[str, float] = field(default_factory=dict)
     lower: bool = True
+    balanced: bool = False
     body: str = "stock.mannequin.body"
     joint: str = "stock.mannequin.joint"
     left: str = "stock.mannequin.left"
@@ -647,8 +735,7 @@ class Mannequin(Figure):
 
     def _local(self, joint: Joint, values: Mapping[str, float], unit: float) -> Transform:
         """A joint on its parent."""
-        yaw, pitch, roll = joint.rest
-        local = Transform(self._offset(joint, unit), rotation(joint.turned("yaw", yaw), pitch, joint.turned("roll", roll)))
+        local = Transform(self._offset(joint, unit), _rest(joint))
         for dof in joint.dofs:
             amount = values.get(f"{joint.name}.{dof.name}", 0.0) * dof.sign
             if dof.turn in MOVES:
@@ -658,10 +745,10 @@ class Mannequin(Figure):
                 local = local.then(Transform.at(**{dof.turn: joint.turned(dof.turn, amount)}))
         return local
 
-    def _solved(self, values: Optional[Mapping[str, float]] = None) -> dict[str, Transform]:
-        """Each joint in the figure's frame, before it is set on the floor."""
+    def _solved(self, values: Optional[Mapping[str, float]] = None, only: Optional[str] = None) -> dict[str, Transform]:
+        """Each joint in the figure's frame, before it is set on the floor, or only those from the hips to `only`."""
         values, frames, unit = self.values() if values is None else values, {}, self.height * self.build_of.fit
-        for joint in JOINTS:
+        for joint in JOINTS if only is None else LINEAGE[only]:
             local = self._local(joint, values, unit)
             frames[joint.name] = frames[joint.parent].then(local) if joint.parent else local
         return frames
@@ -698,9 +785,8 @@ class Mannequin(Figure):
         set on the floor. The bend comes from the law of cosines, and the elbow or knee points toward `pole`, or stays on
         the side it is on now. A point out of reach gives the limb pointing at it."""
         root, mid = LINEAGE[bone.name][-3], LINEAGE[bone.name][-2]
-        unit, frames = self.height * self.build_of.fit, self._solved(values)
-        yaw, pitch, roll = root.rest
-        rest = Transform(self._offset(root, unit), rotation(root.turned("yaw", yaw), pitch, root.turned("roll", roll)))
+        unit, frames = self.height * self.build_of.fit, self._solved(values, bone.name)
+        rest = Transform(self._offset(root, unit), _rest(root))
         before = frames[root.parent].then(rest)  # the root's frame before its own controls turn it
         target, upper, lower = before.undo(wanted), self._offset(mid, unit), self._offset(bone, unit)
         folded = bend(upper.length, lower.length, target.length)
@@ -734,7 +820,7 @@ class Mannequin(Figure):
         mid = LINEAGE[bone.name][-2]
         twist = mid.dofs[1]
         bare = {**values, f"{mid.name}.{twist.name}": 0.0, **{f"{bone.name}.{dof.name}": 0.0 for dof in bone.dofs}}
-        upon = self._solved(bare)[mid.name].basis  # the forearm or shin before it twists
+        upon = self._solved(bare, mid.name)[mid.name].basis  # the forearm or shin before it twists
         wanted = tuple(tuple(sum(upon[k][r] * basis[k][c] for k in range(3)) for c in range(3)) for r in range(3))
         controls = [(mid, twist), *((bone, dof) for dof in bone.dofs)]
         if len(controls) == 3:
@@ -750,7 +836,7 @@ class Mannequin(Figure):
     def _searched(self, values: dict[str, float], bone: Joint, wanted: Vec3, tolerance: float) -> dict[str, float]:
         """An arm or a leg turned a step at a time toward `wanted`, from `values`, for when geometry's answer breaks a range."""
         side, unit = SIDES[bone.side][0], self.height * self.build_of.fit
-        controls, solved = [f"{side}_{name}" for name in CHAINS[bone.region]], self._solved(values)
+        controls, solved = [f"{side}_{name}" for name in CHAINS[bone.region]], self._solved(values, bone.name)
         first = next(i for i, link in enumerate(LINEAGE[bone.name]) if link.name == controls[0].partition(".")[0])
         base, near = solved[LINEAGE[bone.name][first].parent], LINEAGE[bone.name][first:]
         best, step = (self._end(base, near, values, unit) - wanted).length, 32.0
@@ -773,7 +859,7 @@ class Mannequin(Figure):
         """Every control, with an arm or a leg solved so that its hand or foot is at `wanted` and, given `basis`, turned to
         it, all in the figure's frame before it is set on the floor."""
         values = {**values, **self._aimed(values, bone, wanted, pole)}
-        if (self._solved(values)[bone.name].position - wanted).length > tolerance:
+        if (self._solved(values, bone.name)[bone.name].position - wanted).length > tolerance:
             values = self._searched(values, bone, wanted, tolerance)
         if basis is not None:
             values.update(self._kept(values, bone, basis))
@@ -832,7 +918,7 @@ class Mannequin(Figure):
             for _ in range(FINGER_ROUNDS):  # where a range keeps the hand from turning back, the finger lands elsewhere on it
                 wrist = wanted - (now[bone.name].position - now[hand.name].position)
                 values = self._limb(values, hand, wrist, pole, solved[hand.name].basis, tolerance / 4)
-                now = self._solved(values)
+                now = self._solved(values, bone.name)
                 if (now[bone.name].position - wanted).length < 1e-5:
                     break
             if (now[bone.name].position - wanted).length > tolerance / 2:  # out of reach turned so
@@ -919,6 +1005,8 @@ class Mannequin(Figure):
         common = {"casts_shadow": True, "looks": self.looks}
         tint = {-1: self.left, 0: self.joint, 1: self.right}
         for joint in JOINTS:
+            if joint.name not in frames:  # solved only so far
+                continue
             frame = frames[joint.name]
             if joint.bulk:
                 centre, shares = self._bulk(joint)
@@ -946,8 +1034,9 @@ class Mannequin(Figure):
     def _tipped(self, frames: Mapping[str, Transform], hold: Hold, at: Vec3, basis: Optional[Matrix],
                 most: bool = False) -> tuple[Vec3, Optional[Matrix], float]:
         """Where a held foot's ankle goes and how it is turned when it rises onto its toes, the heel coming up as little as
-        lets the leg reach it, or all of `TIPPED` with `most`, and the degrees it turned. A foot under the hips, or one not
-        kept turned, stays flat."""
+        lets the leg reach it, or all of `TIPPED` with `most`, and the degrees it turned. As the heel rises the foot pivots on
+        its ball toward the hips, all the way at `TIPPED`, as a foot does in a turn. A foot under the hips, or one not kept
+        turned, stays flat."""
         hip, reach = frames[LINEAGE[hold.joint][-3].name].position, self._reach(frames, hold.joint)
         if basis is None or (hip - at).length <= reach and not most:
             return at, basis, 0.0
@@ -958,7 +1047,10 @@ class Mannequin(Figure):
         toes = at + apply(basis, apply(transposed(foot.basis), frames[hold.joint.replace("_foot", "_toes")].position - foot.position))
         side = kinematics.unit(apply(basis, Vec3(1, 0, 0)))
         heel = 1 if kinematics.turned(side, 0.1, at - toes).y > (at - toes).y else -1
-        place = lambda degrees: toes + kinematics.turned(side, math.radians(degrees * heel), at - toes)
+        toward, up = hip - toes, Vec3(0, 1, 0)
+        spin = math.atan2(forward.z * toward.x - forward.x * toward.z, forward.x * toward.x + forward.z * toward.z) / TIPPED
+        turn = lambda degrees, point: kinematics.turned(up, spin * degrees, kinematics.turned(side, math.radians(degrees * heel), point))
+        place = lambda degrees: toes + turn(degrees, at - toes)
         if most or (hip - place(TIPPED)).length > reach:
             degrees = TIPPED
         else:
@@ -966,15 +1058,15 @@ class Mannequin(Figure):
             for _ in range(30):
                 low, high = (low, (low + high) / 2) if (hip - place((low + high) / 2)).length <= reach else ((low + high) / 2, high)
             degrees = high
-        columns = [kinematics.turned(side, math.radians(degrees * heel), Vec3(*(row[c] for row in basis))) for c in range(3)]
+        columns = [turn(degrees, Vec3(*(row[c] for row in basis))) for c in range(3)]
         return place(degrees), tuple(tuple(tuple(column)[r] for column in columns) for r in range(3)), degrees * heel
 
-    def _lowered(self, frames: Mapping[str, Transform], drop: float) -> float:
+    def _lowered(self, frames: Mapping[str, Transform], drop: float, holds: Sequence[Hold]) -> float:
         """How far the figure comes down for its held feet to be in reach, from `frames` as the pose puts them. A foot the
         hips have left behind rises onto its toes first."""
         if not self.lower:
             return 0.0
-        held = [hold for hold in self.holds if hold.joint.endswith("_foot")]
+        held = [hold for hold in holds if hold.joint.endswith("_foot")]
         wanted, inward = 0.0, transposed(self.transform.basis)
         for hold in held:
             upper = LINEAGE[hold.joint][-3]
@@ -988,27 +1080,28 @@ class Mannequin(Figure):
                 wanted = max(wanted, needed * (1 - self.let_go.get(hold.joint, 0.0)))
         return max(0.0, wanted)
 
-    def _cleared(self, values: dict[str, float], drop: float) -> dict[str, float]:
+    def _cleared(self, values: dict[str, float], drop: float, holds: Sequence[Hold]) -> dict[str, float]:
         """`values` with each free foot that the hips coming down put below the floor bent up onto it, turned as it was."""
         if not self.grounded:
             return values
-        held = {hold.joint for hold in self.holds if not self.let_go.get(hold.joint, 0.0)}  # one letting go may dip
+        held = {hold.joint for hold in holds if not self.let_go.get(hold.joint, 0.0)}  # one letting go may dip
         for foot in ("left_foot", "right_foot"):
             if foot in held:
                 continue
-            frames = self._solved(values)
             side = foot.partition("_")[0]
+            frames = self._solved(values, f"{side}_toes")
             parts = [part for part in self._parts(frames) if part.name.startswith((f"{side}_foot", f"{side}_toes"))]
             under = drop - min(part.bounds(part.transform)[0].y for part in parts)
             if under > 1e-6:
                 values = self._limb(values, BY_NAME[foot], frames[foot].position + Vec3(0, under, 0), None, frames[foot].basis)
         return values
 
-    def _holding(self, drop: float, frames: Mapping[str, Transform]) -> dict[str, float]:
+    def _holding(self, drop: float, frames: Mapping[str, Transform], values: Mapping[str, float],
+                 holds: Sequence[Hold]) -> dict[str, float]:
         """Every control, with each held hand or foot solved to its hold, a foot rising onto its toes if the hips have left
         it behind."""
-        values, lifted, inward = dict(self.values()), Vec3(0, drop, 0), transposed(self.transform.basis)
-        for hold in self.holds:
+        values, lifted, inward = dict(values), Vec3(0, drop, 0), transposed(self.transform.basis)
+        for hold in holds:
             pole = None if hold.pole is None else self.transform.undo(hold.pole) + lifted
             basis = None if hold.basis is None else _times(inward, hold.basis)
             at, basis, tipped = self.transform.undo(hold.at) + lifted, basis, 0.0
@@ -1023,17 +1116,102 @@ class Mannequin(Figure):
             values = {key: value + (values.get(key, 0.0) - value) * free for key, value in held.items()}
         return values
 
+    def _held(self, values: Mapping[str, float], holds: Sequence[Hold], drop: float,
+              solved: Optional[Mapping[str, Transform]] = None) -> tuple[dict[str, Transform], float]:
+        """Each joint before it is set on the floor with `holds` solved, and how far the floor is below the figure then.
+        `solved` is `values` solved already, if it is at hand."""
+        solved = self._solved(values) if solved is None else solved
+        drop += self._lowered(solved, drop, holds)
+        return self._solved(self._cleared(self._holding(drop, solved, values, holds), drop, holds)), drop
+
+    def _balanced(self, solved: Mapping[str, Transform], drop: float) -> tuple[dict[str, float], tuple[Hold, ...]]:
+        """Every control with the hips moved across the floor until the centre of mass is `STEADY` inside what carries the
+        figure, or over its middle if it is too small for that, and its holds, with one more for each foot on the floor that
+        keeps it where the pose put it if the hips moved."""
+        values, held = dict(self.values()), {hold.joint for hold in self.holds}
+        standing = {part.name for part in self._parts(solved) if part.bounds(part.transform)[0].y <= drop + FOOTED}
+        feet = [foot for foot in ("left_foot", "right_foot")
+                if foot not in held and {foot, foot.replace("_foot", "_toes")} & standing]
+        holds = (*self.holds, *(Hold(foot, self.transform.apply(solved[foot].position - Vec3(0, drop, 0)),
+                                     _times(self.transform.basis, solved[foot].basis)) for foot in feet))
+        moved = False
+        for _ in range(BALANCE_ROUNDS):
+            frames, floor = self._held(values, holds if moved else self.holds, drop) if moved or self.holds else (solved, drop)
+            outline = self._support(frames, floor)
+            if not outline:
+                break
+            centre = self._centre(frames)
+            x, z = _steadied((centre.x, centre.z), outline)
+            if math.hypot(x - centre.x, z - centre.z) < 1e-4:
+                break
+            values["hips.right"] = values.get("hips.right", 0.0) + x - centre.x
+            values["hips.forward"] = values.get("hips.forward", 0.0) + z - centre.z
+            moved = True
+        return values, holds if moved else tuple(self.holds)
+
+    def _centre(self, frames: Mapping[str, Transform]) -> Vec3:
+        """The centre of mass in the frame of `frames`: each segment's share of MASS at the middle of its solids."""
+        solids: dict[tuple[str, int], list[tuple[float, Vec3]]] = {}
+        for part in self._parts(frames):
+            if not part.name.endswith(".ball"):
+                solids.setdefault(_segment(BY_NAME[part.name]), []).append((math.prod(part.radii), Vec3.of(part.at)))
+        x = y = z = 0.0
+        for (segment, _), held in solids.items():
+            volume = sum(size for size, _ in held)
+            for size, at in held:
+                share = MASS[segment] * size / volume
+                x, y, z = x + at.x * share, y + at.y * share, z + at.z * share
+        return Vec3(x, y, z)
+
+    def _support(self, frames: Mapping[str, Transform], floor: float) -> list[tuple[float, float]]:
+        """The outline, as (x, z) in the frame of `frames`, of the parts within FOOTED of the floor at height `floor`."""
+        points = []
+        for part in self._parts(frames):
+            if part.bounds(part.transform)[0].y > floor + FOOTED:
+                continue
+            for u in range(0, 360, 15):
+                for v in range(-90, 91, 6):
+                    a, b = math.radians(u), math.radians(v)
+                    local = (math.cos(a) * math.cos(b) * part.radii[0], math.sin(b) * part.radii[1], math.sin(a) * math.cos(b) * part.radii[2])
+                    at = part.transform.apply(local)
+                    if at.y <= floor + FOOTED:
+                        points.append((round(at.x, 9), round(at.z, 9)))
+        return _outline(points)
+
+    def centre_of_mass(self) -> Vec3:
+        """Where its centre of mass is in the location, from each segment's share in MASS."""
+        return self.transform.apply(self._centre(self.frames()))
+
+    def support(self) -> list[Vec3]:
+        """The outline on the floor of the parts that carry it, those within FOOTED of the floor, counter-clockwise looking
+        down. Empty for a figure that is not `grounded`."""
+        if not self.grounded:
+            return []
+        return [self.transform.apply(Vec3(x, 0, z)) for x, z in self._support(self.frames(), 0.0)]
+
+    def balance(self) -> Optional[float]:
+        """How far inside the edge of its support its centre of mass is, over the floor, in metres, and below 0 by how far
+        outside it is. None for a figure that sits or is not `grounded`."""
+        if not self.grounded or self.sits:
+            return None
+        frames = self.frames()
+        centre = self._centre(frames)
+        return _margin((centre.x, centre.z), self._support(frames, 0.0))
+
     def frames(self) -> dict[str, Transform]:
         """Each joint in the figure's frame, as it stands; `transform.then()` of one is where it is in the location."""
         pose = self.pose if isinstance(self.pose, str) else tuple(sorted(self.pose.items()))
         key = pose, tuple(sorted(self.adjust.items())), self.height, self.kind, self.seed, self.grounded, self.limits, self.lower
         key += (tuple(self.holds), tuple(sorted(self.let_go.items())), self.transform) if self.holds else ()  # a hold is in the location, so it moves with nothing
+        key += (self.balanced,)
         if getattr(self, "_framed", (None, None))[0] != key:
             solved = self._solved()
             drop = self._drop(solved)  # from the pose alone, so a held foot does not lift the floor out from under the rest
-            if self.holds:
-                drop += self._lowered(solved, drop)
-                solved = self._solved(self._cleared(self._holding(drop, solved), drop))
+            values, holds, posed = self.values(), tuple(self.holds), solved
+            if self.balanced and self.grounded and not self.sits:
+                (values, holds), posed = self._balanced(solved, drop), None
+            if holds:
+                solved, drop = self._held(values, holds, drop, posed)
             self._framed = key, {name: Transform(frame.position - Vec3(0, drop, 0), frame.basis) for name, frame in solved.items()}
         return self._framed[1]
 

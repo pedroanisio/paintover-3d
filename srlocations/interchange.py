@@ -1,5 +1,5 @@
 """Skeletons and motion for other packages: a mannequin's bones and moves written as BVH or as a skinned GLB, and poses read
-back from a BVH, whichever package wrote it.
+back from a BVH or a glTF, whichever package wrote it.
 
 Both formats are right-handed and y-up. A model file's (x, y, z) lands at the SDK's (x, y, -z) (see mesh.py), so both are
 written that way, and a figure that faces +z here faces -z in the file. The root carries the figure's place in the location,
@@ -18,8 +18,17 @@ left and right fall on this figure's, and scaled by how long its bones are again
 three controls keeps what they can do and leaves the rest to the bones below it. A value outside its range is held at it and
 reported, unless the figure has `limits=False`.
 
-A GLB has the same bones as a skin, and each limb is a mesh bound rigidly to its bone, where the figure stands at the first
-sample, so a Mesh of the file stands as the figure did. Its animation turns every joint and moves the hips.
+A GLB has the same bones as a skin, and its animation turns every joint and moves the hips. By default each limb is a mesh
+bound rigidly to its bone, where the figure stands at the first sample, so a Mesh of the file stands as the figure did.
+With `skinned` the body is one mesh, the same eggs bound at the T-stance, where the nodes stand too, as packages expect a
+character to be. A vertex follows its own bone, and a bone joined to it by as much as it is as near that one as its own,
+fading to nothing once it is further by half the lower bone's radius, so a joint bends where the two eggs meet. The
+weights blend the bones' matrices, as every reader of glTF does, so a vertex between two bones stays between where each
+would put it, and a sharply bent joint pinches a little, as a simple skin does.
+
+`load_gltf()` reads the bones of a glTF or GLB as load_bvh() reads a BVH's: a skin's joints, at rest where its nodes stand
+without the animation, and in each frame each bone's turn from there. A bone's parents may turn and scale it, as an
+"Armature" in centimetres does; their scale moves the bones but is taken out of their turns.
 """
 from __future__ import annotations
 
@@ -29,10 +38,11 @@ import re
 import struct
 from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Iterator, Mapping, Optional, Sequence, Union
+from typing import Iterable, Iterator, Mapping, Optional, Sequence, Union
 
 from srlocations.geometry import IDENTITY, Matrix, Transform, Vec3, rotation
 from srlocations.kinematics import angles, apply, cross, dot, nearest, scaled, transposed, turned, unit
+from srlocations.mesh import Gltf, _local, _times as _times4
 from srlocations.nodes import Node
 from srlocations.registry import Registry
 from srlocations.stock.mannequin import ALIASES, BY_NAME, JOINTS, LINEAGE, MOVES, PARAMETERS, Joint, Mannequin, Pose
@@ -49,6 +59,10 @@ FORMATS = {FLOAT: "f", UNSIGNED_BYTE: "B", UNSIGNED_SHORT: "H", UNSIGNED_INT: "I
 SIZES = {"SCALAR": 1, "VEC3": 3, "VEC4": 4, "MAT4": 16}
 VERTICES, INDICES = 34962, 34963  # what a buffer view holds, for a GPU
 HEX = re.compile(r"#[0-9a-fA-F]{6}")
+MIXAMO = re.compile(r"^mixamorig\d*[:_]?")
+BLEND = 0.5  # of a bone's radius: how much further than its own bone another may be for a vertex to follow both
+FIXED = ("left_eye", "right_eye", "jaw")  # inside the head, so a vertex of one follows that bone alone, and the head none of them
+FPS = 30.0  # the rate a glTF of a single moment is said to have
 
 
 class InterchangeError(ValueError):
@@ -305,8 +319,9 @@ def _posed(bones: Sequence[_Bone], row: Sequence[float]) -> list[Transform]:
 
 
 def _known(name: str) -> Optional[str]:
-    """This SDK's name for a bone, by its own name or a package's, with or without a namespace such as "mixamorig1:"."""
-    for candidate in (name, name.rpartition(":")[2]):
+    """This SDK's name for a bone, by its own name or a package's, with or without a namespace such as "mixamorig1:", or
+    Mixamo's written without its colon, as some exporters write it."""
+    for candidate in (name, name.rpartition(":")[2], MIXAMO.sub("", name)):
         joint = BY_NAME.get(ALIASES.get(candidate, candidate))
         if joint is not None:
             return joint.name
@@ -359,9 +374,10 @@ def _heading(at_rest: Sequence[Vec3], bone_of: Mapping[str, int]) -> float:
     return 0.0
 
 
-def _bound(figure: Mannequin, bones: Sequence[_Bone], at_rest: Sequence[Vec3], bone_of: Mapping[str, int],
+def _bound(figure: Mannequin, ends: Sequence[Optional[Vec3]], at_rest: Sequence[Vec3], bone_of: Mapping[str, int],
            turn: Matrix) -> dict[str, Matrix]:
-    """Each joint the file has, turned from this figure's rest so that its bone points the way the file's does at rest."""
+    """Each joint the file has, turned from this figure's rest so that its bone points the way the file's does at rest.
+    `ends` says where each of the file's bones that nothing known hangs from ends, from its joint, at rest."""
     rest, bound = figure._solved({}), {}
     for joint in JOINTS:
         if joint.name not in bone_of:
@@ -369,7 +385,7 @@ def _bound(figure: Mannequin, bones: Sequence[_Bone], at_rest: Sequence[Vec3], b
         index, child = bone_of[joint.name], _continued(joint)
         mine = (rest[child].position - rest[joint.name].position if child else
                 Transform(basis=rest[joint.name].basis).apply(_tip(figure, joint)))
-        there = at_rest[bone_of[child]] - at_rest[index] if child in bone_of else bones[index].end
+        there = at_rest[bone_of[child]] - at_rest[index] if child in bone_of else ends[index]
         if there is not None and there.length > 1e-9:
             swing = _swing(mine, apply(turn, _out(there)))
         else:  # nothing says where this bone points in the file, so it is turned as the bone above it is
@@ -383,19 +399,31 @@ def load_bvh(path: Union[str, Path], figure: Optional[Mannequin] = None) -> Take
     """The poses in a BVH, one to a frame, for `figure`'s body, by default the stock man. Each pose has the figure's frame,
     so the hips carry the file's place on the floor; a figure with `grounded=False` keeps the hips' height as the file has
     it, and a grounded one is set on its floor."""
-    path, figure = Path(path), Mannequin() if figure is None else figure
+    path = Path(path)
     bones, rows, frame_time = _parsed(path.read_text(errors="replace"), path)
-    bone_of: dict[str, int] = {}
-    unknown = []
-    for index, bone in enumerate(bones):
-        name = _known(bone.name)
-        if name is None or name in bone_of:
-            unknown.append(bone.name)
-        else:
-            bone_of[name] = index
     at_rest: list[Vec3] = []  # each bone at the file's rest, where every channel is 0
     for bone in bones:
         at_rest.append(bone.offset + at_rest[bone.parent] if bone.parent is not None else bone.offset)
+    return _retargeted(path, figure, [bone.name for bone in bones], at_rest, [bone.end for bone in bones],
+                       [IDENTITY] * len(bones), (_posed(bones, row) for row in rows), 1 / frame_time)
+
+
+def _retargeted(source: Path, figure: Optional[Mannequin], names: Sequence[str], at_rest: Sequence[Vec3],
+                ends: Sequence[Optional[Vec3]], rests: Sequence[Matrix], frames: Iterable[Sequence[Transform]],
+                fps: float) -> Take:
+    """Poses for `figure` from a file's bones: their names, where each stands at the file's rest and how it is turned there,
+    and in each frame each bone in the file's world."""
+    figure = Mannequin() if figure is None else figure
+    bone_of: dict[str, int] = {}
+    unknown = []
+    for index, bone in enumerate(names):
+        name = _known(bone)
+        if name is None or name in bone_of:
+            unknown.append(bone)
+        else:
+            bone_of[name] = index
+    if not bone_of:
+        raise InterchangeError(f"{source} has no bone this SDK knows by name; it has {', '.join(names[:12]) or 'none'}")
     turn, rest = rotation(yaw=_heading(at_rest, bone_of)), figure._solved({})
     ours = theirs = 0.0
     for name, index in bone_of.items():
@@ -403,16 +431,17 @@ def load_bvh(path: Union[str, Path], figure: Optional[Mannequin] = None) -> Take
         if child in bone_of:
             ours += (rest[child].position - rest[name].position).length
             theirs += (at_rest[bone_of[child]] - at_rest[index]).length
-    scale, bound = ours / theirs if theirs > 0 else 1.0, _bound(figure, bones, at_rest, bone_of, turn)
+    scale, bound = ours / theirs if theirs > 0 else 1.0, _bound(figure, ends, at_rest, bone_of, turn)
     free, length = replace(figure, limits=False) if figure.limits else figure, figure.height * figure.build_of.fit
     poses, clamped, before = [], {}, {}
-    for frame, row in enumerate(rows):
-        worlds, actual, values = _posed(bones, row), {}, {}
+    for frame, worlds in enumerate(frames):
+        actual, values = {}, {}
         for joint in JOINTS:  # each from its parent as solved, so what one joint cannot do the next makes up
             parent = actual[joint.parent] if joint.parent else Transform()
             if joint.name in bone_of:
                 world = worlds[bone_of[joint.name]]
-                wanted = _times(_times(turn, _times(_flipped(world.basis), transposed(turn))), bound[joint.name])
+                since = _times(world.basis, transposed(rests[bone_of[joint.name]]))  # its turn from the file's rest
+                wanted = _times(_times(turn, _times(_flipped(since), transposed(turn))), bound[joint.name])
                 found, held = _controls(figure, free, joint, _times(transposed(parent.basis), wanted), before)
                 if joint.parent is None:
                     moved = scaled(apply(turn, _out(world.position)), scale) - rest[joint.name].position
@@ -426,7 +455,148 @@ def load_bvh(path: Union[str, Path], figure: Optional[Mannequin] = None) -> Take
             actual[joint.name] = parent.then(figure._local(joint, values, length))
         poses.append(Pose(values))
         before = values
-    return Take(tuple(poses), round(1 / frame_time, 3), tuple(unknown), {key: tuple(frames) for key, frames in clamped.items()})
+    return Take(tuple(poses), round(fps, 3), tuple(unknown), {key: tuple(held) for key, held in clamped.items()})
+
+
+class _Reader(Gltf):
+    """A glTF or GLB as far as its skeleton and animation go."""
+    SIZES = {**Gltf.SIZES, "MAT4": 16}
+    NORMALIZED = {5120: 127, 5121: 255, 5122: 32767, 5123: 65535}
+
+    def floats(self, index: int) -> list[tuple[float, ...]]:
+        """An accessor's values, with integers stored to stand for -1 to 1 or 0 to 1 turned back into those."""
+        found, accessor = self._values(index), self.document["accessors"][index]
+        if accessor.get("normalized"):
+            most = self.NORMALIZED[accessor["componentType"]]
+            return [tuple(max(-1.0, value / most) for value in item) for item in found]
+        return found
+
+
+def _slerp(a: Sequence[float], b: Sequence[float], share: float) -> list[float]:
+    cosine = sum(x * y for x, y in zip(a, b))
+    if cosine < 0:
+        b, cosine = [-v for v in b], -cosine
+    if cosine > 0.9995:
+        mixed = [x + (y - x) * share for x, y in zip(a, b)]
+    else:
+        angle = math.acos(cosine)
+        first, second = math.sin((1 - share) * angle) / math.sin(angle), math.sin(share * angle) / math.sin(angle)
+        mixed = [x * first + y * second for x, y in zip(a, b)]
+    size = math.sqrt(sum(v * v for v in mixed))
+    return [v / size for v in mixed]
+
+
+def _sampled(times: Sequence[float], values: Sequence[Sequence[float]], interpolation: str, time: float,
+             turn: bool) -> list[float]:
+    """A channel's value at `time`, held at its first and last keys. A cubic spline keeps each key as an in-tangent, a value
+    and an out-tangent."""
+    cubic = interpolation == "CUBICSPLINE"
+    key = (lambda n: values[3 * n + 1]) if cubic else (lambda n: values[n])
+    if time <= times[0] or len(times) == 1:
+        return list(key(0))
+    if time >= times[-1]:
+        return list(key(len(times) - 1))
+    after = next(n for n, when in enumerate(times) if when > time)
+    span = times[after] - times[after - 1]
+    share = (time - times[after - 1]) / span if span > 0 else 0.0
+    if interpolation == "STEP":
+        return list(key(after - 1))
+    if not cubic:
+        a, b = key(after - 1), key(after)
+        return _slerp(a, b, share) if turn else [x + (y - x) * share for x, y in zip(a, b)]
+    s2, s3 = share * share, share * share * share
+    leaving, arriving = values[3 * (after - 1) + 2], values[3 * after]
+    found = [(2 * s3 - 3 * s2 + 1) * p + (s3 - 2 * s2 + share) * span * m + (-2 * s3 + 3 * s2) * q + (s3 - s2) * span * n
+             for p, m, q, n in zip(key(after - 1), leaving, key(after), arriving)]
+    if turn:
+        size = math.sqrt(sum(v * v for v in found))
+        found = [v / size for v in found]
+    return found
+
+
+def _rigid(matrix: Sequence[Sequence[float]]) -> Transform:
+    """A node's 4 by 4 matrix as a place and a turn, its scale taken out of the turn."""
+    columns = [[matrix[r][c] for r in range(3)] for c in range(3)]
+    sizes = [math.sqrt(sum(v * v for v in column)) or 1.0 for column in columns]
+    return Transform(Vec3(matrix[0][3], matrix[1][3], matrix[2][3]),
+                     tuple(tuple(columns[c][r] / sizes[c] for c in range(3)) for r in range(3)))
+
+
+def load_gltf(path: Union[str, Path], figure: Optional[Mannequin] = None, animation: Union[int, str] = 0,
+              fps: Optional[float] = None) -> Take:
+    """The poses in an animation of a glTF or GLB, by default its first, for `figure`'s body, by default the stock man,
+    read as load_bvh() reads a BVH. The bones are a skin's joints, or without a skin the nodes the animation moves. The
+    file's rest is where its nodes stand without the animation, as a skinned character's do at its bind. Frames are taken
+    `fps` times a second from the first key to the last, by default as often as the keys come; a file with no animation
+    is one frame, as its nodes stand."""
+    path = Path(path)
+    try:
+        reader = _Reader(path)
+        document = reader.document
+        nodes = document.get("nodes", [])
+        clips = document.get("animations", [])
+        if isinstance(animation, str):
+            chosen = next((clip for clip in clips if clip.get("name") == animation), None)
+            if chosen is None:
+                raise InterchangeError(f"{path} has no animation {animation!r}; it has "
+                                       f"{', '.join(str(clip.get('name', n)) for n, clip in enumerate(clips)) or 'none'}")
+        else:
+            chosen = clips[animation] if clips else None
+        channels = []
+        for channel in (chosen or {}).get("channels", ()):
+            target, sampler = channel["target"], chosen["samplers"][channel["sampler"]]
+            if "node" in target and target["path"] in ("translation", "rotation", "scale"):
+                times = [when for (when,) in reader.floats(sampler["input"])]
+                channels.append((target["node"], target["path"], times, reader.floats(sampler["output"]),
+                                 sampler.get("interpolation", "LINEAR")))
+    except InterchangeError:
+        raise
+    except (ValueError, KeyError, IndexError, TypeError, OSError, struct.error) as error:
+        raise InterchangeError(f"{path} is not a glTF this SDK can read: {error}") from None
+    bones = sorted({joint for skin in document.get("skins", ()) for joint in skin.get("joints", ())}) or \
+        sorted({node for node, *_ in channels})
+    names = [str(nodes[index].get("name", f"node {index}")) for index in bones]
+    parents = {child: index for index, node in enumerate(nodes) for child in node.get("children", ())}
+
+    def placer(overrides: Mapping[int, Mapping[str, list[float]]]):
+        """Where any node is in the file's world, its parents' scale moving it but not turning it."""
+        found: dict[int, tuple[list[list[float]], Matrix]] = {}
+
+        def world(index: int) -> tuple[list[list[float]], Matrix]:
+            if index not in found:
+                local = _local({**nodes[index], **overrides.get(index, {})})
+                turn = _rigid(local).basis
+                if index in parents:
+                    matrix, above = world(parents[index])
+                    found[index] = _times4(matrix, local), _times(above, turn)
+                else:
+                    found[index] = local, turn
+            return found[index]
+        return lambda index: Transform(_rigid(world(index)[0]).position, world(index)[1])
+
+    at_rest = placer({})
+    rest = [at_rest(index) for index in bones]
+    known = {index for index, name in zip(bones, names) if _known(name)}
+    ends: list[Optional[Vec3]] = []
+    for index, at in zip(bones, rest):  # a bone's end is the one child nothing known hangs from, as a BVH's end site
+        loose = [child for child in nodes[index].get("children", ()) if child not in known]
+        ends.append(at_rest(loose[0]).position - at.position if len(loose) == 1 else None)
+    keys = sorted({when for *_, times, _, _ in channels for when in times})
+    if not keys:
+        frames, rate = [rest], fps or FPS
+    else:
+        gaps = sorted(b - a for a, b in zip(keys, keys[1:]) if b - a > 1e-6)
+        rate = fps or (1 / gaps[len(gaps) // 2] if gaps else FPS)
+        count = math.floor((keys[-1] - keys[0]) * rate + 1e-3) + 1
+        frames = []
+        for frame in range(count):
+            time = min(keys[0] + frame / rate, keys[-1])
+            overrides: dict[int, dict[str, list[float]]] = {}
+            for node, kind, times, values, interpolation in channels:
+                overrides.setdefault(node, {})[kind] = _sampled(times, values, interpolation, time, kind == "rotation")
+            moment = placer(overrides)
+            frames.append([moment(index) for index in bones])
+    return _retargeted(path, figure, names, [at.position for at in rest], ends, [at.basis for at in rest], frames, rate)
 
 
 class _Blob:
@@ -500,24 +670,111 @@ def _egg(radii: Sequence[float], world: Transform) -> tuple[list[float], list[fl
     return points, normals, triangles
 
 
+def _line(figure: Mannequin, frames: Mapping[str, Transform], joint: Joint) -> tuple[Vec3, Vec3]:
+    """A bone as a line in the figure's frame: from its joint to the joint it continues to, or to its tip."""
+    child = _continued(joint)
+    start = frames[joint.name].position
+    return start, frames[child].position if child else frames[joint.name].apply(_tip(figure, joint))
+
+
+def _distance(point: Vec3, line: tuple[Vec3, Vec3]) -> float:
+    start, end = line
+    way = end - start
+    share = max(0.0, min(1.0, dot(point - start, way) / dot(way, way))) if dot(way, way) > 0 else 0.0
+    return (point - (start + scaled(way, share))).length
+
+
+def _radius(figure: Mannequin, joint: Joint) -> float:
+    """The larger of a bone's egg's radii across the bone, in metres."""
+    radii = figure._bulk(joint)[1]
+    along = 2 if joint.name.endswith(("foot", "toes")) else 0 if joint.region == "arm" else 1
+    return max(radius for index, radius in enumerate(radii) if index != along) * figure.height * figure.build_of.fit
+
+
+def _influences(point: Vec3, owner: str, lines: Mapping[str, tuple[Vec3, Vec3]],
+                widths: Mapping[str, float]) -> list[tuple[str, float]]:
+    """The bones a vertex of `owner`'s follows, at most four, with weights that add up to 1. A bone joined to its own
+    counts as much as it does where the vertex is as near that bone as its own, and nothing once it is further by
+    BLEND of the radius of the lower of the two."""
+    found, mine = {owner: 1.0}, _distance(point, lines[owner])
+    if owner not in FIXED:
+        for other in (BY_NAME[owner].parent, *(child.name for child in CHILDREN[owner])):
+            if other is None or other in FIXED:
+                continue
+            lower = other if BY_NAME[other].parent == owner else owner
+            x = max(0.0, min(1.0, (_distance(point, lines[other]) - mine) / (BLEND * widths[lower])))
+            if x < 1:
+                found[other] = 1 - x * x * (3 - 2 * x)
+    kept = sorted(found.items(), key=lambda item: -item[1])[:4]  # stable, so the vertex's own bone stays
+    total = sum(share for _, share in kept)
+    return [(name, share / total) for name, share in kept]
+
+
+def _body(blob: _Blob, figure: Mannequin, frames: Mapping[str, Transform], numbered: Mapping[str, int],
+          materials: dict[str, int]) -> list[dict]:
+    """A skinned body's primitives, one to a material: every egg of `figure` as `frames` place it, each vertex weighted to
+    the bones it follows."""
+    lines = {joint.name: _line(figure, frames, joint) for joint in JOINTS}
+    widths = {joint.name: _radius(figure, joint) for joint in JOINTS}
+    groups: dict[str, tuple[list, list, list, list, list]] = {}
+    for part in figure._parts(frames):
+        owner = part.name.partition(".")[0]
+        points, normals, triangles = _egg(part.radii, part.transform)
+        group = groups.setdefault(part.material, ([], [], [], [], []))
+        base = len(group[0]) // 3
+        group[0].extend(points)
+        group[1].extend(normals)
+        group[2].extend(base + corner for corner in triangles)
+        for at in range(0, len(points), 3):
+            followed = _influences(_out(Vec3(*points[at:at + 3])), owner, lines, widths)
+            followed += [(JOINTS[0].name, 0.0)] * (4 - len(followed))  # an unused place is joint 0, as glTF asks
+            group[3].extend(numbered[name] for name, _ in followed)
+            group[4].extend(share for _, share in followed)
+    primitives = []
+    for material, (points, normals, triangles, joints, weights) in groups.items():
+        count = len(points) // 3
+        attributes = {"POSITION": blob.add(points, "VEC3", FLOAT, VERTICES, bounds=True),
+                      "NORMAL": blob.add(normals, "VEC3", FLOAT, VERTICES),
+                      "JOINTS_0": blob.add(joints, "VEC4", UNSIGNED_BYTE, VERTICES),
+                      "WEIGHTS_0": blob.add(weights, "VEC4", FLOAT, VERTICES)}
+        indices = blob.add(triangles, "SCALAR", UNSIGNED_SHORT if count < 65536 else UNSIGNED_INT, INDICES)
+        primitives.append({"attributes": attributes, "indices": indices,
+                           "material": materials.setdefault(material, len(materials))})
+    return primitives
+
+
 def save_glb(path: Union[str, Path], figure: Union[Mannequin, Node, str], location=None, fps: float = 30.0,
-             start: float = 0.0, end: Optional[float] = None, registry: Optional[Registry] = None) -> Path:
-    """Writes a mannequin as a skinned GLB: the figure as it stands, or with a location, the figure in it or of that name,
-    bound where it stands at `start` and animated to `end`, by default the location's whole length. Its materials are
-    the figure's, as `registry` has them, by default the location's."""
-    path = Path(path)
+             start: float = 0.0, end: Optional[float] = None, registry: Optional[Registry] = None, skinned: bool = False,
+             names: str = "") -> Path:
+    """Writes a mannequin as a GLB with its skeleton: the figure as it stands, or with a location, the figure in it or of
+    that name from `start` to `end`, by default the location's whole length. Its materials are the figure's, as `registry`
+    has them, by default the location's, and `names` is a package whose bone names to use, as in save_bvh().
+
+    By default each limb is a mesh of its own, bound rigidly where the figure stands at `start`. With `skinned` the body is
+    one mesh bound at the T-stance, where its nodes stand too, each vertex following its own bone and those beside it
+    that are nearly as near, so an elbow or a knee bends rather than parting; its animation holds the pose, even of a
+    figure on its own."""
+    path, named = Path(path), _namer(names)
     moments, times = _moments(figure, location, fps, start, end)
     registry = registry or (location.registry if location is not None else Registry.default())
     body, numbered = moments[0], {joint.name: index for index, joint in enumerate(JOINTS)}
     posed = [_locals(_worlds(moment)) for moment in moments]
-    bind = _worlds(body)
+    if skinned:
+        still = replace(body, pose={}, adjust={}, holds=(), let_go={})
+        bind = still.frames()  # the T-stance, standing on the file's origin
+        rest = _locals(bind)
+    else:
+        bind, rest = _worlds(body), posed[0]
     blob, nodes, meshes, materials = _Blob(), [], [], {}
     for joint in JOINTS:
-        local = _file(posed[0][joint.name])
+        local = _file(rest[joint.name])
         children = [numbered[child.name] for child in CHILDREN[joint.name]]
-        nodes.append({"name": joint.name, "translation": list(local.position), "rotation": _quaternion(local.basis),
+        nodes.append({"name": named(joint), "translation": list(local.position), "rotation": _quaternion(local.basis),
                       **({"children": children} if children else {})})
-    for part in body._parts(body.frames()):
+    if skinned:
+        meshes.append({"name": body.label, "primitives": _body(blob, still, bind, numbered, materials)})
+        nodes.append({"name": body.label, "mesh": 0, "skin": 0})
+    for part in () if skinned else body._parts(body.frames()):
         points, normals, triangles = _egg(part.radii, body.transform.then(part.transform))
         count, bone = len(points) // 3, numbered[part.name.partition(".")[0]]
         attributes = {"POSITION": blob.add(points, "VEC3", FLOAT, VERTICES, bounds=True),
@@ -545,8 +802,9 @@ def save_glb(path: Union[str, Path], figure: Union[Mannequin, Node, str], locati
         "skins": [{"name": body.label, "joints": list(range(len(JOINTS))), "skeleton": numbered["hips"],
                    "inverseBindMatrices": blob.add(inverse, "MAT4", FLOAT)}],
     }
-    if len(moments) > 1:
-        document["animations"] = [_animation(blob, posed, [time - start for time in times], location.name)]
+    if len(moments) > 1 or skinned:
+        name = location.name if location is not None else body.label
+        document["animations"] = [_animation(blob, posed, [time - start for time in times], name)]
     document |= {"accessors": blob.accessors, "bufferViews": blob.views, "buffers": [{"byteLength": len(blob.data)}]}
     text = json.dumps(document, separators=(",", ":")).encode()
     text += b" " * (-len(text) % 4)

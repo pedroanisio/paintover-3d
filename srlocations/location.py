@@ -268,34 +268,59 @@ class Location:
         track.fields["let_go"] = [Key(time, {**value_at(loose, time), hold.joint: freed(time)}, "linear") for time in times]
         return self
 
-    def walk(self, figure: Union[Node, str], to: Union[VecLike, str], start: float = 0.0, speed: float = 1.2,
-             stride: Optional[float] = None) -> "Location":
-        """Walks a figure from where it is at `start` to a point or a mark, at `speed` metres a second: it turns to face the
-        way, steps with its walk poses (`stepping` and `passing`), lifts each foot as it passes the other, and keeps each foot planted
-        while it stands on it. A step is `stride` long, or as long as the walk pose makes it, rounded to fit the way. At
-        the end it stands in the pose it had."""
+    def walk(self, figure: Union[Node, str], to: Union[VecLike, str, Sequence[Union[VecLike, str]]], start: float = 0.0,
+             speed: float = 1.2, stride: Optional[float] = None) -> "Location":
+        """Walks a figure from where it is at `start` to a point or a mark, or through several in turn, at `speed` metres a
+        second: it turns to face the way, steps with its walk poses (`stepping` and `passing`), lifts each foot as it passes
+        the other, and keeps each foot planted while it stands on it. It keeps to the straight lines between the points but
+        rounds each corner, starting to turn up to a stride before it, facing the way it goes. A step is `stride` long, or as long as the walk pose makes it, rounded to
+        fit the way. At the end it stands in the pose it had."""
         found = self.figure(figure)
         index = next(place for place, node in enumerate(self.nodes) if node is found)
         now = self.at(start).nodes[index]
         here = Vec3.of(now.at)
-        goal = self.marks[to].at if isinstance(to, str) and to in self.marks else Vec3.of(self._point(to))
-        way = Vec3(goal.x - here.x, 0, goal.z - here.z)
-        if way.length < 1e-6:
+        stops = [to] if isinstance(to, str) or isinstance(next(iter(to)), (int, float)) else list(to)
+        corners = [here]
+        for stop in stops:
+            point = self.marks[stop].at if isinstance(stop, str) and stop in self.marks else Vec3.of(self._point(stop))
+            if math.hypot(point.x - corners[-1].x, point.z - corners[-1].z) > 1e-6:
+                corners.append(Vec3(point.x, here.y, point.z))
+        if len(corners) == 1:
             raise MotionError(f"{found.label} is already there")
         try:
             stride = stride or found.stride()
         except NotImplementedError as error:
             raise MotionError(str(error)) from None
-        steps = max(1, round(way.length / stride))
-        step = way.length / steps / speed
-        yaw = math.degrees(math.atan2(way.x, way.z))
-        yaw = now.yaw + (yaw - now.yaw + 180) % 360 - 180  # the short way round
+        bearing = lambda way: math.degrees(math.atan2(way.x, way.z))
+        path = [(corners[0], bearing(corners[1] - corners[0]))]  # points on the way, and the way it goes at each
+        for before, corner, after in zip(corners, corners[1:], corners[2:]):  # each corner rounded, as a parabola
+            cut = min(stride, (corner - before).length / 2, (after - corner).length / 2)
+            enter, leave = (corner + Vec3(*(part * cut / (other - corner).length for part in other - corner)) for other in (before, after))
+            for t in (number / self.ROUNDING for number in range(self.ROUNDING + 1)):
+                path.append((Vec3(*((1 - t) ** 2 * a + 2 * (1 - t) * t * b + t * t * c for a, b, c in zip(enter, corner, leave))),
+                             bearing(Vec3(*((1 - t) * (b - a) + t * (c - b) for a, b, c in zip(enter, corner, leave))))))
+        path.append((corners[-1], bearing(corners[-1] - corners[-2])))
+        path = [place for number, place in enumerate(path) if not number or (place[0] - path[number - 1][0]).length > 1e-9]
+        lengths = [(b - a).length for (a, _), (b, _) in zip(path, path[1:])]
+        steps = max(1, round(sum(lengths) / stride))
+        step = sum(lengths) / steps / speed
         end = start + steps * step
         stand = dict(now.values())
         if start > 0:
             self.move(found, start, at=here, yaw=now.yaw, pose=stand)
-        self.move(found, end, ease="linear", at=Vec3(goal.x, here.y, goal.z))
-        self.move(found, start + step, yaw=yaw)
+        time, yaw, turns = start, now.yaw, [(start + step, path[0][1])]  # it faces the first way by the end of its first step
+        for number, ((point, way), length) in enumerate(zip(path[1:], lengths)):
+            time = end if number == len(lengths) - 1 else time + length / sum(lengths) * (end - start)
+            self.move(found, time, ease="linear", at=point)
+            turns.append((time, way))
+        kept: list[tuple[float, float]] = []
+        for when, way in turns:
+            while kept and kept[-1][0] >= when:  # a turn that comes sooner takes the place of one meant for later
+                kept.pop()
+            yaw = (kept[-1][1] if kept else now.yaw)
+            kept.append((when, yaw + (way - yaw + 180) % 360 - 180))  # the short way round
+        for number, (when, yaw) in enumerate(kept):
+            self.move(found, when, ease="ease-in-out" if not number else "linear", yaw=yaw)
         # The first and last steps are halves, so every foot lands a whole step from the last and the trailing foot is half
         # a step behind the hips when the leading one lands.
         leads = ["right" if number % 2 else "left" for number in range(1, steps + 1)]
@@ -334,6 +359,7 @@ class Location:
         return max((track.end for key, track in self.motion.items()
                     if not (isinstance(key, tuple) and key[0] == "shot" and shot not in (None, key[1]))), default=0.0)
 
+    ROUNDING = 8  # straight pieces to a rounded corner of a walk
     STRIDE = 0.03  # metres: no part of a moving body goes further than this between two checks
 
     def instants(self, walked: Optional[dict[float, dict[int, tuple[Node, list[Placed]]]]] = None) -> list[float]:
@@ -574,11 +600,14 @@ class Location:
     def clashes(self, bodies_only: bool = False) -> list[Clash]:
         """What is passing through what, by the rules in collision.py, each at the first time it happens if this location
         moves, earliest first."""
+        if sum(1 for node in self.nodes if node.collides or self._moving(node)) < 2:
+            return []  # a body never clashes with itself, so with one there is nothing to look for, at any time
         known: dict = {}  # what stands still is the same node at every moment, and its body is found once
         walked: dict = {}  # and what moves was built and walked once already, to find the instants
         found: dict[tuple[str, str], Clash] = {}
         for index, time in enumerate(self.instants(walked)):
-            nodes = list(self.at(time).nodes)
+            # The nodes of at(time), without its shots and paint: a shot from a figure's eyes would solve the figure again.
+            nodes = list(self.nodes)
             for place, (node, leaves) in walked.get(time, {}).items():
                 nodes[place] = node
                 known[id(node)] = Body.of(node, self.contact, leaves)

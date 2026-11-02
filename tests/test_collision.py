@@ -1,4 +1,5 @@
 """Collision: the shapes themselves, the rules for when an overlap is a fault, and figures that keep out of the furniture."""
+import random
 import sys
 from pathlib import Path
 
@@ -10,9 +11,9 @@ sys.path[:0] = [str(ROOT), str(ROOT / "examples")]
 from use_cases import office
 
 from srlocations import Box, CatalogError, CollisionError, Cone, Cylinder, Decal, Location, Registry, Renderer, Sphere, Surface, Vec3
-from srlocations.collision import DRESSED, TOUCH, Body, Egg, deepest, overlap
+from srlocations.collision import DRESSED, TOUCH, Block, Body, Drum, Egg, Hull, deepest, overlap
 from srlocations.geometry import Transform
-from srlocations.stock.mannequin import Mannequin
+from srlocations.stock.mannequin import POSES, Mannequin
 
 
 def hull(solid, at=(0, 0, 0), **turn):
@@ -250,3 +251,96 @@ def test_every_body_sits_in_a_chair(kind, seed):
     location, figure = seated(kind=kind, seed=seed)
     assert location.clashes() == []
     assert location.pov(figure).eye.y > 0.6
+
+
+# clashes over a walk: these pin what clashes() finds, and when, so a faster search is shown to find the same
+
+def walked(table=None, floor=False, plants=False, **table_params) -> Location:
+    """A figure taking two steps 1.4 m along +z in a second, its feet planted as it goes if `plants`, with a table at
+    `table` if one is given."""
+    location = Location("walk").mark("a", (0, 0, 0))
+    if floor:
+        location.add("stock.box", size=(10, 0.1, 10), at=(0, -0.05, 0), material="stock.concrete", name="floor")
+    figure = location.stand("a")[0]
+    if table is not None:
+        location.add("stock.table", at=(table, 0, 0.7), name="table", **table_params)
+    location.move(figure, 1.0, ease="linear", at=(0, 0, 1.4))
+    location.move(figure, 0.25, pose=dict(POSES["walk"]))
+    location.move(figure, 0.75, pose=dict(POSES["walk"].mirror()))
+    location.move(figure, 1.0, pose="stand")
+    if plants:
+        location.plant(figure, "right_foot", 0.05, 0.35)
+        location.plant(figure, "left_foot", 0.55, 0.85)
+    return location
+
+
+def found(location, bodies_only=False):
+    return [(clash.first, clash.second, round(clash.depth, 6), round(clash.time, 9), clash.moving)
+            for clash in location.clashes(bodies_only)]
+
+
+@pytest.mark.parametrize("floor", [False, True])
+def test_a_walk_into_a_table_is_found_where_each_limb_first_meets_it(floor):
+    location = walked(table=0.0, floor=floor)
+    expected = [("a/left_middle_distal", "table/box", 0.011, 0.0859375, True),
+                ("a/left_ring_distal", "table/box", 0.006062, 0.08984375, True),
+                ("a/right_upper_leg", "table/box", 0.007834, 0.12109375, True),
+                ("a/left_upper_leg", "table/box", 0.221941, 0.3359375, True)]
+    assert found(location) == expected and found(location, bodies_only=True) == expected
+
+
+def test_a_walk_with_planted_feet_into_a_table_is_found_too():
+    assert found(walked(table=0.0, plants=True)) == [("a/left_index_distal", "table/box", 0.018208, 0.08125, True),
+                                                      ("a/left_middle_distal", "table/box", 0.02908, 0.0875, True),
+                                                      ("a/left_ring_distal", "table/box", 0.027423, 0.09375, True),
+                                                      ("a/right_upper_leg", "table/box", 0.005384, 0.1625, True),
+                                                      ("a/left_upper_leg", "table/box", 0.03262, 0.20625, True)]
+
+
+def test_a_hand_that_grazes_a_table_in_passing_is_found_once():
+    assert found(walked(table=1.0, height=0.73)) == [("a/right_middle_distal", "table/box", 0.006325, 0.3046875, True)]
+
+
+@pytest.mark.parametrize("floor, plants", [(False, False), (True, True)])
+def test_a_walk_past_a_table_or_over_a_floor_is_clear(floor, plants):
+    assert found(walked(table=1.0, height=0.7, floor=floor, plants=plants)) == []
+
+
+def solves(monkeypatch) -> list:
+    """Each figure whose joints are worked out from here on: a figure solves once, the first time it is asked."""
+    asked, frames = [], Mannequin.frames
+    def counted(figure):
+        if not any(figure is seen for seen in asked):
+            asked.append(figure)
+        return frames(figure)
+    monkeypatch.setattr(Mannequin, "frames", counted)
+    return asked
+
+
+def test_a_moving_figure_is_solved_once_for_each_instant(monkeypatch):
+    """The figure is the costly part of a check over time, and a shot from its eyes needs no second solve to find a clash."""
+    location = walked(table=1.0, height=0.73)
+    location.pov("a")
+    location.frame("stock.close-up", "a")
+    instants = location.instants()
+    asked = solves(monkeypatch)
+    location.clashes()
+    assert len(asked) == len(instants)
+
+
+def test_a_figure_with_nothing_to_meet_is_not_solved(monkeypatch):
+    location = walked()
+    asked = solves(monkeypatch)
+    assert location.clashes() == [] and asked == []
+
+
+def test_a_hull_finds_its_box_as_reach_does_to_the_last_bit():
+    """Every part of a moving figure is boxed at every instant, so the shapes work theirs out directly, and must agree."""
+    shuffled = random.Random(7)
+    pick = lambda: shuffled.choice([0, 0.0, -0.0, 90, -180, shuffled.uniform(-360, 360)])
+    for _ in range(3000):
+        world = Transform.at(tuple(shuffled.choice([0.0, -0.0, shuffled.uniform(-5, 5)]) for _ in range(3)),
+                             yaw=pick(), pitch=pick(), roll=pick())
+        sizes = [shuffled.choice([0.0, shuffled.uniform(0.001, 2)]) for _ in range(3)]
+        for shape in (Block(world, Vec3(*sizes)), Egg(world, sizes), Drum(world, sizes[0], sizes[1])):
+            assert repr(shape.box()) == repr(Hull.box(shape))

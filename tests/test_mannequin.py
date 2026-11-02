@@ -1,7 +1,10 @@
 """The mannequin: its parameters against the references, the way each control turns, and a figure standing in a set."""
+import hashlib
+import json
 import math
 import subprocess
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -13,8 +16,8 @@ sys.path[:0] = [str(ROOT)]
 from srlocations import Blueprint, Location, Projection, Registry, Renderer, SceneCompiler, Shaded, SharedCatalog, Vec3
 from srlocations.figures import angle
 from srlocations.registry import CatalogError
-from srlocations.stock.mannequin import (ALIASES, BY_NAME, JOINTS, KINDS, PARAMETERS, POSES, Mannequin, PoseError, both,
-                                         curled, joint_named)
+from srlocations.stock.mannequin import (ALIASES, BY_NAME, JOINTS, JOINTS_VERSION, KINDS, PARAMETERS, POSES, Mannequin,
+                                         PoseError, both, curled, joint_named)
 
 BODY = ["Spine Front-Back", "Spine Left-Right", "Spine Twist Left-Right", "Chest Front-Back", "Chest Left-Right",
         "Chest Twist Left-Right", "UpperChest Front-Back", "UpperChest Left-Right", "UpperChest Twist Left-Right",
@@ -407,7 +410,7 @@ def lowest(figure, *prefixes) -> float:
 @pytest.mark.parametrize("pose", ["crouch", "kneel", "sit-floor", "lie", "run", "wave", "arms-crossed", "hands-on-hips",
                                   "phone", "type"])
 def test_a_new_pose_is_in_range_on_the_floor_and_untangled(pose):
-    for kind in ("man", "woman-5th", "child"):
+    for kind in KINDS:
         figure = Mannequin(pose=pose, kind=kind)
         assert lowest(figure, "") == pytest.approx(0, abs=1e-6)
         assert figure.tangled() == [], (kind, figure.tangled())
@@ -483,3 +486,68 @@ def test_typing_sits_with_the_hands_out_in_front_at_elbow_height():
     assert pose.sits
     for side in ("left", "right"):
         assert at[f"{side}_hand"].z > at["chest"].z + 0.25 and abs(at[f"{side}_hand"].y - at[f"{side}_lower_arm"].y) < 0.06
+
+
+# Balance
+
+ONE_LEG = {**POSES["stand"], "right_upper_leg.front_back": -80, "right_lower_leg.stretch": 0, **both({"upper_arm.down_up": -20})}
+
+
+def inside(point: Vec3, polygon: list) -> bool:
+    """Whether a point on the floor is within a convex polygon of points on it, in x and z."""
+    turns = [(b.x - a.x) * (point.z - a.z) - (b.z - a.z) * (point.x - a.x) for a, b in zip(polygon, polygon[1:] + polygon[:1])]
+    return all(turn >= 0 for turn in turns) or all(turn <= 0 for turn in turns)
+
+
+def test_the_centre_of_mass_of_a_standing_figure_is_a_little_above_its_middle():
+    for kind in KINDS:
+        figure = Mannequin(kind=kind)
+        centre = figure.centre_of_mass()
+        assert abs(centre.x) < 1e-6
+        assert figure.frames()["hips"].position.y < centre.y < figure.frames()["chest"].position.y
+        if KINDS[kind].measured:  # an adult stands with it at 0.55 to 0.57 of its height (Winter, after Dempster)
+            assert 0.53 < centre.y / figure.height < 0.59
+
+
+def test_the_centre_of_mass_follows_a_raised_arm_and_the_figure_in_the_location():
+    figure = Mannequin(adjust={"right_upper_arm.down_up": 0})
+    hand = figure.frames()["right_hand"].position
+    assert figure.centre_of_mass().x * hand.x > 0
+    moved = Mannequin(at=(2, 0, 1), yaw=90)
+    assert (moved.centre_of_mass() - moved.transform.apply(Mannequin().centre_of_mass())).length < 1e-9
+
+
+def test_a_standing_figure_is_carried_by_both_feet_with_its_weight_between_them():
+    figure = Mannequin()
+    support = figure.support()
+    assert len(support) >= 4 and all(abs(point.y) < 1e-9 for point in support)
+    frames = figure.frames()
+    for side in ("left", "right"):
+        assert inside(Vec3(frames[f"{side}_foot"].position.x, 0, frames[f"{side}_foot"].position.z + 0.02), support)
+    assert inside(figure.centre_of_mass(), support)
+    assert figure.balance() > 0.02
+    assert Mannequin(grounded=False).support() == [] and Mannequin(grounded=False).balance() is None
+
+
+def test_a_balanced_figure_moves_its_hips_over_the_foot_it_stands_on_and_keeps_it_where_it_was():
+    raised = Mannequin(pose=ONE_LEG)
+    assert raised.balance() < 0  # it would fall over its raised leg
+    balanced = replace(raised, balanced=True)
+    assert balanced.balance() >= 0.0199
+    foot = balanced.frames()["left_foot"]
+    assert (foot.position - raised.frames()["left_foot"].position).length < 0.002
+    assert balanced.frames()["hips"].position.x < raised.frames()["hips"].position.x - 0.03  # towards the left foot
+    assert not balanced.tangled()
+
+
+def test_balance_leaves_a_steady_or_seated_figure_alone():
+    for pose in ("stand", "sit"):
+        plain, balanced = Mannequin(pose=pose), Mannequin(pose=pose, balanced=True)
+        moved = (balanced.frames()["hips"].position - plain.frames()["hips"].position).length
+        assert moved < 1e-9
+
+
+def test_the_names_of_the_joints_and_their_controls_change_only_with_their_version():
+    names = [[joint.name, [dof.name for dof in joint.dofs]] for joint in JOINTS]
+    assert (len(names), sum(len(dofs) for _, dofs in names)) == (55, 103)
+    assert (JOINTS_VERSION, hashlib.sha256(json.dumps(names).encode()).hexdigest()[:16]) == ("1.0.0", "88629dcb422eb384")

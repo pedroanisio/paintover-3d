@@ -77,7 +77,7 @@ def test_a_figure_without_a_rig_is_reported_and_blocked():
     location.add(Statue(name="a", at=(1, 0, 0), yaw=90))
     location.shot("wide", (1, 1.5, -4), (1, 1, 0))
     found = location.report().figures[0]
-    assert found.height == pytest.approx(1.8) and found.within_reach == []
+    assert found.height == pytest.approx(1.8) and found.within_reach == [] and found.balance is None
     mark = location.blocking("wide", 640, 360)[0]
     assert mark["height"] == pytest.approx(1.8) and mark["facing"] == pytest.approx(90)
 
@@ -286,7 +286,7 @@ def test_a_hollow_or_open_surface_holds_nothing():
 
 
 @pytest.mark.parametrize("pose", [name for name in POSES])
-@pytest.mark.parametrize("kind", ["man", "woman", "child", "man-95th", "woman-5th"])
+@pytest.mark.parametrize("kind", list(KINDS))
 def test_no_stock_pose_is_tangled(pose, kind):
     assert list(Mannequin(pose=pose, kind=kind).tangled()) == []
 
@@ -625,7 +625,10 @@ def test_a_report_gives_numbers_and_no_verdicts():
     first = report.figures[0]
     assert first.name == "detective" and first.height > 1 and 0 < first.headroom <= 1.5 and first.arm_reach > 0.3
     assert set(first.posture) >= {"knee", "elbow", "trunk to thigh"}
-    assert first.faults == [] and first.tangled == []
+    assert first.faults == [] and first.tangled == [] and first.balance is None  # a seat carries it
+    standing = bare()
+    standing.add(Mannequin(name="a"))
+    assert standing.report().figures[0].balance > 0.02 and "balance" in str(standing.report())
     text = str(report)
     assert "office" in text.lower() and "headroom" in text and "client" in text
     assert "wanted" not in text

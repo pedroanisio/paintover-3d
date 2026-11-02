@@ -4,6 +4,7 @@ reading the GLB's bytes here; only the round trips use the module's reader."""
 import json
 import math
 import struct
+import subprocess
 import sys
 from pathlib import Path
 
@@ -12,11 +13,12 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 sys.path[:0] = [str(ROOT)]
 
-from srlocations import Location, Mesh, Registry
+from srlocations import Flat, Location, Look, Mesh, Projection, Registry, Renderer, Styled
 from srlocations.geometry import Transform, Vec3
-from srlocations.interchange import InterchangeError, load_bvh, save_bvh, save_glb
+from srlocations.interchange import InterchangeError, load_bvh, load_gltf, save_bvh, save_glb
 from srlocations.mesh import _local, _times
 from srlocations.stock.mannequin import JOINTS, POSES, Mannequin
+from test_looks import GREY, H, W, flat_set, near, pixel
 
 MM = 0.001
 
@@ -167,7 +169,7 @@ def test_a_bvh_can_name_its_bones_as_another_package_does(tmp_path):
     bones, _, _ = parse_bvh(save_bvh(tmp_path / "mixamo.bvh", Mannequin(), names="mixamo", units=1).read_text())
     names = [bone["name"] for bone in bones]
     assert names[0] == "mixamorig:Hips" and "mixamorig:LeftForeArm" in names and "mixamorig:RightHandPinky3" in names
-    assert "left_eye" in names  # Mixamo's body has no eyes, so they keep this SDK's name
+    assert "jaw" in names and "mixamorig:LeftEye" in names  # Mixamo's body has no jaw, so it keeps this SDK's name
     with pytest.raises(InterchangeError, match="unity"):
         save_bvh(tmp_path / "other.bvh", Mannequin(), names="maya")
 
@@ -460,7 +462,11 @@ def values(document: dict, binary: bytes, index: int) -> list[tuple]:
 
 def test_a_glb_is_well_formed(tmp_path):
     location, figure = walking()
-    document, binary = glb_parts(save_glb(tmp_path / "walk.glb", figure, location, fps=10))
+    check_well_formed(*glb_parts(save_glb(tmp_path / "walk.glb", figure, location, fps=10)), frames=11)
+
+
+def check_well_formed(document: dict, binary: bytes, frames: int) -> None:
+    """What glTF 2.0 asks of the buffers, views, accessors, skin, meshes and animation, as far as this file uses them."""
     assert document["asset"]["version"] == "2.0"
     assert document["buffers"][0]["byteLength"] <= len(binary) < document["buffers"][0]["byteLength"] + 4
     for view in document["bufferViews"]:
@@ -494,7 +500,7 @@ def test_a_glb_is_well_formed(tmp_path):
     assert len(animation["channels"]) == len(JOINTS) + 1
     for sampler in animation["samplers"]:
         times = values(document, binary, sampler["input"])
-        assert len(times) == 11 and document["accessors"][sampler["input"]]["max"] == [pytest.approx(1.0)]
+        assert len(times) == frames and document["accessors"][sampler["input"]]["max"] == [pytest.approx((frames - 1) / 10)]
         assert document["accessors"][sampler["input"]]["min"] == [0.0]
         assert document["accessors"][sampler["output"]]["count"] == len(times)
     for channel in animation["channels"]:
@@ -586,3 +592,316 @@ def test_a_glbs_skin_carries_each_limb_with_its_bone(tmp_path):
 def test_a_glb_of_one_pose_has_no_animation(tmp_path):
     document, _ = glb_parts(save_glb(tmp_path / "sit.glb", Mannequin(pose="sit")))
     assert "animations" not in document
+
+
+# A skinned GLB
+
+PARENTS = {joint.name: joint.parent for joint in JOINTS}
+
+
+def matrix4(m: tuple) -> list[list[float]]:
+    """An accessor's MAT4, which glTF stores by columns, as rows."""
+    return [[m[c * 4 + r] for c in range(4)] for r in range(4)]
+
+
+def moved(m: list[list[float]], point) -> list[float]:
+    return [sum(m[r][k] * value for k, value in enumerate((*point, 1.0))) for r in range(3)]
+
+
+def in_file(world: Transform) -> list[list[float]]:
+    """A transform in the SDK as the 4 by 4 matrix a model file holds for it."""
+    basis = flipped(world.basis)
+    return [[*basis[r], written(world.position)[r]] for r in range(3)] + [[0.0, 0.0, 0.0, 1.0]]
+
+
+def inverse(m: list[list[float]]) -> list[list[float]]:
+    """The inverse of a rotation and a translation."""
+    turn = [[m[c][r] for c in range(3)] for r in range(3)]
+    back = [-sum(turn[r][k] * m[k][3] for k in range(3)) for r in range(3)]
+    return [[*turn[r], back[r]] for r in range(3)] + [[0.0, 0.0, 0.0, 1.0]]
+
+
+def transpose(m) -> list[list[float]]:
+    return [[m[c][r] for c in range(3)] for r in range(3)]
+
+
+def degrees_between(a, b) -> float:
+    """How far apart two rotations are, in radians."""
+    trace = sum(times3(transpose(a), b)[i][i] for i in range(3))
+    return math.acos(max(-1.0, min(1.0, (trace - 1) / 2)))
+
+
+def skinned(document: dict, binary: bytes, frame: int) -> list[tuple]:
+    """Every vertex as the skin and one keyframe of the animation place it: the position, the weights by joint name, and
+    the position at the bind."""
+    inverse_binds = values(document, binary, document["skins"][0]["inverseBindMatrices"])
+    joints = document["skins"][0]["joints"]
+    found = node_worlds(document, binary, frame)
+    skinning = [_times(found[document["nodes"][index]["name"]], matrix4(m)) for index, m in zip(joints, inverse_binds)]
+    vertices = []
+    for mesh in document["meshes"]:
+        for primitive in mesh["primitives"]:
+            attributes = primitive["attributes"]
+            for point, bones, weights in zip(values(document, binary, attributes["POSITION"]),
+                                             values(document, binary, attributes["JOINTS_0"]),
+                                             values(document, binary, attributes["WEIGHTS_0"])):
+                place = [sum(w * v for w, v in zip(weights, column))
+                         for column in zip(*(moved(skinning[bone], point) for bone in bones))]
+                named = {document["nodes"][joints[bone]]["name"]: weight for bone, weight in zip(bones, weights) if weight}
+                vertices.append((place, named, point))
+    return vertices
+
+
+def t_stance(figure: Mannequin) -> dict[str, Transform]:
+    return Mannequin(pose="t", kind=figure.kind, seed=figure.seed, height=figure.height, grounded=figure.grounded).frames()
+
+
+def test_a_skinned_glb_is_well_formed_and_one_body(tmp_path):
+    location, figure = walking()
+    document, binary = glb_parts(save_glb(tmp_path / "walk.glb", figure, location, fps=10, skinned=True))
+    check_well_formed(document, binary, frames=11)
+    assert len(document["meshes"]) == 1 and len([node for node in document["nodes"] if "mesh" in node]) == 1
+    used = {primitive["material"] for primitive in document["meshes"][0]["primitives"]}
+    assert len(used) == len(document["meshes"][0]["primitives"]) == len(document["materials"])  # one primitive to a material
+
+
+def test_a_skinned_glbs_weights_are_whole_and_few(tmp_path):
+    document, binary = glb_parts(save_glb(tmp_path / "walk.glb", Mannequin(pose="walk"), skinned=True))
+    for primitive in document["meshes"][0]["primitives"]:
+        attributes = primitive["attributes"]
+        assert document["accessors"][attributes["WEIGHTS_0"]]["type"] == "VEC4"
+        for joints, weights in zip(values(document, binary, attributes["JOINTS_0"]),
+                                   values(document, binary, attributes["WEIGHTS_0"])):
+            assert abs(sum(weights) - 1) < 1e-6 and min(weights) >= 0
+            used = [joint for joint, weight in zip(joints, weights) if weight]
+            assert len(used) == len(set(used)) <= 4
+
+
+def test_a_skinned_glb_is_bound_at_the_t_stance(tmp_path):
+    figure = FIGURES["placed"]
+    document, binary = glb_parts(save_glb(tmp_path / "point.glb", figure, skinned=True))
+    rest = t_stance(figure)
+    inverse_binds = values(document, binary, document["skins"][0]["inverseBindMatrices"])
+    for index, m in zip(document["skins"][0]["joints"], inverse_binds):
+        want = inverse(in_file(rest[document["nodes"][index]["name"]]))
+        assert max(abs(a - b) for x, y in zip(matrix4(m), want) for a, b in zip(x, y)) < 1e-5
+    # Without its animation the file stands at the bind too, so any reader shows the body it was bound in.
+    nodes = document["nodes"]
+    parents = {child: index for index, node in enumerate(nodes) for child in node.get("children", ())}
+
+    def world(index: int) -> list[list[float]]:
+        return _times(world(parents[index]), _local(nodes[index])) if index in parents else _local(nodes[index])
+    for index in document["skins"][0]["joints"]:
+        want = in_file(rest[nodes[index]["name"]])
+        assert max(abs(a - b) for x, y in zip(world(index), want) for a, b in zip(x, y)) < 1e-5
+    # A figure on its own is a pose, kept as an animation of one key.
+    assert len(values(document, binary, document["animations"][0]["samplers"][0]["input"])) == 1
+
+
+def neighbours(a: str, b: str) -> bool:
+    return PARENTS[a] == b or PARENTS[b] == a
+
+
+@pytest.mark.parametrize("case", ["walking", "placed", "toddler"])
+def test_a_skin_puts_the_body_where_the_figure_has_its_limbs(case, tmp_path):
+    if case == "walking":
+        location, source = walking()
+        path, frame = save_glb(tmp_path / "walk.glb", source, location, fps=10, skinned=True), 7
+        figure = moment(location, source, 0.7)
+    else:
+        figure = FIGURES[case]
+        path, frame = save_glb(tmp_path / f"{case}.glb", figure, skinned=True), 0
+    document, binary = glb_parts(path)
+    posed, rest = worlds(figure), t_stance(figure)
+    rigid = {name: _times(in_file(posed[name]), inverse(in_file(rest[name]))) for name in posed}  # bind to pose, by bone
+    eggs = {}
+    for placed in figure.walk():
+        eggs.setdefault(placed.item.name.partition(".")[0], []).append((placed.world, placed.item.radii))
+    vertices = skinned(document, binary, frame)
+    for place, weights, point in vertices:
+        # Every vertex is where the bones it follows put it, by its weights, as frames() has the bones. The file holds
+        # float32, which rounds a position 2 m from the origin to within 0.2 micrometres; 0.01 mm leaves room for that
+        # through a chain of 8 joints, and is far below anything a picture shows.
+        want = [sum(weight * value for weight, value in zip(weights.values(), column))
+                for column in zip(*(moved(rigid[name], point) for name in weights))]
+        assert math.dist(place, want) < 0.01 * MM
+        if len(weights) == 1:  # one bone's alone: on the surface of one of that bone's eggs, as the figure stands
+            (main,) = weights
+            sdk = Vec3(place[0], place[1], -place[2])
+            off = []
+            for world, radii in eggs[main]:
+                local = world.undo(sdk)
+                scale = math.sqrt(sum((v / r) ** 2 for v, r in zip(local, radii)))
+                off.append(local.length * abs(1 - 1 / scale))
+            assert min(off) < 0.01 * MM, main
+        else:  # blended about one bone and its neighbours: no further from where that bone puts it than their bends allow
+            main = next((name for name in weights if all(other == name or neighbours(name, other) for other in weights)), None)
+            assert main, weights
+            allowed = 0.0
+            for name, weight in weights.items():
+                if name != main:
+                    joint = rest[name if PARENTS[name] == main else main].position  # the joint the two bones share
+                    bend = degrees_between(times3(posed[name].basis, transpose(rest[name].basis)),
+                                           times3(posed[main].basis, transpose(rest[main].basis)))
+                    allowed += weight * bend * math.dist(point, written(joint))
+            assert math.dist(place, moved(rigid[main], point)) <= allowed + 0.01 * MM
+
+
+def test_an_elbow_and_a_knee_bend_between_their_bones(tmp_path):
+    figure = Mannequin(pose="t")
+    document, binary = glb_parts(save_glb(tmp_path / "t.glb", figure, skinned=True))
+    rest = t_stance(figure)
+    vertices = skinned(document, binary, 0)
+    for upper, lower in (("left_upper_arm", "left_lower_arm"), ("right_upper_leg", "right_lower_leg")):
+        joint = written(rest[lower].position)
+        nearest = min(vertices, key=lambda vertex: math.dist(vertex[2], joint))
+        assert nearest[1].get(upper, 0) > 0.2 and nearest[1].get(lower, 0) > 0.2, nearest[1]
+        assert math.dist(nearest[2], joint) < 0.06
+        # Half way down either bone, the skin follows that bone alone.
+        for bone, end in ((upper, lower), (lower, lower.replace("lower_arm", "hand").replace("lower_leg", "foot"))):
+            middle = [(a + b) / 2 for a, b in zip(written(rest[bone].position), written(rest[end].position))]
+            nearest = min(vertices, key=lambda vertex: math.dist(vertex[2], middle))
+            assert nearest[1] == {bone: 1.0}, (bone, nearest[1])
+
+
+def test_a_skinned_glb_draws_its_pose_in_the_engine(tmp_path):
+    figure = Mannequin(pose="stand")
+    location = flat_set()
+    location.add(Mesh(path=save_glb(tmp_path / "stand.glb", figure, skinned=True), at=(0, 0, 3)))
+    view = Projection(location.shots["front"], W, H)
+    hand = view.pixel(Transform.at((0, 0, 3)).apply(worlds(figure)["left_hand"].position))
+    forearm = view.pixel(Transform.at((0, 0, 3)).apply(t_stance(figure)["left_lower_arm"].position + Vec3(0.1, 0, 0)))
+
+    def drawn(clip: bool) -> list[bytes]:
+        scene = Renderer().compile(location, "front", Styled(Look([Flat()], sky=GREY), W, H, supersample=1))
+        meshes = [node for node in scene.iter() if node.xml_name == "object3D" and node.primitive == "mesh"]
+        assert len(meshes) == 1
+        if clip:
+            meshes[0].animationClip = "0"
+        output = Renderer().still(scene, tmp_path / f"{clip}.png")
+        raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(output), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                             capture_output=True, check=True).stdout
+        return [raw[row * W * 3:(row + 1) * W * 3] for row in range(H)]
+    rest, posed = drawn(False), drawn(True)
+    # At rest the body stands in the T-stance, its forearm out to the side; with its clip it stands as the figure does.
+    assert not near(pixel(rest, *forearm), GREY) and near(pixel(posed, *forearm), GREY)
+    assert near(pixel(rest, *hand), GREY) and not near(pixel(posed, *hand), GREY)
+
+
+# glTF in
+
+def test_a_skinned_glb_read_back_gives_the_same_joints(tmp_path):
+    location, figure = walking()
+    take = load_gltf(save_glb(tmp_path / "walk.glb", figure, location, fps=10, skinned=True))
+    assert take.fps == 10 and len(take.poses) == 11 and not take.unknown and not take.clamped
+    for frame, pose in enumerate(take.poses):
+        found, expected = standing(pose, figure), worlds(moment(location, figure, frame / 10))
+        for joint in JOINTS:
+            assert (found[joint.name].position - expected[joint.name].position).length < MM, (frame, joint.name)
+
+
+@pytest.mark.parametrize("name", ["pose-sit", "pose-drive", "seeded", "placed"])
+def test_a_pose_read_back_from_a_glb_is_the_same_pose(name, tmp_path):
+    figure = FIGURES[name]
+    take = load_gltf(save_glb(tmp_path / "pose.glb", figure, skinned=True), figure)
+    assert len(take.poses) == 1
+    found, expected = standing(take.poses[0], figure), worlds(figure)
+    assert max((found[j.name].position - expected[j.name].position).length for j in JOINTS) < MM
+
+
+def rewritten(path: Path, change) -> Path:
+    """A GLB with its JSON changed by `change`, the binary kept."""
+    document, binary = glb_parts(path)
+    text = json.dumps(change(document)).encode()
+    text += b" " * (-len(text) % 4)
+    chunks = struct.pack("<II", len(text), 0x4E4F534A) + text + struct.pack("<II", len(binary), 0x004E4942) + binary
+    path.write_bytes(b"glTF" + struct.pack("<II", 2, 12 + len(chunks)) + chunks)
+    return path
+
+
+@pytest.mark.parametrize("prefix", ["mixamorig:", "mixamorig", "mixamorig_", "mixamorig1:"])
+def test_a_glbs_mixamo_names_are_seen_through_with_or_without_a_colon(prefix, tmp_path):
+    figure = FIGURES["pose-sit"]
+    path = save_glb(tmp_path / "sit.glb", figure, skinned=True, names="mixamo")
+    assert any(node["name"] == "mixamorig:LeftForeArm" for node in glb_parts(path)[0]["nodes"])
+
+    def renamed(document: dict) -> dict:
+        for node in document["nodes"]:
+            node["name"] = node["name"].replace("mixamorig:", prefix)
+        return document
+    take = load_gltf(rewritten(path, renamed), figure)
+    assert not take.unknown  # the eyes too, which Mixamo names; the jaw, which it lacks, keeps this SDK's name
+    found, expected = standing(take.poses[0], figure), worlds(figure)
+    assert max((found[j.name].position - expected[j.name].position).length for j in JOINTS) < MM
+
+
+def test_a_skeleton_under_a_turned_and_scaled_node_reads_the_same(tmp_path):
+    # As a package's export often has it: the bones under an "Armature" in other units, turned to its idea of up or ahead.
+    location, figure = walking()
+    path = save_glb(tmp_path / "walk.glb", figure, location, fps=10, skinned=True)
+
+    def wrapped(document: dict) -> dict:
+        hips = document["scenes"][0]["nodes"][0]
+        half = math.sqrt(0.5)
+        document["nodes"].append({"name": "Armature", "rotation": [0, half, 0, half], "scale": [100, 100, 100],
+                                  "children": [hips]})
+        document["scenes"][0]["nodes"][0] = len(document["nodes"]) - 1
+        return document
+    take = load_gltf(rewritten(path, wrapped))
+    assert not take.unknown and len(take.poses) == 11
+    for frame in (0, 4, 10):
+        found, expected = standing(take.poses[frame], figure), worlds(moment(location, figure, frame / 10))
+        assert max((found[j.name].position - expected[j.name].position).length for j in JOINTS) < MM
+
+
+def test_a_gltf_with_its_buffer_in_a_file_beside_it_is_read(tmp_path):
+    figure = FIGURES["seeded"]
+    document, binary = glb_parts(save_glb(tmp_path / "walk.glb", figure, skinned=True))
+    (tmp_path / "walk.bin").write_bytes(binary)
+    document["buffers"][0]["uri"] = "walk.bin"
+    (tmp_path / "walk.gltf").write_text(json.dumps(document))
+    take = load_gltf(tmp_path / "walk.gltf", figure)
+    found, expected = standing(take.poses[0], figure), worlds(figure)
+    assert max((found[j.name].position - expected[j.name].position).length for j in JOINTS) < MM
+
+
+def test_a_file_that_is_not_a_gltf_is_refused(tmp_path):
+    path = tmp_path / "broken.glb"
+    path.write_bytes(b"glTF" + struct.pack("<II", 2, 40) + b"\0" * 8)
+    with pytest.raises(InterchangeError):
+        load_gltf(path)
+    document, _ = glb_parts(save_glb(tmp_path / "t.glb", Mannequin(), skinned=True))
+    del document["animations"], document["skins"]
+    for node in document["nodes"]:
+        node["name"] = "bone"
+    (tmp_path / "nothing.gltf").write_text(json.dumps({**document, "meshes": [], "buffers": []}))
+    with pytest.raises(InterchangeError, match="no bone"):
+        load_gltf(tmp_path / "nothing.gltf")
+    with pytest.raises(InterchangeError, match="no animation 'dance'; it has mannequin"):
+        load_gltf(tmp_path / "t.glb", animation="dance")
+
+
+# The bone names of a Mixamo character as a published file has them: three.js r160, examples/models/gltf/Xbot.glb
+# (https://github.com/mrdoob/three.js/raw/r160/examples/models/gltf/Xbot.glb), every node under its "Armature", each
+# written there with the prefix "mixamorig:".
+XBOT = """Hips Spine Spine1 Spine2 Neck Head HeadTop_End LeftEye RightEye
+LeftShoulder LeftArm LeftForeArm LeftHand RightShoulder RightArm RightForeArm RightHand
+LeftHandThumb1 LeftHandThumb2 LeftHandThumb3 LeftHandThumb4 LeftHandIndex1 LeftHandIndex2 LeftHandIndex3 LeftHandIndex4
+LeftHandMiddle1 LeftHandMiddle2 LeftHandMiddle3 LeftHandMiddle4 LeftHandRing1 LeftHandRing2 LeftHandRing3 LeftHandRing4
+LeftHandPinky1 LeftHandPinky2 LeftHandPinky3 LeftHandPinky4
+RightHandThumb1 RightHandThumb2 RightHandThumb3 RightHandThumb4 RightHandIndex1 RightHandIndex2 RightHandIndex3 RightHandIndex4
+RightHandMiddle1 RightHandMiddle2 RightHandMiddle3 RightHandMiddle4 RightHandRing1 RightHandRing2 RightHandRing3 RightHandRing4
+RightHandPinky1 RightHandPinky2 RightHandPinky3 RightHandPinky4
+LeftUpLeg LeftLeg LeftFoot LeftToeBase LeftToe_End RightUpLeg RightLeg RightFoot RightToeBase RightToe_End"""
+XBOT_ENDS = {"HeadTop_End", "LeftToe_End", "RightToe_End", *(f"{side}Hand{finger}4" for side in ("Left", "Right")
+                                                            for finger in ("Thumb", "Index", "Middle", "Ring", "Pinky"))}
+
+
+def test_mixamo_names_are_those_of_a_published_mixamo_character():
+    published = {f"mixamorig:{name}" for name in XBOT.split()}
+    assert len(published) == 67
+    named = {joint.name: joint.known_as.get("mixamo") for joint in JOINTS}
+    assert {name for name in named.values() if name} <= published  # every name given is one Mixamo uses
+    # Mixamo has every bone of this body but the jaw, and its other bones end a chain, where nothing turns.
+    assert [joint for joint, name in named.items() if not name] == ["jaw"]
+    assert published - set(named.values()) == {f"mixamorig:{name}" for name in XBOT_ENDS}
