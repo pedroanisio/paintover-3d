@@ -276,20 +276,25 @@ def test_the_published_news_studio_needs_no_plugin():
     catalog = SharedCatalog.open(ROOT / "catalog")
     location = catalog.location("news-studio")
     assert "newsroom" not in location.registry.plugins.loaded
-    assert location.validate() == [] and set(location.shots) == {"floor-camera", "two-shot", "from-the-desk", "wide",
-                                                                  "portrait-two-shot", "portrait-push-in"}
-    assert catalog.pins(location)["props"] == {"news-studio": "1.1.0"}
+    assert location.validate() == [] and set(location.shots) == {"floor-camera", "two-shot", "wide", "portrait-two-shot",
+                                                                  "portrait-push-in"}
+    assert catalog.pins(location)["props"] == {"news-studio": "2.0.0"}
     assert set(location.marks) == {"anchor-left", "anchor-right"} and len(location.lights()) < 63
 
 
 def test_the_news_studio_keeps_to_its_palette():
     """News Compiler's approved look: every lit colour is plum, tangerine or mint, or white for lamps and screens, whose
-    pictures carry the palette, and no light is blue."""
+    pictures carry the palette; every other colour is the palette's or a grey; and no light is blue."""
     location = SharedCatalog.open(ROOT / "catalog").location("news-studio")
     palette = {"#2a1458", "#160a30", "#ff8a1f", "#d9620a", "#3fe0b5", "#1fa98a"}
     resolved = location.registry.resolved
-    lit = {location.registry.materials.get(resolved.get(leaf.item.material, leaf.item.material)).glow for leaf in location.solids()}
-    assert lit - {None, ""} <= palette | {"#ffffff", "#fff6e8"}
+    materials = [location.registry.materials.get(resolved.get(leaf.item.material, leaf.item.material)) for leaf in location.solids()]
+    assert {material.glow for material in materials} - {None, ""} <= palette | {"#ffffff", "#fff6e8"}
+
+    def grey(color: str) -> bool:
+        channels = [int(color[i:i + 2], 16) for i in (1, 3, 5)]
+        return max(channels) - min(channels) < 24
+    assert not {material.color for material in materials if material.color not in palette and not grey(material.color)}
     assert {light.item.color for light in location.lights()} <= palette | {"#fff3e4", "#ffe9cf"}
 
 
@@ -308,7 +313,7 @@ def test_the_published_starship_bridge_needs_no_plugin():
     location = catalog.location("starship-bridge")
     assert "bridge" not in location.registry.plugins.loaded
     assert location.validate() == [] and set(location.shots) == {"bridge-wide", "console-line", "mimic-board", "chart-table", "the-view"}
-    assert catalog.pins(location)["props"] == {"starship-bridge": "2.0.0"}
+    assert catalog.pins(location)["props"] == {"starship-bridge": "2.1.0"}
     assert len(location.lights()) < 63
 
 
@@ -318,6 +323,14 @@ def test_the_bridge_has_no_centre_seat():
     seats = location.seats()
     assert len(seats) == 2 and all(abs(seat.at.x) > 1.0 for seat in seats)
     assert not any("holo" in leaf.path or "command-chair" in leaf.path for leaf in location.solids())
+
+
+def test_each_bridge_chair_has_its_own_paths():
+    """So a seat or clash report can say which chair it means."""
+    paths = [leaf.path for leaf in SharedCatalog.open(ROOT / "catalog").location("starship-bridge").solids()]
+    assert {"starship-bridge/seat-helm", "starship-bridge/seat-navigator", "starship-bridge/back-helm",
+            "starship-bridge/back-navigator"} <= set(paths)
+    assert len([path for path in paths if "/seat" in path or "/back" in path]) == 4
 
 
 def test_every_part_of_a_published_prop_has_its_own_path():

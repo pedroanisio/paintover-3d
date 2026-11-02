@@ -1,0 +1,26 @@
+{
+  "description": "Deep plum lacquer",
+  "digest": "4aa2f1a307e0946db65d4a7d95a8610ac6a08d3c02be567a90cf3105d21a10ab",
+  "kind": "shader",
+  "name": "lacquer.plum",
+  "payload": {
+    "color": "#160a30",
+    "extra": {
+      "clearcoat": 0.6,
+      "clearcoatRoughness": 0.25,
+      "doubleSided": true
+    },
+    "glow": "",
+    "glow_strength": 1.0,
+    "maps": {},
+    "metallic": 0.0,
+    "opacity": 1.0,
+    "roughness": 0.4
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "lacquer"
+  ],
+  "version": "1.0.0"
+}

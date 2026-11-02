@@ -1,4 +1,4 @@
-"""A television news studio: a curved anchor desk of glass and wood on a lit riser, a curved video wall, a lighting grid and
+"""A television news studio: a curved anchor desk of glass and lacquer on a lit riser, a curved video wall, a lighting grid and
 a pedestal camera with its prompter. publish_catalog.py freezes it, so a project uses it without this file. The origin is on
 the floor in front of the desk, which curves toward the cameras at -z, and anchors stand behind it facing them. The pictures
 are drawn by news_pictures.py. Sizes are a studio's: a desk 1 m high, a riser 16 cm, a video wall 2.8 m tall 9 m away
@@ -34,7 +34,8 @@ SHADERS = {
     "desk.frost.plum": (Material("#2a1458", 0.4, glow="#2a1458", glow_strength=1.2, extra={"doubleSided": True}), ["glass", "glow"],
                         "Frosted glass lit plum from behind"),
     "desk.back": (Material("#17191e", 0.6, extra={"doubleSided": True}), ["plastic"], "The dark inside of a desk"),
-    "wood.desk": (Material("#6e4227", 0.45, extra={"clearcoat": 0.5, "clearcoatRoughness": 0.3, "doubleSided": True}), ["wood"], "Lacquered walnut"),
+    "lacquer.plum": (Material("#160a30", 0.4, extra={"clearcoat": 0.6, "clearcoatRoughness": 0.25, "doubleSided": True}), ["lacquer"],
+                     "Deep plum lacquer"),
     "glow.tangerine": (Material("#000000", 1.0, glow="#ff8a1f", glow_strength=1.5), ["glow"], "A tangerine light strip"),
     "glow.mint": (Material("#000000", 1.0, glow="#3fe0b5", glow_strength=1.6), ["glow"], "A mint light strip"),
     "glow.panel.plum": (Material("#160a30", 0.6, glow="#2a1458", glow_strength=1.4), ["glow"], "A lit plum panel"),
@@ -49,7 +50,7 @@ SHADERS = {
     "screen.pattern": (screen("pattern"), ["glow", "screen"], "Sweeps of tangerine and mint on plum, with nothing written"),
     "screen.wall": (screen("wall"), ["glow", "screen"], "Waves of mint dots and rings on plum, with nothing written"),
 }
-SLOTS = {"floor": "studio.floor.concrete", "wood": "studio.wood.desk", "frost": "studio.desk.frost.plum", "strip": "studio.glow.tangerine"}
+SLOTS = {"floor": "studio.floor.concrete", "wood": "studio.lacquer.plum", "frost": "studio.desk.frost.plum", "strip": "studio.glow.tangerine"}
 
 
 def _around(centre: Sequence[float], radius: str) -> tuple[str, str]:
@@ -97,9 +98,9 @@ def aim(at: Sequence[float], target: Sequence[float]) -> dict:
 
 @dataclass
 class Desk(Prefab):
-    """The anchor desk and its riser: a curve of lit frosted glass between walnut ends, with tangerine strips along it and a
+    """The anchor desk and its riser: a curve of lit frosted glass between plum lacquer ends, with tangerine strips along it and a
     glass top, on a grey deck with a mint edge."""
-    wood: str = "studio.wood.desk"
+    wood: str = "studio.lacquer.plum"
     frost: str = "studio.desk.frost.plum"
     strip: str = "studio.glow.tangerine"
 
@@ -112,7 +113,7 @@ class Desk(Prefab):
                              end(DESK, (1.2, OUTER + 0.45), deck[0], (0, RISER), "studio.riser.grey", name="riser-end"),
                              end(DESK, (1.2, OUTER + 0.45), deck[1], (0, RISER), "studio.riser.grey", name="riser-end")]
         low, high = RISER + 0.04, TOP - 0.03
-        panel = 13.0  # degrees of walnut at each end
+        panel = 13.0  # degrees of lacquer at each end
         parts += band(DESK, OUTER, (a0 + panel, a1 - panel), (low, high), self.frost, pieces=8, outward=True, name="front")
         for start in (a0, a1 - panel):
             parts += band(DESK, OUTER + 0.02, (start, start + panel), (low, high), self.wood, outward=True, name="front-wood")
@@ -251,7 +252,7 @@ class Studio(Prefab):
 
 class NewsroomPlugin(Plugin):
     name = "newsroom"
-    version = "1.1.0"
+    version = "2.0.0"
     requires = ("stock",)
     shaders, slots = SHADERS, SLOTS
 

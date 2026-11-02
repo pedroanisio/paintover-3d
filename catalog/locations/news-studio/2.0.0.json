@@ -1,0 +1,117 @@
+{
+  "description": "A television news studio on air, with portrait shots for two anchors",
+  "digest": "2d41113a1ad9a4b9e7d868886b3f07dbb6e262df3d99e4f25eef4397c071363f",
+  "kind": "location",
+  "name": "news-studio",
+  "payload": {
+    "marks": [
+      {
+        "at": [
+          -0.55,
+          0.16,
+          0.7
+        ],
+        "facing": 172,
+        "name": "anchor-left"
+      },
+      {
+        "at": [
+          0.55,
+          0.16,
+          0.7
+        ],
+        "facing": 188,
+        "name": "anchor-right"
+      }
+    ],
+    "name": "news-studio",
+    "nodes": [
+      {
+        "use": "studio.news-studio@2.0.0"
+      }
+    ],
+    "rig": {
+      "fill": 0.6,
+      "use": "stock.interior"
+    },
+    "shots": [
+      {
+        "eye": [
+          -2.0,
+          1.8,
+          -6.8
+        ],
+        "lens": 20,
+        "look_at": [
+          1.5,
+          1.2,
+          1.8
+        ],
+        "name": "floor-camera"
+      },
+      {
+        "eye": [
+          0,
+          1.5,
+          -3.2
+        ],
+        "lens": 35,
+        "look_at": [
+          0,
+          1.35,
+          0.7
+        ],
+        "name": "two-shot"
+      },
+      {
+        "eye": [
+          6.0,
+          3.4,
+          -7.0
+        ],
+        "lens": 20,
+        "look_at": [
+          -0.5,
+          1.2,
+          2.0
+        ],
+        "name": "wide"
+      },
+      {
+        "eye": [
+          0,
+          1.626,
+          -5.52
+        ],
+        "lens": 35,
+        "look_at": [
+          0,
+          1.212,
+          0.7
+        ],
+        "name": "portrait-two-shot"
+      },
+      {
+        "eye": [
+          0,
+          1.4,
+          -4.49
+        ],
+        "lens": 35,
+        "look_at": [
+          0,
+          1.175,
+          0.7
+        ],
+        "name": "portrait-push-in"
+      }
+    ]
+  },
+  "schema": 1,
+  "size": null,
+  "tags": [
+    "interior",
+    "broadcast"
+  ],
+  "version": "2.0.0"
+}

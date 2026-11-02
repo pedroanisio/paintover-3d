@@ -82,18 +82,20 @@ class Console(Prefab):
 @dataclass
 class ConsoleChair(Prefab):
     """A padded swivel chair for a console, its column behind the hips so a body can be marked where it sits. It faces +z,
-    toward the console's screens."""
+    toward the console's screens. `station` names its seat and back, so a report can tell one chair from another."""
     padding: str = "studio.chair.black"
+    station: str = ""
 
     def seats(self) -> Sequence[Seat]:
         return [Seat(Vec3(0, 0, -0.06), 0.0, 0.455, 0.3, 0.13)]
 
     def build(self) -> Sequence[Node]:
+        own = f"-{self.station}" if self.station else ""
         parts: list[Node] = [Cylinder(0.3, 0.05, at=(0, 0.025, -0.1), material="studio.hull.dark", name="base"),
                              Cylinder(0.06, 0.32, at=(0, 0.21, -0.22), material="studio.rail.steel", name="column"),
-                             pillow((0.52, 0.11, 0.5), self.padding, square=0.35, samples=(24, 12), at=(0, 0.395, 0.0), name="seat"),
+                             pillow((0.52, 0.11, 0.5), self.padding, square=0.35, samples=(24, 12), at=(0, 0.395, 0.0), name=f"seat{own}"),
                              pillow((0.5, 0.66, 0.13), self.padding, square=0.35, samples=(24, 16), at=(0, 0.78, -0.28), pitch=-8,
-                                    name="back")]
+                                    name=f"back{own}")]
         for side in (-1, 1):
             parts.append(Box((0.06, 0.04, 0.34), at=(side * 0.3, 0.62, -0.04), material="studio.hull.grey", name="arm"))
         return parts
@@ -207,7 +209,8 @@ class Bridge(Prefab):
                    ("studio.screen.readouts", "studio.screen.tactical", "studio.screen.scope"))
         parts: list[Node] = [Console(2.6, pictures, self.plating, at=(x, 0, FRONT - 0.45), name="bow-console")
                              for x, pictures in zip(STATIONS, screens)]
-        parts += [ConsoleChair(at=(x, 0, FRONT - 1.4), name="console-chair") for x in STATIONS[1:3]]
+        parts += [ConsoleChair(station=station, at=(x, 0, FRONT - 1.4), name=f"chair-{station}")
+                  for x, station in zip(STATIONS[1:3], ("helm", "navigator"))]
         parts.append(MimicBoard(6.4, self.plating, at=(-SIDE + 0.05, 0, -1.4), yaw=-90, name="mimic-board"))
         parts.append(ChartTable(self.plating, at=(SIDE - 0.5, 0, -1.1), yaw=90, name="chart-table"))
         return parts
@@ -234,7 +237,7 @@ class Bridge(Prefab):
 
 class BridgePlugin(Plugin):
     name = "bridge"
-    version = "2.0.0"
+    version = "2.1.0"
     requires = ("stock",)
     shaders, slots = SHADERS, SLOTS
 
