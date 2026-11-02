@@ -334,6 +334,23 @@ def test_a_figure_with_nothing_to_meet_is_not_solved(monkeypatch):
     assert location.clashes() == [] and asked == []
 
 
+def test_a_figure_that_passes_through_on_purpose_is_not_solved(monkeypatch):
+    """Through a table and over a floor: solid=False means nothing it does is a clash, so there is nothing to look between keys for."""
+    location = walked(table=0.0, floor=True)
+    location.figure("a").solid = False
+    asked = solves(monkeypatch)
+    assert location.clashes(bodies_only=True) == [] and location.clashes() == [] and asked == []
+
+
+def test_a_figure_made_solid_by_a_key_is_still_checked():
+    location = walked(table=0.0, floor=True)
+    figure = location.figure("a")
+    figure.solid = False
+    location.move(figure, 0.5, ease="hold", solid=True)
+    found = location.clashes(bodies_only=True)
+    assert found and all(clash.second.startswith("table/") and clash.time >= 0.5 for clash in found)
+
+
 def test_a_hull_finds_its_box_as_reach_does_to_the_last_bit():
     """Every part of a moving figure is boxed at every instant, so the shapes work theirs out directly, and must agree."""
     shuffled = random.Random(7)

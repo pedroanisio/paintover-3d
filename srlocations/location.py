@@ -386,6 +386,11 @@ class Location:
     def _moving(self, node: Node) -> bool:
         return id(node) in self.motion or ("mark", node.name) in self.motion
 
+    def _collides(self, node: Node) -> bool:
+        """Whether a node collides at some moment: as it starts or at one of its keys, since a key may set `solid`."""
+        track = self.motion.get(id(node))
+        return node.collides or bool(track) and any(node.posed(track.at(time)).collides for time in track.times)
+
     def _places(self, time: float, walked: dict[float, dict[int, tuple[Node, list[Placed]]]]) -> list[Vec3]:
         """Where each part of what moves is at a time: the corners of its bounds, so a turn counts as well as a slide."""
         marks, places = self._marks_at(time), []
@@ -602,6 +607,10 @@ class Location:
         moves, earliest first."""
         if sum(1 for node in self.nodes if node.collides or self._moving(node)) < 2:
             return []  # a body never clashes with itself, so with one there is nothing to look for, at any time
+        if not any(self._moving(node) and self._collides(node) for node in self.nodes):
+            # Nothing that moves meets anything, so what stands still is all there is, the same at every moment: a dance
+            # of figures with solid=False spent nine tenths of its compile looking between keys for nothing.
+            return [replace(clash, time=0.0) for clash in clashes(self.nodes, bodies_only, self.contact)]
         known: dict = {}  # what stands still is the same node at every moment, and its body is found once
         walked: dict = {}  # and what moves was built and walked once already, to find the instants
         found: dict[tuple[str, str], Clash] = {}

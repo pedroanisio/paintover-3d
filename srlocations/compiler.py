@@ -367,14 +367,17 @@ def find_engine() -> Path:
 
 
 class Renderer:
-    """Runs the engine. render() draws in `default_mode`, wireframe unless told otherwise."""
+    """Runs the engine. render() draws in `default_mode`, wireframe unless told otherwise. `collisions` False draws a body
+    inside something instead of refusing it, and skips looking for one, the costliest part of a long film of figures."""
 
-    def __init__(self, engine: Union[str, Path, None] = None, default_mode: Optional[RenderMode] = None) -> None:
+    def __init__(self, engine: Union[str, Path, None] = None, default_mode: Optional[RenderMode] = None,
+                 collisions: bool = True) -> None:
         self.engine, self.default_mode = Path(engine) if engine else find_engine(), default_mode or Wireframe()
+        self.collisions = collisions
 
     def compile(self, location: Location, shot: str, mode: Union[RenderMode, str, None] = None, **params: Any) -> Scene:
         """A shot of a location. `mode` is a RenderMode or a name from registry.modes, with `params` for it."""
-        blocked = location.clashes(bodies_only=True)
+        blocked = location.clashes(bodies_only=True) if self.collisions else []
         if blocked:
             raise CollisionError(f"{blocked[0]}; settle() moves it clear, and solid=False lets it through on purpose")
         chosen = location.registry.modes.get(mode)(**params) if isinstance(mode, str) else mode or self.default_mode
