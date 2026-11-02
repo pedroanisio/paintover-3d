@@ -15,7 +15,8 @@ sys.path[:0] = [str(ROOT)]
 
 from srlocations import Flat, Location, Look, Mesh, Projection, Registry, Renderer, Styled
 from srlocations.geometry import Transform, Vec3
-from srlocations.interchange import InterchangeError, load_bvh, load_gltf, save_bvh, save_glb
+from srlocations.interchange import InterchangeError, load_bvh, load_gltf, load_keypoints, save_bvh, save_glb
+from srlocations.kinematics import scaled
 from srlocations.mesh import _local, _times
 from srlocations.stock.mannequin import JOINTS, POSES, Mannequin
 from test_looks import GREY, H, W, flat_set, near, pixel
@@ -428,6 +429,176 @@ def test_a_file_that_is_not_a_bvh_is_refused(tmp_path):
     path.write_text("HIERARCHY\nROOT hips\n{\n  OFFSET 0 0\n")
     with pytest.raises(InterchangeError):
         load_bvh(path)
+
+
+# Points in: where a body's joints are in each frame, as a pose tracker from video gives them
+
+BODY = [f"{side}_{part}" for side in ("left", "right") for part in
+        ("upper_leg", "lower_leg", "foot", "toes", "upper_arm", "lower_arm", "hand")]
+PALMS = [f"{side}_{finger}_proximal" for side in ("left", "right") for finger in ("index", "middle", "little")]
+FACE = ["head", "left_eye", "right_eye"]
+
+
+def points(figure: Mannequin, names=BODY) -> dict[str, Vec3]:
+    found = worlds(figure)
+    return {name: found[name].position for name in names}
+
+
+def apart(found: dict[str, Transform], expected: dict[str, Transform], names) -> float:
+    return max((found[name].position - expected[name].position).length for name in names)
+
+
+TRACKED = {name: FIGURES[f"pose-{name}"] for name in ("stand", "walk", "sit", "point", "drive", "crouch", "kneel",
+                                                      "wave", "arms-crossed", "run", "t")}
+LIMBS = {"left_upper_leg.twist_in_out": 30, "left_lower_leg.stretch": -70, "right_upper_leg.in_out": 20,
+         "right_lower_leg.stretch": -40, "left_upper_arm.twist_in_out": -40, "left_lower_arm.stretch": -80,
+         "right_upper_arm.front_back": -60, "right_lower_arm.stretch": -50}
+TRACKED |= {"seeded": FIGURES["seeded"], "limbs": Mannequin(at=(0.4, 0, 0.2), yaw=150, adjust=LIMBS)}
+# Points cannot show how a bend is shared along the spine, and a spine bent at one joint and read back bent evenly holds
+# the shoulders, and all below them, a little elsewhere.
+UNEVEN = {"placed": FIGURES["placed"],
+          "bent": Mannequin(at=(0.4, 0, 0.2), yaw=150, adjust={**LIMBS, "chest.twist_left_right": 8, "spine.left_right": 10,
+                                                               "upper_chest.front_back": -10})}
+
+
+@pytest.mark.parametrize("name", [*TRACKED, *UNEVEN])
+def test_points_read_back_put_every_joint_where_they_were(name):
+    figure = TRACKED.get(name) or UNEVEN[name]
+    take = load_keypoints([points(figure, BODY + PALMS)], figure)
+    assert len(take.poses) == 1 and not take.unknown
+    assert apart(standing(take.poses[0], figure), worlds(figure), BODY + PALMS) < (0.01 if name in TRACKED else 0.025)
+
+
+def test_a_limbs_twist_is_read_from_the_way_its_middle_joint_bends():
+    figure = TRACKED["limbs"]
+    pose = load_keypoints([points(figure)], figure).poses[0]
+    assert pose["left_upper_leg.twist_in_out"] == pytest.approx(30, abs=1)
+    assert pose["left_upper_arm.twist_in_out"] == pytest.approx(-40, abs=1)
+    assert pose["left_lower_leg.stretch"] == pytest.approx(-70, abs=1)
+
+
+def test_a_forearms_twist_is_read_from_the_palm():
+    figure = Mannequin(adjust={"left_lower_arm.stretch": -60, "left_lower_arm.twist_in_out": 50, "left_hand.down_up": 30})
+    pose = load_keypoints([points(figure, BODY + PALMS)], figure).poses[0]
+    assert pose["left_lower_arm.twist_in_out"] == pytest.approx(50, abs=2)
+    assert pose["left_hand.down_up"] == pytest.approx(30, abs=2)
+    bare = load_keypoints([points(figure)], figure).poses[0]  # without the palm nothing says, and it keeps none
+    assert bare.get("left_lower_arm.twist_in_out", 0) == pytest.approx(0, abs=0.1) and "left_hand.down_up" not in bare
+    bending = Mannequin(adjust={"left_lower_arm.stretch": -90, "left_lower_arm.twist_in_out": 50, "left_hand.down_up": 30})
+    take = load_keypoints([points(figure, BODY + PALMS), points(bending)], figure)  # the palm lost in the second frame
+    assert take.poses[1]["left_lower_arm.twist_in_out"] == pytest.approx(50, abs=2)
+    assert take.poses[1]["left_lower_arm.stretch"] == pytest.approx(-90, abs=1)
+
+
+def test_the_head_turns_only_with_points_on_it():
+    figure = Mannequin(adjust={"neck.turn_left_right": 20, "head.turn_left_right": 20, "head.nod_down_up": -10})
+    take = load_keypoints([points(figure, BODY + FACE)], figure)
+    assert apart(standing(take.poses[0], figure), worlds(figure), BODY + FACE) < 0.01
+    turned = take.poses[0]["neck.turn_left_right"] + take.poses[0]["head.turn_left_right"]
+    assert turned == pytest.approx(40, abs=1)
+    without = load_keypoints([points(figure)], figure).poses[0]  # follows the chest
+    assert not any(key.startswith(("neck.", "head.")) for key in without)
+
+
+def test_shoulders_beside_the_hips_bend_the_trunk_sideways_and_no_more():
+    # Level shoulders shifted to one side, as a tracker's depth puts them: the chest can lean only about its shoulder
+    # line, and must not be turned past it looking for the rest.
+    for way in (Vec3(0.2, 0, 0), Vec3(-0.15, 0, 0), Vec3(0, 0, 0.2)):
+        for yaw in (0, 120):
+            figure = Mannequin(yaw=yaw)
+            shift = Transform(basis=figure.transform.basis).apply(way)
+            moved = {name: at + shift if "arm" in name or "hand" in name else at for name, at in points(figure).items()}
+            pose = load_keypoints([moved], figure).poses[0]
+            for control in ("front_back", "left_right", "twist_left_right"):
+                assert abs(sum(pose.get(f"{joint}.{control}", 0) for joint in ("spine", "chest", "upper_chest"))) < 35
+
+
+def test_a_body_turning_past_half_a_turn_is_not_held_there():
+    # Turned near half a turn and tilted, the hips' turns kept near their last values pass an end of a range of a whole
+    # turn, where they are the same a whole turn back.
+    turning = [Mannequin(yaw=yaw, adjust={"hips.front_back": tilt, "hips.left_right": side, "left_lower_leg.stretch": -30})
+               for yaw, tilt, side in ((170, 0, 6), (178, -20, -8), (182, 0, 6), (190, -20, -8), (200, 0, 6), (300, 0, 0),
+                                       (400, 0, 0))]
+    take = load_keypoints([points(figure) for figure in turning], turning[0])
+    assert not take.clamped
+    for pose, figure in zip(take.poses, turning):
+        assert apart(standing(pose, figure), worlds(figure), BODY) < 0.01
+
+
+def test_a_knee_pushed_back_past_straight_is_read_straight_and_never_folded():
+    # A tracker's knee a little behind the line from hip to ankle bends it the way it cannot go. Held at its range, a
+    # straight knee is nearer that than a folded one, however the two angle sets that make the turn fall.
+    sweep = []
+    for back in range(0, 21, 2):
+        found = points(Mannequin())
+        found["left_lower_leg"] = found["left_lower_leg"] - Vec3(0, 0, back / 200)
+        sweep.append(found)
+    for pose in load_keypoints(sweep).poses:
+        assert pose.get("left_lower_leg.stretch", 0) > -20
+
+
+def test_an_arm_raised_past_its_range_moves_as_smoothly_as_its_points():
+    # Swept over the head and across, the arm is held at its range part of the way. Of the angle sets that make each
+    # frame's turn, the one held nearest it is kept, so the hand moves no more between frames than its points do, and a
+    # gesture keeps its speed and acceleration.
+    figure = Mannequin()
+    found = points(figure)
+    shoulder = found["left_upper_arm"]
+    upper = (found["left_lower_arm"] - shoulder).length
+    lower = (found["left_hand"] - found["left_lower_arm"]).length
+    out = found["left_upper_arm"] - found["right_upper_arm"]
+    out = scaled(out, 1 / out.length)
+    sweep = []
+    for step in range(0, 181, 5):  # out to the side, over the head and across it
+        angle = math.radians(step)
+        way = scaled(out, math.cos(angle)) + Vec3(0, math.sin(angle), 0.2)
+        way = scaled(way, 1 / way.length)
+        sweep.append({**found, "left_lower_arm": shoulder + scaled(way, upper), "left_hand": shoulder + scaled(way, upper + lower)})
+    hands = [worlds(Mannequin(pose=pose))["left_hand"].position for pose in load_keypoints(sweep, figure).poses]
+    stride = (sweep[1]["left_hand"] - sweep[0]["left_hand"]).length
+    assert max((b - a).length for a, b in zip(hands, hands[1:])) < 2 * stride
+
+
+def test_a_point_missing_from_a_frame_keeps_its_bone_as_it_was():
+    raised = Mannequin(adjust={"left_upper_arm.front_back": -80, "left_lower_arm.stretch": -45})
+    later = Mannequin(adjust={"left_upper_arm.front_back": -80, "left_lower_arm.stretch": -45, "right_lower_leg.stretch": -30})
+    second = {name: at for name, at in points(later).items() if not name.startswith("left_") or "arm" not in name}
+    second.pop("left_hand")
+    take = load_keypoints([points(raised), second], raised)
+    for key in ("left_upper_arm.front_back", "left_lower_arm.stretch"):
+        assert take.poses[1][key] == pytest.approx(take.poses[0][key], abs=0.1)
+    assert take.poses[1]["right_lower_leg.stretch"] == pytest.approx(-30, abs=1)
+
+
+def test_points_from_a_smaller_body_move_this_one_as_far_for_its_size():
+    child = Mannequin(kind="child", at=(1.0, 0, 0), adjust={"left_lower_leg.stretch": -50, "left_upper_leg.front_back": -40})
+    take = load_keypoints([points(Mannequin(kind="child")), points(child)], fps=10)
+    man, small = Mannequin()._solved({}), child._solved({})
+    size = (man["left_upper_leg"].position - man["left_foot"].position).length / \
+        (small["left_upper_leg"].position - small["left_foot"].position).length
+    moved = take.poses[1].get("hips.right", 0) - take.poses[0].get("hips.right", 0)
+    assert take.fps == 10 and abs(moved) == pytest.approx(size, rel=0.02)
+    assert take.poses[1]["left_lower_leg.stretch"] == pytest.approx(-50, abs=1)
+
+
+def test_points_are_read_from_a_file(tmp_path):
+    figure = TRACKED["walk"]
+    path = tmp_path / "points.json"
+    path.write_text(json.dumps({"fps": 24, "frames": [{name: list(at) for name, at in points(figure).items()} |
+                                                      {"tail": [0, 0, 0]}]}))
+    take = load_keypoints(path, figure)
+    assert take.fps == 24 and take.unknown == ("tail",)
+    assert apart(standing(take.poses[0], figure), worlds(figure), BODY) < 0.01
+
+
+def test_points_without_both_hips_are_refused(tmp_path):
+    with pytest.raises(InterchangeError, match="left_upper_leg"):
+        load_keypoints([{"right_upper_leg": (0.1, 0.9, 0)}])
+    with pytest.raises(InterchangeError):
+        load_keypoints([])
+    (tmp_path / "bad.json").write_text("[1, 2")
+    with pytest.raises(InterchangeError):
+        load_keypoints(tmp_path / "bad.json")
 
 
 # GLB

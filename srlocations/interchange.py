@@ -41,7 +41,7 @@ from pathlib import Path
 from typing import Iterable, Iterator, Mapping, Optional, Sequence, Union
 
 from srlocations.geometry import IDENTITY, Matrix, Transform, Vec3, rotation
-from srlocations.kinematics import angles, apply, cross, dot, nearest, scaled, transposed, turned, unit
+from srlocations.kinematics import angles, apply, cross, dot, framed, nearest, scaled, transposed, turned, unit
 from srlocations.mesh import Gltf, _local, _times as _times4
 from srlocations.nodes import Node
 from srlocations.registry import Registry
@@ -341,26 +341,55 @@ def _swing(start: Vec3, end: Vec3) -> Matrix:
     return tuple(tuple(tuple(column)[r] for column in columns) for r in range(3))
 
 
+TIE = 1.0  # degrees within which two angle sets cost the same, and the nearer the rotation is kept
+
+
 def _controls(figure: Mannequin, free: Mannequin, joint: Joint, basis: Matrix,
               before: Mapping[str, float]) -> tuple[dict[str, float], list[str]]:
     """A joint's turning controls for a rotation on its parent, and which of them were held at a range. Of the two sets
-    that make it, the one within the ranges is kept, or the one least outside them, then the one nearest those `before`."""
+    that make it, each held at the ranges, the one kept is the one with the fewest degrees between its turn and the
+    rotation added to the degrees it turns the joint from `before`, if there was a frame before, or where the two come
+    within `TIE`, the one nearer the rotation, then the one with controls nearer those. Two sets the same degrees outside the ranges may hold at turns far apart, an arm up or down, a knee
+    straight or folded, and choosing by degrees outside swapped them between frames as the points crossed. Nor is the
+    nearest turn enough: as an arm held over the head is drawn on across it, the set held at its other end comes nearer,
+    and the hand would leap in one frame. A turn that makes the rotation always wins, since its cost, the turn from
+    before, is never more than the other's miss added to its turn."""
     turns = [dof for dof in joint.dofs if dof.turn not in MOVES]
     yaw, pitch, roll = joint.rest
     wanted = _times(transposed(rotation(joint.turned("yaw", yaw), pitch, joint.turned("roll", roll))), basis)
     order = [dof.turn for dof in turns]
     order += [turn for turn in ("yaw", "pitch", "roll") if turn not in order]  # turns it lacks, left out at the end
     controls = [(joint, dof) for dof in turns]
-    options = [free._chosen(controls, [found], before)[0] for found in angles(wanted, order)]
 
-    def outside(option: Mapping[str, float]) -> float:
-        return sum(max(PARAMETERS[key].low - value, value - PARAMETERS[key].high, 0.0) for key, value in option.items())
-    best = min(options, key=lambda option: (max(0.0, outside(option) - SLACK) if figure.limits else 0.0,
-                                            sum((value - before.get(key, 0.0)) ** 2 for key, value in option.items())))
+    def wrapped(option: Mapping[str, float]) -> dict[str, float]:
+        """A control that can make a whole turn, kept near its value before, may pass an end of its range; it comes
+        back a whole turn, since there it is the same."""
+        found = dict(option)
+        for key, value in found.items():
+            low, high = PARAMETERS[key].low, PARAMETERS[key].high
+            if high - low >= 360 - SLACK and not low <= value <= high:
+                found[key] = value - 360 * math.floor((value - low) / 360)
+        return found
+    options = [wrapped(free._chosen(controls, [found], before)[0]) for found in angles(wanted, order)]
+
+    def held(option: Mapping[str, float]) -> dict[str, float]:
+        return {key: max(PARAMETERS[key].low, min(PARAMETERS[key].high, value)) for key, value in option.items()}
+
+    def apart(a: Matrix, b: Matrix) -> float:
+        made = _times(transposed(a), b)
+        return math.degrees(math.acos(max(-1.0, min(1.0, (made[0][0] + made[1][1] + made[2][2] - 1) / 2))))
+
+    def moved(option: Mapping[str, float]) -> float:
+        return sum((value - before.get(key, 0.0)) ** 2 for key, value in option.items())
     if not figure.limits:
-        return best, []
-    held = {key: max(PARAMETERS[key].low, min(PARAMETERS[key].high, value)) for key, value in best.items()}
-    return held, [key for key, value in best.items() if abs(held[key] - value) > SLACK]
+        return min(options, key=moved), []
+    was = free._local(joint, held(before), 1.0).basis if any(key in before for key in options[0]) else None
+    made = [free._local(joint, held(option), 1.0).basis for option in options]
+    misses = [apart(turn, basis) for turn in made]
+    costs = [miss + (apart(was, turn) if was else 0.0) for miss, turn in zip(misses, made)]
+    best = min((i for i, cost in enumerate(costs) if cost <= min(costs) + TIE), key=lambda i: (misses[i], moved(options[i])))
+    best = options[best]
+    return held(best), [key for key, value in best.items() if abs(held(best)[key] - value) > SLACK]
 
 
 def _heading(at_rest: Sequence[Vec3], bone_of: Mapping[str, int]) -> float:
@@ -597,6 +626,223 @@ def load_gltf(path: Union[str, Path], figure: Optional[Mannequin] = None, animat
             moment = placer(overrides)
             frames.append([moment(index) for index in bones])
     return _retargeted(path, figure, names, [at.position for at in rest], ends, [at.basis for at in rest], frames, rate)
+
+
+def _share(m: Matrix, share: float) -> Matrix:
+    """That part of a rotation, about the same axis."""
+    x, y, z, w = _slerp([0.0, 0.0, 0.0, 1.0], _quaternion(m), share)
+    return tuple(tuple(row[:3]) for row in _local({"rotation": (x, y, z, w)})[:3])
+
+
+def _shares(chain: Sequence[str]) -> list[float]:
+    """How much of a turn each joint of a chain has reached by itself, each taking a part as wide as its ranges."""
+    widths = [sum(PARAMETERS[f"{name}.{dof.name}"].high - PARAMETERS[f"{name}.{dof.name}"].low
+                  for dof in BY_NAME[name].dofs) for name in chain]
+    return [sum(widths[:n + 1]) / sum(widths) for n in range(len(chain))]
+
+
+def _framed(along: Vec3, side: Vec3, *fallbacks: Vec3) -> Matrix:
+    """A frame along a bone, turned about it toward `side`, or toward the first of the others that is not along it."""
+    way = unit(along)
+    for candidate in (side, *fallbacks, Vec3(0, 0, 1), Vec3(0, 1, 0)):
+        square = candidate - scaled(way, dot(candidate, way))
+        if square.length > 1e-6 * max(1.0, candidate.length):
+            return framed(way, square)
+    raise InterchangeError("no direction is square to the bone")  # cannot happen: two fixed candidates are square to each other
+
+
+def _carried(now: Matrix, rest: Matrix) -> Matrix:
+    """The turn that takes a frame from where it was at rest to where it is."""
+    return _times(now, transposed(rest))
+
+
+SIDES = ("left", "right")
+LIMBS = tuple((f"{side}_{top}", f"{side}_{middle}", f"{side}_{end}") for side in SIDES
+              for top, middle, end in (("upper_leg", "lower_leg", "foot"), ("upper_arm", "lower_arm", "hand")))
+TRUNK, NECK = ("spine", "chest", "upper_chest"), ("neck", "head")
+STRAIGHT = 15.0  # degrees: an elbow or knee bent less than this says only in part which way its hinge faces
+LEAN = 0.5  # of the trunk's lean from upright, what the pelvis takes: two hip points cannot show how it tilts
+UP, AHEAD = Vec3(0, 1, 0), Vec3(0, 0, 1)
+ROUNDS = 4  # times the chest is turned toward where the shoulders are, each nearer by the square of the last miss
+
+
+def load_keypoints(source: Union[str, Path, Sequence[Mapping[str, Sequence[float]]]], figure: Optional[Mannequin] = None,
+                   fps: Optional[float] = None) -> Take:
+    """Poses for `figure`, by default the stock man, from where a body's joints are in each frame, as a pose tracker gives
+    them from video: a list of frames, or a JSON file of {"fps": ..., "frames": [...]}, each frame a mapping from a joint's
+    name to where it is, in metres in this SDK's frame (x right, y up, z away). A joint is named as this SDK or a package
+    in `ALIASES` names it, and its point is where it turns: `left_lower_leg` is the knee. Frames come `fps` a second, or
+    as the file says, or 30.
+
+    Both hips (`left_upper_leg`, `right_upper_leg`) are needed. Each bone is turned to point where its points say: a thigh
+    from hip to knee, a foot from ankle to `toes`. An elbow or knee bent by `STRAIGHT` or more says which way its hinge
+    faces, which turns the whole limb about its length; a straighter one says it only in part, and leans on the hinge as
+    it was, carried as the bone swung. A forearm twists with the palm when `index_proximal`, `middle_proximal` and
+    `little_proximal` are given, and as it last did in a frame that lacks them. The head turns only when `head` and both
+    eyes are given; without them it follows the chest. The trunk's turn from the pelvis to the shoulders is shared
+    between spine, chest and upper chest as their ranges are, and the pelvis takes `LEAN` of its lean.
+    A point missing from a frame leaves its bone turned on its parent as it was. Points from a body of another size move
+    this one as far for its size, judged by its legs. A grounded figure stands on its floor; the rest is as load_bvh()."""
+    path = Path(source) if isinstance(source, (str, Path)) else Path("points")
+    rate: Optional[float] = None
+    if isinstance(source, (str, Path)):
+        try:
+            data = json.loads(path.read_text())
+            source, rate = data["frames"], data.get("fps")
+        except (OSError, ValueError, KeyError, TypeError, AttributeError) as error:
+            raise InterchangeError(f"{path} is not a file of points this SDK can read: {error}") from None
+    figure = Mannequin() if figure is None else figure
+    named: list[dict[str, Vec3]] = []
+    unknown: list[str] = []
+    for frame in source:
+        found = {}
+        for name, at in frame.items():
+            known = _known(name)
+            if known is None:
+                unknown += [] if name in unknown else [name]
+            else:
+                found[known] = Vec3(*at)
+        named.append(found)
+    hipped = [frame for frame in named if "left_upper_leg" in frame and "right_upper_leg" in frame]
+    if not hipped:
+        raise InterchangeError(f"{path} has no frame with both hips, left_upper_leg and right_upper_leg")
+    filled, last = [], hipped[0]
+    for frame in named:  # a frame without both hips is the one before it, or the first that has them
+        last = frame if frame in hipped else last
+        filled.append(last)
+
+    solved = figure._solved({})
+    rest = {name: frame.position for name, frame in solved.items()}
+    bent = figure._solved({f"{middle}.stretch": -90.0 for _, middle, _ in LIMBS})
+    hinged = {top: unit(cross(rest[middle] - rest[top], bent[end].position - bent[middle].position))
+              for top, middle, end in LIMBS}
+    flexed = figure._solved({f"{side}_hand.down_up": 30.0 for side in SIDES})
+    wrists = {}  # the line a hand bends up and down about, at rest, which turns with the forearm
+    for side in SIDES:
+        x, y, z, _ = _quaternion(_carried(flexed[f"{side}_hand"].basis, solved[f"{side}_hand"].basis))
+        wrists[f"{side}_hand"] = unit(Vec3(x, y, z))
+    ours = theirs = 0.0
+    for a, b in [pair for top, middle, end in LIMBS if "leg" in top for pair in ((top, middle), (middle, end))]:
+        lengths = sorted((frame[a] - frame[b]).length for frame in filled if a in frame and b in frame)
+        if lengths:
+            theirs, ours = theirs + lengths[len(lengths) // 2], ours + (rest[a] - rest[b]).length
+    size = theirs / ours if ours > 0 else 1.0
+
+    def middle_of(a: Vec3, b: Vec3) -> Vec3:
+        return scaled(a + b, 0.5)
+    pelvis_rest = _framed(rest["right_upper_leg"] - rest["left_upper_leg"], UP)
+    trunk_rest = middle_of(rest["left_upper_arm"], rest["right_upper_arm"]) - middle_of(rest["left_upper_leg"],
+                                                                                       rest["right_upper_leg"])
+    thorax_rest = _framed(rest["right_upper_arm"] - rest["left_upper_arm"], trunk_rest)
+    shoulders_rest = middle_of(rest["left_upper_arm"], rest["right_upper_arm"])
+    eyes_rest = middle_of(rest["left_eye"], rest["right_eye"])
+    trunk_shares, neck_shares = _shares(TRUNK), _shares(NECK)
+    turns: list[dict[str, Matrix]] = []
+    places: list[Vec3] = []
+    kept: dict[str, Matrix] = {}  # each bone's last turn on its parent
+    hinges: dict[str, tuple[Vec3, Vec3]] = {}  # each limb's last upper bone and hinge, on the bone above it
+    twists: dict[str, Matrix] = {}  # each forearm's last twist from the plane of its elbow, from the last palm seen
+    driven: set[str] = set()
+    for points in filled:
+        turn: dict[str, Matrix] = {}
+
+        def keep(name: str) -> Matrix:
+            """A bone with nothing to say where it points this frame, turned on its parent as it last was."""
+            if name not in turn:
+                turn[name] = _times(turn[BY_NAME[name].parent], kept.get(name, IDENTITY))
+            return turn[name]
+
+        def placed(name: str) -> Vec3:
+            parent = BY_NAME[name].parent
+            return place[parent] + apply(turn[parent], scaled(rest[name] - rest[parent], size))
+
+        left, right = points["left_upper_leg"], points["right_upper_leg"]
+        chest = "left_upper_arm" in points and "right_upper_arm" in points
+        trunk = middle_of(points["left_upper_arm"], points["right_upper_arm"]) - middle_of(left, right) if chest else None
+        up = scaled(UP, 1 - LEAN) + scaled(unit(trunk), LEAN) if trunk else UP
+        turn["hips"] = pelvis = _carried(_framed(right - left, up, trunk or UP), pelvis_rest)
+        place = {"hips": middle_of(left, right) + apply(pelvis, scaled(rest["hips"] - middle_of(rest["left_upper_leg"],
+                                                                                             rest["right_upper_leg"]), size))}
+        if chest:
+            # The line from hips to shoulders leans less than the chest, since the spine bends above the hips, so the
+            # chest is turned about its shoulder line until the spine puts the shoulders' middle where the points have
+            # it, or as near as that turn can: a miss along the line is the spine's bend, which the line already says.
+            across, top, way = points["right_upper_arm"] - points["left_upper_arm"], middle_of(
+                points["left_upper_arm"], points["right_upper_arm"]), trunk
+            for _ in range(ROUNDS):
+                within = _times(transposed(pelvis), _carried(_framed(across, way), thorax_rest))
+                for name, share in zip(TRUNK, trunk_shares):
+                    turn[name] = _times(pelvis, _share(within, share))
+                for name in TRUNK:
+                    place[name] = placed(name)
+                reached = place["upper_chest"] + apply(turn["upper_chest"], scaled(shoulders_rest - rest["upper_chest"], size))
+                line = unit(across)
+                missed, wanted = (v - scaled(line, dot(v, line)) for v in (reached - place["spine"], top - place["spine"]))
+                way = turned(line, math.atan2(dot(line, cross(missed, wanted)), dot(missed, wanted)), way)
+            driven.update(TRUNK)
+        for name in TRUNK + ("neck",) + tuple(f"{side}_shoulder" for side in SIDES):
+            keep(name)
+            place[name] = placed(name)
+        for side in SIDES:
+            shoulder, arm = f"{side}_shoulder", f"{side}_upper_arm"
+            if arm in points:
+                turn[shoulder] = _carried(_framed(points[arm] - place[shoulder], apply(turn["upper_chest"], AHEAD)),
+                                          _framed(rest[arm] - rest[shoulder], AHEAD))
+                driven.add(shoulder)
+        for top, middle, end in LIMBS:
+            parent = BY_NAME[top].parent
+            if all(name in points for name in (top, middle, end)):
+                upper, lower = points[middle] - points[top], points[end] - points[middle]
+                normal = cross(upper, lower)
+                was, hinge = hinges.get(top, (rest[middle] - rest[top], hinged[top]))
+                hinge = apply(turn[parent], apply(_swing(was, apply(transposed(turn[parent]), upper)), hinge))
+                share = min(1.0, math.degrees(math.atan2(normal.length, dot(upper, lower))) / STRAIGHT)
+                if share > 0:  # a straighter limb leans on the hinge as it was, carried as the bone swung
+                    measured = unit(normal) if dot(normal, hinge) >= 0 or share == 1 else scaled(unit(normal), -1)
+                    hinge = unit(scaled(hinge, 1 - share) + scaled(measured, share))
+                hinges[top] = (apply(transposed(turn[parent]), upper), apply(transposed(turn[parent]), hinge))
+                turn[top] = _carried(_framed(upper, hinge), _framed(rest[middle] - rest[top], hinged[top]))
+                turn[middle] = _carried(_framed(lower, hinge), _framed(rest[end] - rest[middle], hinged[top]))
+                driven.update((top, middle))
+            keep(top), keep(middle)
+            hinge, hinge_rest = apply(turn[top], hinged[top]), hinged[top]
+            if end.endswith("foot") and end in points and f"{end[:-4]}toes" in points:
+                toes = f"{end[:-4]}toes"
+                turn[end] = _carried(_framed(points[toes] - points[end], hinge), _framed(rest[toes] - rest[end], hinge_rest))
+                driven.add(end)
+            palm = [f"{end[:-4]}{finger}_proximal" for finger in ("index", "middle", "little")]
+            if end.endswith("hand") and all(name in points for name in [end, middle] + palm):
+                across, across_rest = points[palm[0]] - points[palm[2]], rest[palm[0]] - rest[palm[2]]
+                turn[end] = _carried(_framed(points[palm[1]] - points[end], across),
+                                     _framed(rest[palm[1]] - rest[end], across_rest))
+                lower = points[end] - points[middle]
+                twisted = _framed(lower, apply(turn[end], wrists[end]), hinge)
+                turn[middle] = _carried(twisted, _framed(rest[end] - rest[middle], wrists[end]))
+                twists[middle] = _times(transposed(_framed(lower, hinge)), twisted)
+                driven.update((middle, end))
+            elif middle in twists and middle in points and end in points:  # the palm lost: the forearm twists as it last did
+                twisted = _times(_framed(points[end] - points[middle], hinge), twists[middle])
+                turn[middle] = _carried(twisted, _framed(rest[end] - rest[middle], wrists[end]))
+            keep(end)
+        if all(name in points for name in ("head", "left_eye", "right_eye")):
+            whole = _carried(_framed(points["right_eye"] - points["left_eye"],
+                                     middle_of(points["left_eye"], points["right_eye"]) - place["neck"]),
+                             _framed(rest["right_eye"] - rest["left_eye"], eyes_rest - rest["neck"]))
+            within = _times(transposed(turn["upper_chest"]), whole)
+            for name, share in zip(NECK, neck_shares):
+                turn[name] = _times(turn["upper_chest"], _share(within, share))
+            driven.update(NECK)
+        for name, found in turn.items():
+            parent = BY_NAME[name].parent
+            kept[name] = _times(transposed(turn[parent]), found) if parent else found
+        turns.append(turn)
+        places.append(place["hips"])
+    names = [joint.name for joint in JOINTS if joint.name == "hips" or joint.name in driven]
+    take = _retargeted(path, figure, names, [_out(scaled(rest[name], size)) for name in names], [None] * len(names),
+                       [IDENTITY] * len(names),
+                       ([Transform(_out(place) if name == "hips" else Vec3(), _flipped(turn[name])) for name in names]
+                        for turn, place in zip(turns, places)), fps or rate or FPS)
+    return replace(take, unknown=tuple(unknown))
 
 
 class _Blob:
