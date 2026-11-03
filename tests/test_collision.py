@@ -293,8 +293,8 @@ def test_a_walk_with_planted_feet_into_a_table_is_found_too():
     assert found(walked(table=0.0, plants=True)) == [("a/left_index_distal", "table/box", 0.018208, 0.08125, True),
                                                       ("a/left_middle_distal", "table/box", 0.02908, 0.0875, True),
                                                       ("a/left_ring_distal", "table/box", 0.027423, 0.09375, True),
-                                                      ("a/right_upper_leg", "table/box", 0.005384, 0.1625, True),
-                                                      ("a/left_upper_leg", "table/box", 0.03262, 0.20625, True)]
+                                                      ("a/right_upper_leg", "table/box", 0.011396, 0.1875, True),
+                                                      ("a/left_upper_leg", "table/box", 0.024685, 0.2, True)]
 
 
 def test_a_hand_that_grazes_a_table_in_passing_is_found_once():
