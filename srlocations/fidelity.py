@@ -9,7 +9,7 @@ from dataclasses import dataclass, field, replace
 from typing import Mapping, Optional, Sequence
 
 from .geometry import Transform, Vec3
-from .interchange import Take
+from .interchange import Take, _known
 from .kinematics import scaled
 from .stock.mannequin import FOOTED, Mannequin, _margin
 
@@ -52,13 +52,19 @@ class Fidelity:
 Track = list[Optional[Vec3]]
 
 
+def _wearing(figure: Mannequin, pose: Mapping[str, float]) -> Mannequin:
+    """The figure in one of a take's poses. A take sets every control it read, so the figure's own `adjust` goes too, or
+    it would be added on top and the take compared against a pose it never had."""
+    return replace(figure, pose=pose, adjust={}, solid=False)
+
+
 def positions(take: Take, figure: Optional[Mannequin] = None,
               joints: Sequence[str] = LIMBS + HIPS) -> list[dict[str, Vec3]]:
     """Where each of `joints` turns in each frame of a take, on `figure`, by default the stock man, standing at the origin."""
     figure = Mannequin() if figure is None else figure
     out = []
     for pose in take.poses:
-        posed = replace(figure, pose=pose, solid=False)
+        posed = _wearing(figure, pose)
         frames = posed.frames()
         out.append({name: posed.transform.then(frames[name]).position for name in joints})
     return out
@@ -70,7 +76,7 @@ def _posed(take: Take, figure: Optional[Mannequin], joints: Sequence[str]) -> li
     figure = Mannequin() if figure is None else figure
     out = []
     for pose in take.poses:
-        posed = replace(figure, pose=pose, solid=False)
+        posed = _wearing(figure, pose)
         frames = posed.frames()
         lows: dict[str, list[tuple[float, Vec3]]] = {foot: [] for foot in FEET}
         for leaf in posed.walk():
@@ -84,13 +90,19 @@ def _posed(take: Take, figure: Optional[Mannequin], joints: Sequence[str]) -> li
     return out
 
 
+def _named(frame: Mapping[str, Sequence[float]]) -> dict[str, Vec3]:
+    """One frame of points under this SDK's joint names, read as load_keypoints() reads them, so points named for Mixamo
+    or another package compare with the take made from them. A point no joint is known as is left out."""
+    return {known: Vec3(*at) for name, at in frame.items() if (known := _known(name)) is not None}
+
+
 def fidelity(points: Sequence[Mapping[str, Sequence[float]]], take: Take, figure: Optional[Mannequin] = None) -> Fidelity:
     """How faithfully `take` follows `points`, the frames load_keypoints() read it from, in the same names and frame."""
     if len(points) != len(take.poses):
         raise ValueError(f"{len(points)} frames of points and {len(take.poses)} poses: compare a take with what it was read from")
     fps = take.fps
     made, soles, balances = zip(*_posed(take, figure, LIMBS + HIPS)) if take.poses else ((), (), ())
-    source = [{name: Vec3(*at) for name, at in frame.items()} for frame in points]
+    source = [_named(frame) for frame in points]
     leg = _leg(made)
     theirs, ours = _relative(source, _leg(source)), _relative(made, leg)
     limbs: dict[str, dict[str, float]] = {}

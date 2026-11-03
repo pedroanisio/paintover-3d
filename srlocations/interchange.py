@@ -332,11 +332,13 @@ def _swing(start: Vec3, end: Vec3) -> Matrix:
     """The smallest turn that points `start` along `end`."""
     start, end = unit(start), unit(end)
     axis, cosine = cross(start, end), dot(start, end)
+    angle = math.atan2(axis.length, cosine)  # from the two directions, before an opposite pair's axis is made up
     if axis.length < 1e-9:
         if cosine > 0:
             return IDENTITY
+        # Opposite: any axis square to `start` turns it the half turn. Measured with the made-up axis, it fell short of one.
         axis = cross(start, Vec3(1, 0, 0) if abs(start.x) < 0.9 else Vec3(0, 1, 0))
-    angle, axis = math.atan2(axis.length, cosine), unit(axis)
+    axis = unit(axis)
     columns = [turned(axis, angle, way) for way in (Vec3(1, 0, 0), Vec3(0, 1, 0), Vec3(0, 0, 1))]
     return tuple(tuple(tuple(column)[r] for column in columns) for r in range(3))
 
@@ -832,6 +834,7 @@ def load_keypoints(source: Union[str, Path, Sequence[Mapping[str, Sequence[float
             for name, share in zip(NECK, neck_shares):
                 turn[name] = _times(turn["upper_chest"], _share(within, share))
             driven.update(NECK)
+        keep("head")  # with the face lost this frame the head turns as it last did, not back to rest
         for name, found in turn.items():
             parent = BY_NAME[name].parent
             kept[name] = _times(transposed(turn[parent]), found) if parent else found
