@@ -349,6 +349,32 @@ def test_a_walk_keeps_each_foot_still_while_it_stands_on_it(to):
             assert max(((point - run[0]).length for point in run), default=0) < 0.002
 
 
+@pytest.mark.parametrize("to", [(0, 0, 2.6), [(0, 0, 1.8), (1.8, 0, 1.8)]])
+def test_a_planted_foots_ankle_rises_off_its_ball_without_a_jump(to):
+    """At heel-off a held foot pivots on its ball toward the hips, and its ankle rises and swings a little each frame at
+    60 fps, under 4 cm, and under 3 cm across the foot, where it moves about 2 cm and 1 cm. It jumped about 10 cm across in
+    one frame while the hips were past the ankle but short of the toes, because the way to the hips was taken from the toes
+    and reversed there, and 4 to 12 cm once the hips were `BEHIND` past the ankle, where the foot was let up all at once.
+    The frames where a hold begins or ends are left out: a landing foot drops onto its hold, which is the walk's and not
+    the pivot's."""
+    location, _ = strolling(to)
+    was, before, moves = {}, set(), []
+    for frame in range(round(location.duration() * 60) + 1):
+        moment = location.at(frame / 60).nodes[1]
+        held = {hold.joint for hold in moment.holds if not moment.let_go.get(hold.joint, 0.0)}
+        for side in ("left", "right"):
+            ankle, toes = world(moment, f"{side}_foot").position, world(moment, f"{side}_toes").position
+            if side in was and f"{side}_foot" in held and held == before:
+                step, along = ankle - was[side], toes - was[side]  # along: the foot's heading, from the ankle a frame ago
+                heading = math.atan2(along.x, along.z)
+                moves.append((side, frame, step.length, step.x * math.cos(heading) - step.z * math.sin(heading)))
+            was[side] = ankle
+        before = held
+    assert len(moves) > 20 and max(length for *_, length, _ in moves) > 0.01  # the heels do come up
+    for side, frame, length, across in moves:
+        assert length < 0.04 and abs(across) < 0.03, (side, frame, length, across)
+
+
 def test_a_walk_lifts_its_feet_and_never_sinks_them():
     location, _ = strolling()
     lows, lifted = [], 0.0

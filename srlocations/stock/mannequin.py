@@ -1034,27 +1034,32 @@ class Mannequin(Figure):
     def _tipped(self, frames: Mapping[str, Transform], hold: Hold, at: Vec3, basis: Optional[Matrix],
                 most: bool = False) -> tuple[Vec3, Optional[Matrix], float]:
         """Where a held foot's ankle goes and how it is turned when it rises onto its toes, the heel coming up as little as
-        lets the leg reach it, or all of `TIPPED` with `most`, and the degrees it turned. As the heel rises the foot pivots on
-        its ball toward the hips, all the way at `TIPPED`, as a foot does in a turn. A foot under the hips, or one not kept
-        turned, stays flat."""
+        lets the leg reach it, or as far as it may with `most`, and the degrees it turned. It may rise once the hips are
+        `BEHIND` past the ankle, in proportion, all of `TIPPED` at twice that: let up all at once there, it lifted the hips
+        and swung the ankle in one frame. As the heel rises the foot pivots on its ball toward the hips, all the way at
+        `TIPPED`, as a foot does in a turn. A foot under the hips, or one not kept turned, stays flat."""
         hip, reach = frames[LINEAGE[hold.joint][-3].name].position, self._reach(frames, hold.joint)
         if basis is None or (hip - at).length <= reach and not most:
             return at, basis, 0.0
         forward = apply(basis, Vec3(0, 0, 1))
-        if (hip.x - at.x) * forward.x + (hip.z - at.z) * forward.z < BEHIND * reach:
+        past = (hip.x - at.x) * forward.x + (hip.z - at.z) * forward.z
+        if past <= BEHIND * reach:
             return at, basis, 0.0
+        allowed = TIPPED * min(1.0, (past / (BEHIND * reach) - 1) / 2)
         foot = frames[hold.joint]
         toes = at + apply(basis, apply(transposed(foot.basis), frames[hold.joint.replace("_foot", "_toes")].position - foot.position))
         side = kinematics.unit(apply(basis, Vec3(1, 0, 0)))
         heel = 1 if kinematics.turned(side, 0.1, at - toes).y > (at - toes).y else -1
-        toward, up = hip - toes, Vec3(0, 1, 0)
-        spin = math.atan2(forward.z * toward.x - forward.x * toward.z, forward.x * toward.x + forward.z * toward.z) / TIPPED
+        # The way to the hips is taken from the ankle, as `past` is: from the toes it reversed while the hips were past the
+        # ankle but short of the toes, which is where a heel comes off, and the ankle swung half round the ball.
+        toward, up = hip - at, Vec3(0, 1, 0)
+        spin = math.atan2(forward.z * toward.x - forward.x * toward.z, past) / TIPPED
         turn = lambda degrees, point: kinematics.turned(up, spin * degrees, kinematics.turned(side, math.radians(degrees * heel), point))
         place = lambda degrees: toes + turn(degrees, at - toes)
-        if most or (hip - place(TIPPED)).length > reach:
-            degrees = TIPPED
+        if most or (hip - place(allowed)).length > reach:
+            degrees = allowed
         else:
-            low, high = 0.0, float(TIPPED)
+            low, high = 0.0, allowed
             for _ in range(30):
                 low, high = (low, (low + high) / 2) if (hip - place((low + high) / 2)).length <= reach else ((low + high) / 2, high)
             degrees = high
