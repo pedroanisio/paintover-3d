@@ -5,8 +5,8 @@ from dataclasses import replace
 import pytest
 
 from srlocations.fidelity import HIPS, LIMBS, fidelity, positions
-from srlocations.interchange import Take
-from srlocations.stock.mannequin import Mannequin
+from srlocations.interchange import Take, load_keypoints
+from srlocations.stock.mannequin import BY_NAME, Mannequin
 
 FPS = 24
 
@@ -27,6 +27,42 @@ def swing(frames=96, rate=1.5, wobble=0.0, wobbling=5.0, **extra):
 
 def points(take):
     return [{name: list(at) for name, at in frame.items()} for frame in positions(take, joints=LIMBS + HIPS)]
+
+
+def test_take_overrides_figure_adjustments_in_positions():
+    key = "left_upper_arm.front_back"
+    take = Take(({key: 0}, {key: -60}), FPS)
+    figure = Mannequin(kind="child", adjust={key: 30, "head.turn_left_right": 20})
+    joints = LIMBS + HIPS + ("left_eye",)
+    expected = positions(take, replace(figure, adjust={}), joints)
+    found = positions(take, figure, joints)
+    assert (expected[1]["left_hand"] - expected[0]["left_hand"]).length > 0.3
+    assert found == expected
+    assert figure.adjust == {key: 30, "head.turn_left_right": 20}
+
+
+def test_take_overrides_figure_adjustments_in_fidelity():
+    take = swing(9)
+    figure = Mannequin(kind="child", adjust={"left_upper_arm.down_up": 30})
+    source = positions(take, replace(figure, adjust={}))
+    found = fidelity(source, take, figure).by_limb["left_hand"]
+    assert found["miss"] == pytest.approx(0, abs=1e-9)
+    assert found["speed"] == pytest.approx(1)
+    assert figure.adjust == {"left_upper_arm.down_up": 30}
+
+
+@pytest.mark.parametrize("prefix", ["", "mixamorig:", "mixamorig1"])
+def test_aliased_points_compare_as_the_points_that_were_imported(prefix):
+    source = positions(swing(9), joints=LIMBS + HIPS + ("left_upper_arm", "right_upper_arm"))
+    aliased = [{prefix + BY_NAME[name].known_as["mixamo"]: at for name, at in frame.items()} |
+               {"tail": (0, 0, 0)} for frame in source]
+    take = load_keypoints(aliased, fps=FPS)
+    assert take.unknown == ("tail",)
+    expected, found = fidelity(source, take), fidelity(aliased, take)
+    assert found.miss == pytest.approx(expected.miss)
+    assert found.speed == pytest.approx(expected.speed)
+    for name in LIMBS:
+        assert found.by_limb[name]["miss"] == pytest.approx(expected.by_limb[name]["miss"])
 
 
 def test_a_take_against_its_own_joints_keeps_everything():

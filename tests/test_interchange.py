@@ -15,8 +15,8 @@ sys.path[:0] = [str(ROOT)]
 
 from srlocations import Flat, Location, Look, Mesh, Projection, Registry, Renderer, Styled
 from srlocations.geometry import Transform, Vec3
-from srlocations.interchange import InterchangeError, load_bvh, load_gltf, load_keypoints, save_bvh, save_glb
-from srlocations.kinematics import scaled
+from srlocations.interchange import InterchangeError, _swing, load_bvh, load_gltf, load_keypoints, save_bvh, save_glb
+from srlocations.kinematics import apply, scaled
 from srlocations.mesh import _local, _times
 from srlocations.stock.mannequin import JOINTS, POSES, Mannequin
 from test_looks import GREY, H, W, flat_set, near, pixel
@@ -488,6 +488,28 @@ def test_a_forearms_twist_is_read_from_the_palm():
     take = load_keypoints([points(figure, BODY + PALMS), points(bending)], figure)  # the palm lost in the second frame
     assert take.poses[1]["left_lower_arm.twist_in_out"] == pytest.approx(50, abs=2)
     assert take.poses[1]["left_lower_arm.stretch"] == pytest.approx(-90, abs=1)
+
+
+@pytest.mark.parametrize("direction", [Vec3(0, 1, 0), Vec3(1, 0, 0), Vec3(1, 2, 3)])
+def test_opposite_bones_turn_a_full_half_turn(direction):
+    opposite = scaled(direction, -1)
+    made = apply(_swing(direction, opposite), direction)
+    assert tuple(made) == pytest.approx(tuple(opposite), abs=1e-9)
+
+
+@pytest.mark.parametrize("missing", ["head", "left_eye", "right_eye", "all"])
+def test_intermittent_face_points_keep_the_last_head_turn(missing):
+    figure = Mannequin(adjust={"neck.turn_left_right": 20, "head.turn_left_right": 20, "head.nod_down_up": -10})
+    bare, face = points(figure), points(figure, BODY + FACE)
+    lost = bare if missing == "all" else {name: at for name, at in face.items() if name != missing}
+    take = load_keypoints([bare, face, lost, face], figure)
+    assert len(take.poses) == 4
+    for key, value in take.poses[1].items():
+        if key.startswith(("neck.", "head.")):
+            assert take.poses[0][key] == pytest.approx(0, abs=0.1)
+            assert take.poses[2][key] == pytest.approx(value, abs=0.1)
+            assert take.poses[3][key] == pytest.approx(value, abs=0.1)
+    assert apart(standing(take.poses[1], figure), worlds(figure), BODY + FACE) < 0.01
 
 
 def test_the_head_turns_only_with_points_on_it():

@@ -9,7 +9,7 @@ from dataclasses import dataclass, field, replace
 from typing import Mapping, Optional, Sequence
 
 from .geometry import Transform, Vec3
-from .interchange import Take
+from .interchange import Take, _known
 from .kinematics import scaled
 from .stock.mannequin import FOOTED, Mannequin, _margin
 
@@ -58,7 +58,7 @@ def positions(take: Take, figure: Optional[Mannequin] = None,
     figure = Mannequin() if figure is None else figure
     out = []
     for pose in take.poses:
-        posed = replace(figure, pose=pose, solid=False)
+        posed = replace(figure, pose=pose, adjust={}, solid=False)
         frames = posed.frames()
         out.append({name: posed.transform.then(frames[name]).position for name in joints})
     return out
@@ -70,7 +70,7 @@ def _posed(take: Take, figure: Optional[Mannequin], joints: Sequence[str]) -> li
     figure = Mannequin() if figure is None else figure
     out = []
     for pose in take.poses:
-        posed = replace(figure, pose=pose, solid=False)
+        posed = replace(figure, pose=pose, adjust={}, solid=False)
         frames = posed.frames()
         lows: dict[str, list[tuple[float, Vec3]]] = {foot: [] for foot in FEET}
         for leaf in posed.walk():
@@ -90,7 +90,7 @@ def fidelity(points: Sequence[Mapping[str, Sequence[float]]], take: Take, figure
         raise ValueError(f"{len(points)} frames of points and {len(take.poses)} poses: compare a take with what it was read from")
     fps = take.fps
     made, soles, balances = zip(*_posed(take, figure, LIMBS + HIPS)) if take.poses else ((), (), ())
-    source = [{name: Vec3(*at) for name, at in frame.items()} for frame in points]
+    source = [{known: Vec3(*at) for name, at in frame.items() if (known := _known(name)) is not None} for frame in points]
     leg = _leg(made)
     theirs, ours = _relative(source, _leg(source)), _relative(made, leg)
     limbs: dict[str, dict[str, float]] = {}
