@@ -2,11 +2,17 @@
 with every lamp off (moon, sky and mist only), and one light-only layer for the street lamp and for each row of path
 lights, which added to the base give the plate back. set.json beside them holds what a compositor needs, every number
 projected from the published shot. It needs only the catalog and ffmpeg.
+
+The plates are taller than the published shot's frame, for a camera pull-back in the cut: the shot's 30 mm lens on a
+1920 px tall plate is a 2400 px focal length, and an 18 mm lens on a 3200 px tall plate is the same 2400 px, so the
+published framing is the middle 1920 rows of these plates, the crop at (0, 640), and nothing in it moves or scales.
+The aperture stays the same 50 mm across (f/0.6 at 30 mm is f/0.36 at 18 mm), so the blur in px is unchanged too.
 Run: .venv/bin/python examples/park_night.py [folder] [width]"""
 import json
 import math
 import subprocess
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -15,13 +21,22 @@ sys.path.insert(0, str(ROOT))
 from srlocations import Blueprint, Projection, Registry, Renderer, Shaded, SharedCatalog, Vec3
 from srlocations.geometry import aim
 
-SHOT, MARK, HEIGHT, CROP = "dance", "dancer", 1920, 1080  # the plate's height and the width of the frame panned over it
+SHOT, MARK, HEIGHT, CROP = "dance", "dancer", 3200, 1080  # the plate's height and the width of the frame panned over it
+LENS = 18.0  # mm, in place of the published shot's 30 mm, so the 3200 px plate keeps its 2400 px focal length
+PUBLISHED = {"height": 1920, "lens_mm": 30.0, "f_stop": 0.6}  # the plate as schema 1 rendered it: the published shot's frame
+SCHEMA = 2  # of set.json: 1 had no "schema" key, a 1920 px plate and no "crop"
 FIGURE = 1.6  # metres, the dancer's standing height
 REACH = 400  # px either side of the dance spot where the figure's limbs go
 DERIVATION = {
-    "camera": "The published dance shot (eye, look_at, lens) through srlocations.Projection, the SDK's model of the engine's "
-              "pinhole camera. The focal length in px is lens_mm x plate height / 24 when the plate is narrower than 3:2, "
-              "so 30 mm on a 1920 px tall plate is 2400 px whatever the width.",
+    "camera": "The published dance shot (eye, look_at) with an 18 mm lens in place of its 30 mm, through "
+              "srlocations.Projection, the SDK's model of the engine's pinhole camera. The focal length in px is "
+              "lens_mm x plate height / 24 when the plate is narrower than 3:2, so 18 mm on a 3200 px tall plate is the "
+              "2400 px that 30 mm on a 1920 px plate was, whatever the width, and the principal point stays the centre.",
+    "crop": "Where schema 1's plate (the published shot's frame, 1920 px tall at 30 mm) sits in this one: the same focal "
+            "length about the same centre, so it is the rows from origin_px[1] to origin_px[1] + size_px[1], unscaled.",
+    "depth_of_field": "The engine's circle of confusion in px is lens_mm^2 / f_stop x plate height / 24 / 10 x |1/focus - 1/depth| "
+                      "in centimetres, so with the focal length in px held, f_stop scales with the lens to keep the blur: the "
+                      "aperture stays lens_mm / f_stop = 50 mm across.",
     "dance_spot": "The 'dancer' mark projected to the plate; floor_y is its row. head_y is the point 1.6 m above the mark, "
                   "px_per_metre_vertical is (floor_y - head_y) / 1.6, px_per_metre_horizontal is the distance in px from the "
                   "mark to the point 1 m from it along the camera's x axis.",
@@ -36,7 +51,20 @@ DERIVATION = {
     "behind_the_figure": "Measured on the rendered pictures: WCAG 2 relative luminance of every pixel from head_y to floor_y "
                          "within 400 px either side of the dance spot; a pure black limb's contrast is (L + 0.05) / 0.05.",
 }
-F_STOP = 0.6  # wide open, so what is behind the dancer goes soft
+F_STOP = round(PUBLISHED["f_stop"] * LENS / PUBLISHED["lens_mm"], 3)  # 0.36: f/0.6's 50 mm aperture at 18 mm, so the blur in px is as it was
+
+
+def tall(location):
+    """The location with the dance shot's lens at `LENS`, so a `HEIGHT` px plate keeps the published frame's focal length
+    in px and holds it unscaled in its middle rows. The published location is not changed: this is the built copy."""
+    location.shots[SHOT] = replace(location.shots[SHOT], lens=LENS)
+    return location
+
+
+def crop(width: int) -> dict:
+    """Where the published shot's frame, as schema 1 rendered it, sits in a plate `HEIGHT` rows tall and `width` wide."""
+    return {"of": f"schema 1's plate: the published shot's {PUBLISHED['height']} px frame at {PUBLISHED['lens_mm']} mm",
+            "origin_px": [0, (HEIGHT - PUBLISHED["height"]) // 2], "size_px": [width, PUBLISHED["height"]]}
 
 
 def switched(payload: dict, lit: set[str]) -> dict:
@@ -133,9 +161,12 @@ def numbers(location, rig: dict, width: int, layers: dict[str, list[str]]) -> di
               -math.sin(math.radians(rig["elevation"])),
               math.cos(math.radians(rig["azimuth"] + 180)) * math.cos(math.radians(rig["elevation"])))
     return {
-        "plate": {"width": width, "height": HEIGHT, "frame": [CROP, HEIGHT]},
+        "schema": SCHEMA,
+        "plate": {"width": width, "height": HEIGHT, "frame": [CROP, PUBLISHED["height"]], "crop": crop(width)},
         "camera": {"eye_m": list(shot.eye), "look_at_m": list(shot.look_at), "lens_mm": shot.lens,
-                   "focal_px": round(view.focal, 3), "depth_of_field": {"f_stop": F_STOP, "focus_m": round(view.to_camera(mark.at).z, 3)}},
+                   "published_lens_mm": PUBLISHED["lens_mm"], "focal_px": round(view.focal, 3),
+                   "depth_of_field": {"f_stop": F_STOP, "aperture_mm": round(shot.lens / F_STOP, 3),
+                                      "published_f_stop": PUBLISHED["f_stop"], "focus_m": round(view.to_camera(mark.at).z, 3)}},
         "dance_spot": {"world_m": list(mark.at), "px": [round(spot[0], 1), round(spot[1], 1)], "floor_y": round(spot[1], 1),
                        "px_per_metre_horizontal": round(math.dist(spot, across), 2),
                        "px_per_metre_vertical": round((spot[1] - head[1]) / FIGURE, 2),
@@ -180,7 +211,7 @@ def main() -> None:
     everything = {spec["name"] for spec in payload["nodes"] if spec.get("name", "") == "lamp" or spec.get("name", "").startswith("row-")}
 
     def built(lit: set[str]):
-        return Blueprint(switched(payload, lit)).build(Registry.default().use(catalog))
+        return tall(Blueprint(switched(payload, lit)).build(Registry.default().use(catalog)))
 
     location = built(everything)
     print("issues:", location.validate() or "none")

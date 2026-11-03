@@ -381,6 +381,52 @@ def test_the_dance_shot_frames_a_dancer_for_a_portrait_plate():
     assert 0 < lamp[0] < 1080 and 0 < lamp[1] < head[1]
 
 
+def test_the_tall_plate_holds_the_published_frame_unscaled_in_its_middle_rows():
+    """The plates are 3200 px tall at 18 mm so a pull-back has rows to spare: the same 2400 px focal length as the
+    published 30 mm on 1920 px, about the same centre, so the published frame is the crop at (0, 640), and every point
+    lands 640 rows lower and not a pixel across."""
+    script = _park_night_script()
+    location = script.tall(SharedCatalog.open(ROOT / "catalog").location("park-night"))
+    published = SharedCatalog.open(ROOT / "catalog").location("park-night").shots["dance"]
+    assert published.lens == 30.0 and location.shots["dance"].lens == 18.0
+    assert location.shots["dance"].eye == published.eye and location.shots["dance"].look_at == published.look_at
+    tall, was = Projection(location.shots["dance"], 2400, script.HEIGHT), Projection(published, 2400, 1920)
+    assert tall.focal == was.focal == 2400
+    for point in (location.marks["dancer"].at, location.marks["dancer"].at + Vec3(0, 1.6, 0), published.look_at):
+        (x, y), (x0, y0) = tall.pixel(point), was.pixel(point)
+        assert abs(x - x0) < 1e-9 and abs(y - (y0 + 640)) < 1e-9
+
+
+def test_the_tall_plate_keeps_the_aperture_so_the_blur_in_px_is_unchanged():
+    """The engine's circle of confusion in px is lens^2 / f_stop x height / 24 / 10 x |1/focus - 1/depth|, so with the
+    focal length in px held, the f-stop must scale with the lens: f/0.6 at 30 mm is f/0.36 at 18 mm, 50 mm across both."""
+    script = _park_night_script()
+    coc = lambda lens, f_stop, height: lens * lens / f_stop * height / 24 / 10  # the engine's coc_scale for a tall frame
+    assert script.F_STOP == 0.36
+    assert abs(coc(script.LENS, script.F_STOP, script.HEIGHT) - coc(30.0, 0.6, 1920)) < 1e-6
+    assert abs(script.LENS / script.F_STOP - 30.0 / 0.6) < 1e-9
+
+
+def test_set_json_records_the_plate_height_and_the_crop_in_schema_2():
+    """What worskpace's dance driver reads: the schema number, the plate's height, where the published frame sits in it,
+    and the lens, f-stop and aperture beside the published ones."""
+    script = _park_night_script()
+    catalog = SharedCatalog.open(ROOT / "catalog")
+    location = script.tall(catalog.location("park-night"))
+    found = script.numbers(location, catalog.get("location", "park-night").payload["rig"], 2400, {"lamp": ["lamp.png"]})
+    assert found["schema"] == 2
+    assert found["plate"] == {"width": 2400, "height": 3200, "frame": [1080, 1920],
+                              "crop": {"of": "schema 1's plate: the published shot's 1920 px frame at 30.0 mm",
+                                       "origin_px": [0, 640], "size_px": [2400, 1920]}}
+    camera = found["camera"]
+    assert camera["lens_mm"] == 18.0 and camera["published_lens_mm"] == 30.0 and camera["focal_px"] == 2400
+    assert camera["depth_of_field"]["f_stop"] == 0.36 and camera["depth_of_field"]["published_f_stop"] == 0.6
+    assert camera["depth_of_field"]["aperture_mm"] == 50
+    assert abs(found["dance_spot"]["floor_y"] - (1440 + 640)) < 1 and abs(found["dance_spot"]["px"][0] - 1200) < 1
+    assert abs(found["dance_spot"]["figure_1_6_m_px"] - 800) < 2
+    assert {"camera", "crop", "depth_of_field"} <= set(script.DERIVATION)  # main() writes it beside these numbers
+
+
 def test_the_lamp_centres_its_pool_on_the_dancer():
     location = SharedCatalog.open(ROOT / "catalog").location("park-night")
     beam = next(leaf for leaf in location.lights() if leaf.path.startswith("lamp/") and leaf.item.kind == "spot")

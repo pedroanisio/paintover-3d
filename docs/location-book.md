@@ -148,7 +148,9 @@ street lamp, four rows of low path lights, a bank of mist cards and a low cool m
 - Pictures: `examples/park_night.py [folder] [width]` writes into `renders/park-night/` a wide plate with every light on,
   `base.png` with every lamp off (moon, sky and mist only), `lamp.png` and one light-only layer per row of path lights,
   which added to the base give the plate back, and `set.json` with the plate's camera numbers projected from the shot
-  and the luminance behind the figure. It needs ffmpeg.
+  and the luminance behind the figure. It needs ffmpeg. The plates are 3200 px tall at 18 mm, for a camera pull-back:
+  the same 2400 px focal length as the published 30 mm on 1920 px, so the published frame is their middle 1920 rows,
+  the crop at (0, 640), which `set.json` (schema 2) records, with the f-stop scaled to 0.36 to keep the blur in px.
 - Held by tests: it opens without its plugin, validates, has exactly those shots and the one mark, pins all five props at
   1.0.0, keeps under 63 lights, every lamp's `.off` twin differs only by its light, the mist cards stand on the lawn, the
   lamp haze faces the dance shot, and the dance shot's rows are as above.
