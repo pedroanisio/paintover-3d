@@ -218,10 +218,10 @@ unchecked. What a review of the SDK found and left is under "Found and left" in 
 ```
 $ .venv/bin/python -m pytest --collect-only -q tests -p no:cacheprovider
 ...
-1567 tests collected in 3.73s
+1596 tests collected in 0.30s
 ```
 
-That is the count collected on 2026-11-02 at commit 70033cb, with engine 0.9.0 on this machine, not a count passed: the
-suite was not run for this edition, because the machine was reserved. The full suite takes about four minutes and needs
+That is the count collected on 2026-11-03 at commit db206ed, with engine 0.9.0 on this machine, not a count passed.
+The full suite was also run at that commit, niced: 1594 passed and 2 skipped, in about six minutes. It needs
 the GPU; two tests need srstudio and skip without it. The count changes with every test added, so when it changes, so
 does this line.
